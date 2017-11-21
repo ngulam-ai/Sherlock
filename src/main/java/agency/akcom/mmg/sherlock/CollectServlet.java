@@ -10,15 +10,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
-import com.google.cloud.ServiceOptions;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
@@ -27,21 +29,17 @@ import com.google.pubsub.v1.TopicName;
 @WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
 public class CollectServlet extends HttpServlet {
 
-	private static final String TOPIC_ID = "real-time-ga-hit-data";
+	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID = "mmg-sandbox"; // ServiceOptions.getDefaultProjectId();
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		printRequest(req, "GET");
-
-		// TODO send as Pub/Sub topic
+		printRequest(req, "GET"); 
 
 		try {
-			postToPubSub("{\"data\": \"test_data_1\"}");
-
+			postToPubSub(req);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -49,8 +47,30 @@ public class CollectServlet extends HttpServlet {
 		// resp.setCharacterEncoding("UTF-8");
 		// resp.getWriter().print("GET collect servlet");
 	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		
+		printRequest(req, "POST");
+		
+		try {
+			postToPubSub(req);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
-	private void postToPubSub(String message) throws Exception {
+		resp.setContentType("text/plain");
+		resp.setCharacterEncoding("UTF-8");
+		resp.getWriter().print("POST collect servlet");
+	}
+
+	private void postToPubSub(HttpServletRequest req) throws Exception {
+		JSONObject reqJson = requestParamsToJSON(req);
+		
+		System.out.println("---request JSON---");
+		System.out.println(reqJson.toString(4));
+		System.out.println("---request JSON---");
+		
 		TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 		Publisher publisher = null;
 		try {
@@ -59,7 +79,8 @@ public class CollectServlet extends HttpServlet {
 
 			// schedule a message to be published, messages are automatically batched
 			// convert message to bytes
-			ByteString data = ByteString.copyFromUtf8(message);
+			ByteString data = ByteString.copyFromUtf8(reqJson.toString());
+			
 			PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 			ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
 
@@ -81,14 +102,18 @@ public class CollectServlet extends HttpServlet {
 		}
 	}
 
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		printRequest(req, "POST");
-
-		resp.setContentType("text/plain");
-		resp.setCharacterEncoding("UTF-8");
-		resp.getWriter().print("POST collect servlet");
+	public JSONObject requestParamsToJSON(ServletRequest req) {
+		JSONObject jsonObj = new JSONObject();
+		Map<String, String[]> params = req.getParameterMap();
+		for (Map.Entry<String, String[]> entry : params.entrySet()) {
+			String v[] = entry.getValue();
+			Object o = (v.length == 1) ? v[0] : v;
+			jsonObj.put(entry.getKey(), o);
+		}
+		return jsonObj;
 	}
+
+
 
 	private void printRequest(HttpServletRequest req, String type) throws IOException {
 		System.out.println();
