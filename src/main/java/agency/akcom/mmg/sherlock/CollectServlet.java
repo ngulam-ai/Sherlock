@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -35,7 +37,7 @@ public class CollectServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		printRequest(req, "GET"); 
+		printRequest(req, "GET");
 
 		try {
 			postToPubSub(req);
@@ -47,12 +49,12 @@ public class CollectServlet extends HttpServlet {
 		// resp.setCharacterEncoding("UTF-8");
 		// resp.getWriter().print("GET collect servlet");
 	}
-	
+
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
+
 		printRequest(req, "POST");
-		
+
 		try {
 			postToPubSub(req);
 		} catch (Exception e) {
@@ -66,11 +68,17 @@ public class CollectServlet extends HttpServlet {
 
 	private void postToPubSub(HttpServletRequest req) throws Exception {
 		JSONObject reqJson = requestParamsToJSON(req);
-		
+
+		// add additional parameters if they not exist
+		reqJson.putOnce("hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
+		reqJson.putOnce("time", new Date().getTime()); // Hit time on the server according to the time zone
+		// TODO Determine and use Analytics account time zone;
+		// ---------------
+
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
 		System.out.println("---request JSON---");
-		
+
 		TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 		Publisher publisher = null;
 		try {
@@ -80,7 +88,7 @@ public class CollectServlet extends HttpServlet {
 			// schedule a message to be published, messages are automatically batched
 			// convert message to bytes
 			ByteString data = ByteString.copyFromUtf8(reqJson.toString());
-			
+
 			PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 			ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
 
@@ -112,8 +120,6 @@ public class CollectServlet extends HttpServlet {
 		}
 		return jsonObj;
 	}
-
-
 
 	private void printRequest(HttpServletRequest req, String type) throws IOException {
 		System.out.println();
