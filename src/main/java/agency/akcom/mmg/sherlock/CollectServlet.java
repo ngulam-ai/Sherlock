@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -18,6 +20,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 
 import com.google.api.core.ApiFuture;
@@ -32,7 +37,7 @@ import com.google.pubsub.v1.TopicName;
 public class CollectServlet extends HttpServlet {
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
-	private static final String PROJECT_ID = "mmg-sandbox"; // ServiceOptions.getDefaultProjectId();
+	private static final String PROJECT_ID = "sherlock-184721"; //"mmg-sandbox"; // ServiceOptions.getDefaultProjectId();
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -67,6 +72,7 @@ public class CollectServlet extends HttpServlet {
 	}
 
 	private void postToPubSub(HttpServletRequest req) throws Exception {
+		
 		JSONObject reqJson = requestParamsToJSON(req);
 
 		// add additional parameters if they not exist
@@ -77,7 +83,7 @@ public class CollectServlet extends HttpServlet {
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
-		System.out.println("---request JSON---");
+		System.out.println("===request JSON===");
 
 		TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 		Publisher publisher = null;
@@ -111,14 +117,44 @@ public class CollectServlet extends HttpServlet {
 	}
 
 	public JSONObject requestParamsToJSON(ServletRequest req) {
+		
 		JSONObject jsonObj = new JSONObject();
+		
 		Map<String, String[]> params = req.getParameterMap();
 		for (Map.Entry<String, String[]> entry : params.entrySet()) {
 			String v[] = entry.getValue();
 			Object o = (v.length == 1) ? v[0] : v;
 			jsonObj.put(entry.getKey(), o);
 		}
+
+		List<NameValuePair> pairs = null;
+		try {
+			StringEntity stringEntity = new StringEntity(getBody(req));
+			stringEntity.setContentType(URLEncodedUtils.CONTENT_TYPE);
+			System.out.println("content length: " + stringEntity.getContentLength());
+			pairs = URLEncodedUtils.parse(stringEntity); 
+			System.out.println("pairs: " + pairs);
+			Map<String, String> bodyParams = toMap(pairs);
+			for (Entry<String, String> entry : bodyParams.entrySet()) {
+				String v = entry.getValue();
+				Object o = v;
+				jsonObj.put(entry.getKey(), o);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		return jsonObj;
+	}
+
+	private static Map<String, String> toMap(List<NameValuePair> pairs) {
+		Map<String, String> map = new HashMap<>();
+		for (int i = 0; i < pairs.size(); i++) {
+			NameValuePair pair = pairs.get(i);
+			map.put(pair.getName(), pair.getValue());
+		}
+		return map;
 	}
 
 	private void printRequest(HttpServletRequest req, String type) throws IOException {
@@ -137,12 +173,12 @@ public class CollectServlet extends HttpServlet {
 		while (headerNames.hasMoreElements())
 			System.out.println(headerNames.nextElement());
 
-		System.out.println("---");
-		String payloadRequest = getBody(req);
-		System.out.println(payloadRequest);
+//		System.out.println("---");
+//		String payloadRequest = getBody(req);
+//		System.out.println(payloadRequest);
 	}
 
-	public static String getBody(HttpServletRequest request) throws IOException {
+	public static String getBody(ServletRequest request) throws IOException {
 
 		String body = null;
 		StringBuilder stringBuilder = new StringBuilder();
@@ -173,6 +209,9 @@ public class CollectServlet extends HttpServlet {
 		}
 
 		body = stringBuilder.toString();
+		System.out.println("--- body ---");
+		System.out.println(body);
+		System.out.println("=== body ===");
 		return body;
 	}
 
