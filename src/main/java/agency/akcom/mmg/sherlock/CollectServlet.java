@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.api.core.ApiFuture;
@@ -37,7 +40,8 @@ import com.google.pubsub.v1.TopicName;
 public class CollectServlet extends HttpServlet {
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
-	private static final String PROJECT_ID = "sherlock-184721"; //"mmg-sandbox"; // ServiceOptions.getDefaultProjectId();
+	private static final String PROJECT_ID =  "sherlock-184721"; //"mmg-sandbox"; 
+															// ServiceOptions.getDefaultProjectId();
 
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -72,13 +76,27 @@ public class CollectServlet extends HttpServlet {
 	}
 
 	private void postToPubSub(HttpServletRequest req) throws Exception {
-		
+
 		JSONObject reqJson = requestParamsToJSON(req);
 
 		// add additional parameters if they not exist
-		reqJson.putOnce("hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
-		reqJson.putOnce("time", new Date().getTime()); // Hit time on the server according to the time zone
-		// TODO Determine and use Analytics account time zone;
+		tryToPutOnce(reqJson, "hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
+		
+		// date, time and so on
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());  // TODO Determine and use Analytics account time zone;
+		tryToPutOnce(reqJson, "time", "" + cal.getTime().getTime()); 
+		// Hit time on the server according to the time zone		
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		tryToPutOnce(reqJson, "date", "" + format.format(cal.getTime()));
+		// The day of the month, a two-digit number from 01 to 31.
+		tryToPutOnce(reqJson, "hour", "" + String.format("%02d", cal.get(Calendar.HOUR_OF_DAY)));
+		// A two-digit hour of the day ranging from 00-23 in the
+		// timezone configured for the account. This value is also
+		// corrected for daylight savings time.
+		tryToPutOnce(reqJson, "minute", "" + String.format("%02d", cal.get(Calendar.MINUTE)));
+		// Returns the minutes, between 00 and 59, in the hour.
+
 		// ---------------
 
 		System.out.println("---request JSON---");
@@ -116,10 +134,19 @@ public class CollectServlet extends HttpServlet {
 		}
 	}
 
+	private void tryToPutOnce(JSONObject jsonObj, String key, String value) {
+		try {
+			jsonObj.putOnce(key, value);
+		} catch (JSONException e) {
+			System.out.println(String.format("Parameter '%s' already exists, its value '%s', tried to add '%s' value.",
+					key, jsonObj.get(key), value));
+		}
+	}
+
 	public JSONObject requestParamsToJSON(ServletRequest req) {
-		
+
 		JSONObject jsonObj = new JSONObject();
-		
+
 		Map<String, String[]> params = req.getParameterMap();
 		for (Map.Entry<String, String[]> entry : params.entrySet()) {
 			String v[] = entry.getValue();
@@ -132,7 +159,7 @@ public class CollectServlet extends HttpServlet {
 			StringEntity stringEntity = new StringEntity(getBody(req));
 			stringEntity.setContentType(URLEncodedUtils.CONTENT_TYPE);
 			System.out.println("content length: " + stringEntity.getContentLength());
-			pairs = URLEncodedUtils.parse(stringEntity); 
+			pairs = URLEncodedUtils.parse(stringEntity);
 			System.out.println("pairs: " + pairs);
 			Map<String, String> bodyParams = toMap(pairs);
 			for (Entry<String, String> entry : bodyParams.entrySet()) {
@@ -173,9 +200,9 @@ public class CollectServlet extends HttpServlet {
 		while (headerNames.hasMoreElements())
 			System.out.println(headerNames.nextElement());
 
-//		System.out.println("---");
-//		String payloadRequest = getBody(req);
-//		System.out.println(payloadRequest);
+		// System.out.println("---");
+		// String payloadRequest = getBody(req);
+		// System.out.println(payloadRequest);
 	}
 
 	public static String getBody(ServletRequest request) throws IOException {
