@@ -13,11 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +36,7 @@ import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 
-@WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
+//@WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
 public class CollectServlet extends HttpServlet {
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
@@ -83,18 +83,19 @@ public class CollectServlet extends HttpServlet {
 		tryToPutOnce(reqJson, "hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
 		
 		// date, time and so on
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());  // TODO Determine and use Analytics account time zone;
-		tryToPutOnce(reqJson, "time", "" + cal.getTime().getTime()); 
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid"));  // TODO Determine and use Analytics account time zone;
+		calendar.setTime(new Date()); 
+		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime()); 
 		// Hit time on the server according to the time zone		
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-		tryToPutOnce(reqJson, "date", "" + format.format(cal.getTime()));
+		format.setCalendar(calendar);
+		tryToPutOnce(reqJson, "date", "" + format.format(calendar.getTime()));
 		// The day of the month, a two-digit number from 01 to 31.
-		tryToPutOnce(reqJson, "hour", "" + String.format("%02d", cal.get(Calendar.HOUR_OF_DAY)));
+		tryToPutOnce(reqJson, "hour", "" + String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY)));
 		// A two-digit hour of the day ranging from 00-23 in the
 		// timezone configured for the account. This value is also
 		// corrected for daylight savings time.
-		tryToPutOnce(reqJson, "minute", "" + String.format("%02d", cal.get(Calendar.MINUTE)));
+		tryToPutOnce(reqJson, "minute", "" + String.format("%02d", calendar.get(Calendar.MINUTE)));
 		// Returns the minutes, between 00 and 59, in the hour.
 
 		// ---------------
@@ -150,8 +151,9 @@ public class CollectServlet extends HttpServlet {
 		Map<String, String[]> params = req.getParameterMap();
 		for (Map.Entry<String, String[]> entry : params.entrySet()) {
 			String v[] = entry.getValue();
-			Object o = (v.length == 1) ? v[0] : v;
-			jsonObj.put(entry.getKey(), o);
+			String s = (v.length == 1) ? v[0] : "";
+			tryToPutOnce(jsonObj, entry.getKey(), s);
+			//jsonObj.put(entry.getKey(), o);
 		}
 
 		List<NameValuePair> pairs = null;
@@ -164,8 +166,9 @@ public class CollectServlet extends HttpServlet {
 			Map<String, String> bodyParams = toMap(pairs);
 			for (Entry<String, String> entry : bodyParams.entrySet()) {
 				String v = entry.getValue();
-				Object o = v;
-				jsonObj.put(entry.getKey(), o);
+				//Object o = v;
+				tryToPutOnce(jsonObj, entry.getKey(), v);
+				//jsonObj.put(entry.getKey(), o);
 			}
 
 		} catch (IOException e) {
