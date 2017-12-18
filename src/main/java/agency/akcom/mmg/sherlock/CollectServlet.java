@@ -46,7 +46,7 @@ public class CollectServlet extends HttpServlet {
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		printRequest(req, "GET");
+		//printRequest(req, "GET");
 
 		try {
 			postToPubSub(req);
@@ -54,15 +54,12 @@ public class CollectServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		// resp.setContentType("text/plain");
-		// resp.setCharacterEncoding("UTF-8");
-		// resp.getWriter().print("GET collect servlet");
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		printRequest(req, "POST");
+		//printRequest(req, "POST");
 
 		try {
 			postToPubSub(req);
@@ -82,7 +79,10 @@ public class CollectServlet extends HttpServlet {
 		// add additional parameters if they not exist
 		tryToPutOnce(reqJson, "hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
 		
-		// date, time and so on
+		// --- userAgent
+		tryToPutOnce(reqJson, "ua", req.getHeader("User-Agent"));
+		
+		// --- date, time and so on
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid"));  // TODO Determine and use Analytics account time zone;
 		calendar.setTime(new Date()); 
 		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime()); 
@@ -130,7 +130,9 @@ public class CollectServlet extends HttpServlet {
 		} finally {
 			if (publisher != null) {
 				// When finished with the publisher, shutdown to free up resources.
-				publisher.shutdown();
+				publisher.shutdown(); 
+				
+				
 			}
 		}
 	}
