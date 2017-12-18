@@ -42,7 +42,38 @@ public class CollectServlet extends HttpServlet {
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID =  "sherlock-184721"; //"mmg-sandbox"; 
 															// ServiceOptions.getDefaultProjectId();
-
+	
+	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
+	// Create a publisher instance with default settings bound to the topic
+	Publisher	publisher = null; //Publisher.newBuilder(topicName).build();
+	
+	@Override
+	public void init() throws ServletException {
+		try {
+			publisher = Publisher.newBuilder(topicName).build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("CollectServlet.init() complited");
+	}
+	
+	@Override
+	public void destroy() {
+		if (publisher != null) {
+			// When finished with the publisher, shutdown to free up resources.
+			try {
+				publisher.shutdown();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} 
+		}
+			
+		super.destroy();
+		
+		System.out.println("CollectServlet.destroy() complited");
+	}
+	
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -103,38 +134,24 @@ public class CollectServlet extends HttpServlet {
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
 		System.out.println("===request JSON===");
+			
+		// schedule a message to be published, messages are automatically batched
+		// convert message to bytes
+		ByteString data = ByteString.copyFromUtf8(reqJson.toString());
 
-		TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
-		Publisher publisher = null;
-		try {
-			// Create a publisher instance with default settings bound to the topic
-			publisher = Publisher.newBuilder(topicName).build();
+		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
 
-			// schedule a message to be published, messages are automatically batched
-			// convert message to bytes
-			ByteString data = ByteString.copyFromUtf8(reqJson.toString());
-
-			PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-			ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
-
-			ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
-				public void onSuccess(String messageId) {
-					System.out.println("published with message id: " + messageId);
-				}
-
-				public void onFailure(Throwable t) {
-					System.out.println("failed to publish: " + t);
-				}
-			});
-
-		} finally {
-			if (publisher != null) {
-				// When finished with the publisher, shutdown to free up resources.
-				publisher.shutdown(); 
-				
-				
+		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
+			public void onSuccess(String messageId) {
+				System.out.println("published with message id: " + messageId);
 			}
-		}
+
+			public void onFailure(Throwable t) {
+				System.out.println("failed to publish: " + t);
+			}
+		});
+		
 	}
 
 	private void tryToPutOnce(JSONObject jsonObj, String key, String value) {
@@ -162,9 +179,7 @@ public class CollectServlet extends HttpServlet {
 		try {
 			StringEntity stringEntity = new StringEntity(getBody(req));
 			stringEntity.setContentType(URLEncodedUtils.CONTENT_TYPE);
-			System.out.println("content length: " + stringEntity.getContentLength());
 			pairs = URLEncodedUtils.parse(stringEntity);
-			System.out.println("pairs: " + pairs);
 			Map<String, String> bodyParams = toMap(pairs);
 			for (Entry<String, String> entry : bodyParams.entrySet()) {
 				String v = entry.getValue();
@@ -241,9 +256,7 @@ public class CollectServlet extends HttpServlet {
 		}
 
 		body = stringBuilder.toString();
-		System.out.println("--- body ---");
-		System.out.println(body);
-		System.out.println("=== body ===");
+
 		return body;
 	}
 
