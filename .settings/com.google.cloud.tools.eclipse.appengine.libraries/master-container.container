@@ -1,5 +1,5 @@
 {
-  "description": "Google APIs",
+  "description": "Google Cloud Platform Libraries",
   "path": "com.google.cloud.tools.eclipse.appengine.libraries/master-container",
   "entries": [
     {
@@ -35,8 +35,8 @@
     },
     {
       "accessRules": [],
-      "sourceAttachmentPath": "BIN/com/google/api/grpc/grpc-google-cloud-pubsub-v1/0.1.25/grpc-google-cloud-pubsub-v1-0.1.25-sources.jar",
-      "path": "com/google/api/grpc/grpc-google-cloud-pubsub-v1/0.1.25/grpc-google-cloud-pubsub-v1-0.1.25.jar",
+      "sourceAttachmentPath": "BIN/com/google/api/grpc/grpc-google-cloud-pubsub-v1/0.1.26/grpc-google-cloud-pubsub-v1-0.1.26-sources.jar",
+      "path": "com/google/api/grpc/grpc-google-cloud-pubsub-v1/0.1.26/grpc-google-cloud-pubsub-v1-0.1.26.jar",
       "attributes": [
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.repository",
@@ -56,7 +56,7 @@
         },
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.version",
-          "value": "0.1.25"
+          "value": "0.1.26"
         },
         {
           "name": "org.eclipse.jst.component.dependency",
@@ -66,8 +66,8 @@
     },
     {
       "accessRules": [],
-      "sourceAttachmentPath": "BIN/com/google/api/grpc/proto-google-cloud-pubsub-v1/0.1.25/proto-google-cloud-pubsub-v1-0.1.25-sources.jar",
-      "path": "com/google/api/grpc/proto-google-cloud-pubsub-v1/0.1.25/proto-google-cloud-pubsub-v1-0.1.25.jar",
+      "sourceAttachmentPath": "BIN/com/google/api/grpc/proto-google-cloud-pubsub-v1/0.1.26/proto-google-cloud-pubsub-v1-0.1.26-sources.jar",
+      "path": "com/google/api/grpc/proto-google-cloud-pubsub-v1/0.1.26/proto-google-cloud-pubsub-v1-0.1.26.jar",
       "attributes": [
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.repository",
@@ -87,7 +87,7 @@
         },
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.version",
-          "value": "0.1.25"
+          "value": "0.1.26"
         },
         {
           "name": "org.eclipse.jst.component.dependency",
@@ -97,8 +97,8 @@
     },
     {
       "accessRules": [],
-      "sourceAttachmentPath": "BIN/com/google/api/grpc/proto-google-common-protos/1.0.1/proto-google-common-protos-1.0.1-sources.jar",
-      "path": "com/google/api/grpc/proto-google-common-protos/1.0.1/proto-google-common-protos-1.0.1.jar",
+      "sourceAttachmentPath": "BIN/com/google/api/grpc/proto-google-common-protos/1.0.2/proto-google-common-protos-1.0.2-sources.jar",
+      "path": "com/google/api/grpc/proto-google-common-protos/1.0.2/proto-google-common-protos-1.0.2.jar",
       "attributes": [
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.repository",
@@ -118,7 +118,7 @@
         },
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.version",
-          "value": "1.0.1"
+          "value": "1.0.2"
         },
         {
           "name": "org.eclipse.jst.component.dependency",
@@ -128,8 +128,8 @@
     },
     {
       "accessRules": [],
-      "sourceAttachmentPath": "BIN/com/google/api/grpc/proto-google-iam-v1/0.1.25/proto-google-iam-v1-0.1.25-sources.jar",
-      "path": "com/google/api/grpc/proto-google-iam-v1/0.1.25/proto-google-iam-v1-0.1.25.jar",
+      "sourceAttachmentPath": "BIN/com/google/api/grpc/proto-google-iam-v1/0.1.26/proto-google-iam-v1-0.1.26-sources.jar",
+      "path": "com/google/api/grpc/proto-google-iam-v1/0.1.26/proto-google-iam-v1-0.1.26.jar",
       "attributes": [
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.repository",
@@ -149,7 +149,7 @@
         },
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.version",
-          "value": "0.1.25"
+          "value": "0.1.26"
         },
         {
           "name": "org.eclipse.jst.component.dependency",
@@ -345,8 +345,8 @@
     },
     {
       "accessRules": [],
-      "sourceAttachmentPath": "BIN/com/google/cloud/google-cloud-core/1.12.0/google-cloud-core-1.12.0-sources.jar",
-      "path": "com/google/cloud/google-cloud-core/1.12.0/google-cloud-core-1.12.0.jar",
+      "sourceAttachmentPath": "BIN/com/google/cloud/google-cloud-core/1.14.0/google-cloud-core-1.14.0-sources.jar",
+      "path": "com/google/cloud/google-cloud-core/1.14.0/google-cloud-core-1.14.0.jar",
       "attributes": [
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.repository",
@@ -366,7 +366,7 @@
         },
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.version",
-          "value": "1.12.0"
+          "value": "1.14.0"
         },
         {
           "name": "org.eclipse.jst.component.dependency",
@@ -376,8 +376,8 @@
     },
     {
       "accessRules": [],
-      "sourceAttachmentPath": "BIN/com/google/cloud/google-cloud-core-grpc/1.12.0/google-cloud-core-grpc-1.12.0-sources.jar",
-      "path": "com/google/cloud/google-cloud-core-grpc/1.12.0/google-cloud-core-grpc-1.12.0.jar",
+      "sourceAttachmentPath": "BIN/com/google/cloud/google-cloud-core-grpc/1.14.0/google-cloud-core-grpc-1.14.0-sources.jar",
+      "path": "com/google/cloud/google-cloud-core-grpc/1.14.0/google-cloud-core-grpc-1.14.0.jar",
       "attributes": [
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.repository",
@@ -397,7 +397,7 @@
         },
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.version",
-          "value": "1.12.0"
+          "value": "1.14.0"
         },
         {
           "name": "org.eclipse.jst.component.dependency",
@@ -407,8 +407,8 @@
     },
     {
       "accessRules": [],
-      "sourceAttachmentPath": "BIN/com/google/cloud/google-cloud-pubsub/0.30.0-beta/google-cloud-pubsub-0.30.0-beta-sources.jar",
-      "path": "com/google/cloud/google-cloud-pubsub/0.30.0-beta/google-cloud-pubsub-0.30.0-beta.jar",
+      "sourceAttachmentPath": "BIN/com/google/cloud/google-cloud-pubsub/0.32.0-beta/google-cloud-pubsub-0.32.0-beta-sources.jar",
+      "path": "com/google/cloud/google-cloud-pubsub/0.32.0-beta/google-cloud-pubsub-0.32.0-beta.jar",
       "attributes": [
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.repository",
@@ -428,7 +428,7 @@
         },
         {
           "name": "com.google.cloud.tools.eclipse.appengine.libraries.version",
-          "value": "0.30.0-beta"
+          "value": "0.32.0-beta"
         },
         {
           "name": "org.eclipse.jst.component.dependency",
@@ -1541,7 +1541,7 @@
         "repository": "central",
         "groupId": "com.google.api.grpc",
         "artifactId": "grpc-google-cloud-pubsub-v1",
-        "version": "0.1.25",
+        "version": "0.1.26",
         "type": "jar"
       },
       "export": true,
@@ -1553,7 +1553,7 @@
         "repository": "central",
         "groupId": "com.google.api.grpc",
         "artifactId": "proto-google-cloud-pubsub-v1",
-        "version": "0.1.25",
+        "version": "0.1.26",
         "type": "jar"
       },
       "export": true,
@@ -1565,7 +1565,7 @@
         "repository": "central",
         "groupId": "com.google.api.grpc",
         "artifactId": "proto-google-common-protos",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "type": "jar"
       },
       "export": true,
@@ -1577,7 +1577,7 @@
         "repository": "central",
         "groupId": "com.google.api.grpc",
         "artifactId": "proto-google-iam-v1",
-        "version": "0.1.25",
+        "version": "0.1.26",
         "type": "jar"
       },
       "export": true,
@@ -1661,7 +1661,7 @@
         "repository": "central",
         "groupId": "com.google.cloud",
         "artifactId": "google-cloud-core",
-        "version": "1.12.0",
+        "version": "1.14.0",
         "type": "jar"
       },
       "export": true,
@@ -1673,7 +1673,7 @@
         "repository": "central",
         "groupId": "com.google.cloud",
         "artifactId": "google-cloud-core-grpc",
-        "version": "1.12.0",
+        "version": "1.14.0",
         "type": "jar"
       },
       "export": true,
@@ -1685,7 +1685,7 @@
         "repository": "central",
         "groupId": "com.google.cloud",
         "artifactId": "google-cloud-pubsub",
-        "version": "0.30.0-beta",
+        "version": "0.32.0-beta",
         "type": "jar"
       },
       "export": true,

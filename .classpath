@@ -18,5 +18,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/junit-4.12.jar"/>
+	<classpathentry kind="lib" path="C:/Users/User/Desktop/Sherlock/src/main/webapp/WEB-INF/lib/google-api-client-1.23.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/User/Desktop/Sherlock/src/main/webapp/WEB-INF/lib/google-api-services-analytics-v3-rev142-1.23.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/User/Desktop/Sherlock/src/main/webapp/WEB-INF/lib/google-oauth-client-1.23.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/User/Desktop/Sherlock/src/main/webapp/WEB-INF/lib/google-http-client-gson-1.23.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
