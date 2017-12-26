@@ -110,8 +110,9 @@ public class CollectServlet extends HttpServlet {
 		// add additional parameters if they not exist
 		tryToPutOnce(reqJson, "hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
 		
-		// --- userAgent
+		// --- userAgent & IP
 		tryToPutOnce(reqJson, "ua", req.getHeader("User-Agent"));
+		tryToPutOnce(reqJson, "__uip", req.getRemoteAddr());
 		
 		// --- date, time and so on
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid"));  // TODO Determine and use Analytics account time zone;

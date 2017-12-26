@@ -5,7 +5,7 @@
 	<sessions-enabled>false</sessions-enabled>
 	<runtime>java8</runtime>
 
-	<instance-class>F2</instance-class>
+	<instance-class>F1</instance-class>
 
 	<automatic-scaling>
 		<!-- min-idle-instances>2</min-idle-instances>
