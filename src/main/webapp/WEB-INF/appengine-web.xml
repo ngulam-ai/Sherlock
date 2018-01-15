@@ -5,10 +5,12 @@
 	<sessions-enabled>false</sessions-enabled>
 	<runtime>java8</runtime>
 
-	<instance-class>F2</instance-class>
+	<instance-class>F1</instance-class>
 
 	<automatic-scaling>
-		<min-idle-instances>1</min-idle-instances>
+		<!-- min-idle-instances>2</min-idle-instances>
+		<max-pending-latency>1s</max-pending-latency>
+		<min-pending-latency>1s</min-pending-latency -->
 	</automatic-scaling>
 
 </appengine-web-app>
