@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,6 +44,7 @@ public class CollectServlet extends HttpServlet {
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID =  "sherlock-184721"; //"mmg-sandbox"; 
 															// ServiceOptions.getDefaultProjectId();
+	private static final String [] LIST_ID_TIMEZONE = TimeZone.getAvailableIDs();
 	
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
@@ -107,7 +109,7 @@ public class CollectServlet extends HttpServlet {
 	private void postToPubSub(HttpServletRequest req) throws Exception {
 
 		JSONObject reqJson = requestParamsToJSON(req);
-
+		
 		// add additional parameters if they not exist
 		tryToPutOnce(reqJson, "hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
 		
@@ -116,7 +118,39 @@ public class CollectServlet extends HttpServlet {
 		tryToPutOnce(reqJson, "__uip", req.getRemoteAddr());
 		
 		// --- date, time and so on
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid"));  // TODO Determine and use Analytics account time zone;
+		Calendar calendar = null;
+		List <String> setCountry = new ArrayList();
+		String countryAdServer = null;
+		String cityAdServer = null;
+		
+		try {
+			countryAdServer = reqJson.get("cd33").toString();
+			cityAdServer = reqJson.get("cd30").toString();
+		} catch (JSONException e) {
+			// set calendar on standard and skip  below code...
+		}
+
+		for (int i = 0; i < LIST_ID_TIMEZONE.length; i++) {
+			if(LIST_ID_TIMEZONE[i].startsWith(countryAdServer)) {
+				setCountry.add(LIST_ID_TIMEZONE[i]);
+			}
+		}
+		
+		if(setCountry.size() == 0) {
+			calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid")); // TODO Determine and use Analytics account time zone;
+		} else {
+			int checking = 0;
+			for (int j = 0; j < setCountry.size(); j++) {
+				if(setCountry.get(j).endsWith(cityAdServer)) {
+					calendar = Calendar.getInstance(TimeZone.getTimeZone(setCountry.get(j)));
+					checking++;
+				}
+			}
+			if(checking != 1) {
+				calendar = Calendar.getInstance(TimeZone.getTimeZone(setCountry.get(0)));
+			}
+		}
+		
 		calendar.setTime(new Date()); 
 		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime()); 
 		// Hit time on the server according to the time zone		
