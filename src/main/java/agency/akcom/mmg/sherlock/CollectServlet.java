@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
@@ -131,19 +132,24 @@ public class CollectServlet extends HttpServlet {
 		// Returns the minutes, between 00 and 59, in the hour.
 
 		// ---------------
+		
 		//TimeZone
-		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone());
+		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
 		//LocalTime
-		tryToPutOnce(reqJson, "CD92", "" + calendar.getTime().getTime());
+		SimpleDateFormat formatTimeStampToLocalTime = new SimpleDateFormat("HH:mm:ss.SSS");
+		tryToPutOnce(reqJson, "CD92", "" + formatTimeStampToLocalTime.format(calendar.getTime()));
 		//Day
 		tryToPutOnce(reqJson, "CD93", "" + calendar.getTime().getDate());
-		//Weekday 
-		tryToPutOnce(reqJson, "CD94", "" + calendar.getTime().getDay());
-		//Month  
-		tryToPutOnce(reqJson, "CD95", "" + calendar.getTime().getMonth());
-		//Year   
-		tryToPutOnce(reqJson, "CD96", "" + calendar.getTime().getYear());
-
+		//Weekday
+		SimpleDateFormat formatTimeStampToWeekday = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+		tryToPutOnce(reqJson, "CD94", "" + formatTimeStampToWeekday.format(calendar.getTime()));
+		//Month
+		SimpleDateFormat formatTimeStampToMonth = new SimpleDateFormat("MM");
+		tryToPutOnce(reqJson, "CD95", "" + formatTimeStampToMonth.format(calendar.getTime()));
+		//Year 
+		SimpleDateFormat formatTimeStampToYear = new SimpleDateFormat("yyyy");
+		tryToPutOnce(reqJson, "CD96", "" + formatTimeStampToYear.format(calendar.getTime()));
+		
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
 		System.out.println("===request JSON===");
