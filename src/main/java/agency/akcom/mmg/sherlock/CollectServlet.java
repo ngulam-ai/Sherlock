@@ -131,6 +131,18 @@ public class CollectServlet extends HttpServlet {
 		// Returns the minutes, between 00 and 59, in the hour.
 
 		// ---------------
+		//TimeZone
+		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone());
+		//LocalTime
+		tryToPutOnce(reqJson, "CD92", "" + calendar.getTime().getTime());
+		//Day
+		tryToPutOnce(reqJson, "CD93", "" + calendar.getTime().getDate());
+		//Weekday 
+		tryToPutOnce(reqJson, "CD94", "" + calendar.getTime().getDay());
+		//Month  
+		tryToPutOnce(reqJson, "CD95", "" + calendar.getTime().getMonth());
+		//Year   
+		tryToPutOnce(reqJson, "CD96", "" + calendar.getTime().getYear());
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
