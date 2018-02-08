@@ -44,7 +44,7 @@ public class CollectServlet extends HttpServlet {
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID =  "sherlock-184721"; //"mmg-sandbox"; 
 															// ServiceOptions.getDefaultProjectId();
-	private static final String [] LIST_ID_TIMEZONE = TimeZone.getAvailableIDs();
+	private static final Map<String, ArrayList<String>> MAP_ID_TIMEZONE = new HashMap<String, ArrayList<String>>();
 	
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
@@ -57,7 +57,7 @@ public class CollectServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		createMapTimeZone();
 		System.out.println("CollectServlet.init() complited");
 	}
 	
@@ -83,7 +83,7 @@ public class CollectServlet extends HttpServlet {
 		//printRequest(req, "GET");
 
 		try {
-			postToPubSub(req);
+			postToPubSub(putParamToJSON(req));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,7 +96,7 @@ public class CollectServlet extends HttpServlet {
 		//printRequest(req, "POST");
 
 		try {
-			postToPubSub(req);
+			postToPubSub(putParamToJSON(req));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -106,8 +106,8 @@ public class CollectServlet extends HttpServlet {
 		resp.getWriter().print("POST collect servlet");
 	}
 
-	private void postToPubSub(HttpServletRequest req) throws Exception {
-
+	private JSONObject putParamToJSON(HttpServletRequest req) {
+		
 		JSONObject reqJson = requestParamsToJSON(req);
 		
 		// add additional parameters if they not exist
@@ -116,39 +116,28 @@ public class CollectServlet extends HttpServlet {
 		// --- userAgent & IP
 		tryToPutOnce(reqJson, "ua", req.getHeader("User-Agent"));
 		tryToPutOnce(reqJson, "__uip", req.getRemoteAddr());
-		
+	
 		// --- date, time and so on
+		// Set timeZone in Calendar
 		Calendar calendar = null;
-		List <String> setCountry = new ArrayList();
-		String countryAdServer = null;
-		String cityAdServer = null;
-		
 		try {
-			countryAdServer = reqJson.get("cd33").toString();
-			cityAdServer = reqJson.get("cd30").toString();
-		} catch (JSONException e) {
-			// set calendar on standard and skip  below code...
-		}
-
-		for (int i = 0; i < LIST_ID_TIMEZONE.length; i++) {
-			if(LIST_ID_TIMEZONE[i].startsWith(countryAdServer)) {
-				setCountry.add(LIST_ID_TIMEZONE[i]);
-			}
-		}
-		
-		if(setCountry.size() == 0) {
-			calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid")); // TODO Determine and use Analytics account time zone;
-		} else {
-			int checking = 0;
-			for (int j = 0; j < setCountry.size(); j++) {
-				if(setCountry.get(j).endsWith(cityAdServer)) {
-					calendar = Calendar.getInstance(TimeZone.getTimeZone(setCountry.get(j)));
-					checking++;
+			String countryAdServer = reqJson.get("cd33").toString();
+			String cityAdServer = reqJson.get("cd30").toString();
+			
+			if(MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
+				List<String> idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);
+				for (int i = 0; i < idTimeZone.size() ; i++) {
+					if(idTimeZone.get(i).endsWith(cityAdServer)) {
+						calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone.get(i)));
+						break;
+					}
+				}
+				if(calendar == null) {
+					calendar = Calendar.getInstance(TimeZone.getTimeZone(MAP_ID_TIMEZONE.get(countryAdServer).get(0)));
 				}
 			}
-			if(checking != 1) {
-				calendar = Calendar.getInstance(TimeZone.getTimeZone(setCountry.get(0)));
-			}
+		} catch (JSONException e) {
+			calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid")); // TODO Determine and use Analytics account time zone;
 		}
 		
 		calendar.setTime(new Date()); 
@@ -170,27 +159,34 @@ public class CollectServlet extends HttpServlet {
 		//TimeZone
 		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
 		//LocalTime
-		SimpleDateFormat formatTimeStampToLocalTime = new SimpleDateFormat("HH:mm:ss.SSS");
-		tryToPutOnce(reqJson, "CD92", "" + formatTimeStampToLocalTime.format(calendar.getTime()));
+		format = new SimpleDateFormat("HH:mm:ss.SSS");
+		tryToPutOnce(reqJson, "CD92", "" + format.format(calendar.getTime()));
 		//Day
-		tryToPutOnce(reqJson, "CD93", "" + calendar.getTime().getDate());
+		format = new SimpleDateFormat("dd");
+		tryToPutOnce(reqJson, "CD93", "" + format.format(calendar.getTime()));
 		//Weekday
-		SimpleDateFormat formatTimeStampToWeekday = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-		tryToPutOnce(reqJson, "CD94", "" + formatTimeStampToWeekday.format(calendar.getTime()));
+		format = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+		tryToPutOnce(reqJson, "CD94", "" + format.format(calendar.getTime()));
 		//Month
-		SimpleDateFormat formatTimeStampToMonth = new SimpleDateFormat("MM");
-		tryToPutOnce(reqJson, "CD95", "" + formatTimeStampToMonth.format(calendar.getTime()));
+		format = new SimpleDateFormat("MM");
+		tryToPutOnce(reqJson, "CD95", "" + format.format(calendar.getTime()));
 		//Year 
-		SimpleDateFormat formatTimeStampToYear = new SimpleDateFormat("yyyy");
-		tryToPutOnce(reqJson, "CD96", "" + formatTimeStampToYear.format(calendar.getTime()));
+		format = new SimpleDateFormat("yyyy");
+		tryToPutOnce(reqJson, "CD96", "" + format.format(calendar.getTime()));
 		
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
 		System.out.println("===request JSON===");
+		
+		return reqJson;
+		
+	}
+	
+	private void postToPubSub(JSONObject jsonObj) throws Exception {
 			
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-		ByteString data = ByteString.copyFromUtf8(reqJson.toString());
+		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
 
 		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
@@ -311,6 +307,23 @@ public class CollectServlet extends HttpServlet {
 		body = stringBuilder.toString();
 
 		return body;
+	}
+	
+	public static void createMapTimeZone() {
+		String [] list =  TimeZone.getAvailableIDs();
+		for (int i = 0; i < list.length; i++) {
+			String[] id = list[i].split("/");
+			String country = id[0];
+			if(!MAP_ID_TIMEZONE.containsKey(country)) {
+				ArrayList<String> idPerCountry = new ArrayList<String>();
+				for (int j = 0; j < list.length; j++) {
+					if (list[j].startsWith(country)) {
+						idPerCountry.add(list[j]);
+					}
+				}
+				MAP_ID_TIMEZONE.put(country, idPerCountry);
+			}
+		}
 	}
 
 }
