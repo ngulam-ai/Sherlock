@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -119,27 +123,28 @@ public class CollectServlet extends HttpServlet {
 	
 		// --- date, time and so on
 		// Set timeZone in Calendar
-		Calendar calendar = null;
+		String idTimeZone = null;
 		try {
 			String countryAdServer = reqJson.get("cd33").toString();
 			String cityAdServer = reqJson.get("cd30").toString();
 			
 			if(MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
-				List<String> idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);
-				for (int i = 0; i < idTimeZone.size() ; i++) {
-					if(idTimeZone.get(i).endsWith(cityAdServer)) {
-						calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone.get(i)));
+				List<String> listIdTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);
+				for (int i = 0; i < listIdTimeZone.size() ; i++) {
+					if(listIdTimeZone.get(i).endsWith(cityAdServer)) {
+						idTimeZone = listIdTimeZone.get(i);
 						break;
 					}
 				}
-				if(calendar == null) {
-					calendar = Calendar.getInstance(TimeZone.getTimeZone(MAP_ID_TIMEZONE.get(countryAdServer).get(0)));
+				if(idTimeZone == null) {
+					idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer).get(0);
 				}
 			}
 		} catch (JSONException e) {
-			calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid")); // TODO Determine and use Analytics account time zone;
+			idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
 		}
 		
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
 		calendar.setTime(new Date()); 
 		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime()); 
 		// Hit time on the server according to the time zone		
@@ -157,21 +162,29 @@ public class CollectServlet extends HttpServlet {
 		// ---------------
 		
 		//TimeZone
-		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
+
+// For get local time in UTC "+01:00"
+//		LocalDateTime dt = LocalDateTime.now();
+//		ZoneId zone = ZoneId.of(idTimeZone);
+//      ZonedDateTime zdt = dt.atZone(zone);
+//      ZoneOffset zos = zdt.getOffset();
+//      String formatUTC = dt.atZone(zone).getOffset().getId().replace("Z", "+00:00");
+
+        tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
 		//LocalTime
-		format = new SimpleDateFormat("HH:mm:ss.SSS");
+		format.applyPattern("HH:mm:ss.SSS");
 		tryToPutOnce(reqJson, "CD92", "" + format.format(calendar.getTime()));
 		//Day
-		format = new SimpleDateFormat("dd");
+		format.applyPattern("dd");
 		tryToPutOnce(reqJson, "CD93", "" + format.format(calendar.getTime()));
 		//Weekday
 		format = new SimpleDateFormat("EEEE", Locale.ENGLISH);
 		tryToPutOnce(reqJson, "CD94", "" + format.format(calendar.getTime()));
 		//Month
-		format = new SimpleDateFormat("MM");
+		format.applyPattern("MM");
 		tryToPutOnce(reqJson, "CD95", "" + format.format(calendar.getTime()));
 		//Year 
-		format = new SimpleDateFormat("yyyy");
+		format.applyPattern("yyyy");
 		tryToPutOnce(reqJson, "CD96", "" + format.format(calendar.getTime()));
 		
 		System.out.println("---request JSON---");
