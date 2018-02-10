@@ -5,11 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -151,14 +146,6 @@ public class CollectServlet extends HttpServlet {
 		} catch (JSONException e) {}
 	
 		//TimeZone
-		
-// For get local time in UTC "+01:00"
-//		LocalDateTime dt = LocalDateTime.now();
-//		ZoneId zone = ZoneId.of(idTimeZone);
-//      ZonedDateTime zdt = dt.atZone(zone);
-//      ZoneOffset zos = zdt.getOffset();
-//      String formatUTC = dt.atZone(zone).getOffset().getId().replace("Z", "+00:00");
-
 		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
         tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
 		//LocalTime
