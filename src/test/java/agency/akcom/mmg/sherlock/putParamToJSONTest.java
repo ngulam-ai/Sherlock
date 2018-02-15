@@ -1,5 +1,7 @@
 package agency.akcom.mmg.sherlock;
 
+import javax.servlet.ServletException;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,20 +12,20 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 @RunWith(JUnit4.class)
 public class putParamToJSONTest {
-	static final CollectServlet COLLECT_SERVLET = new CollectServlet();
-	
+	private static final CollectServlet COLLECT_SERVLET = new CollectServlet();
+
 	@Before
-	public void init() {
-		COLLECT_SERVLET.createMapTimeZone();
+	public void init() throws ServletException {
+		COLLECT_SERVLET.init();
 	}
-	
+
 	@Test
 	public void customParamIDTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
 		Assert.assertEquals("Europe/Madrid", json.get("CD91"));
 	}
-	
+
 	@Test
 	public void setCountryCDidTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -32,7 +34,7 @@ public class putParamToJSONTest {
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
 		Assert.assertEquals("Egypt", json.get("CD91"));
 	}
-	
+
 	@Test
 	public void setSityIDTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
