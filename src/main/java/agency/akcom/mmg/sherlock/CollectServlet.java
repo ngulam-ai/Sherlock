@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
@@ -42,6 +43,7 @@ public class CollectServlet extends HttpServlet {
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID =  "sherlock-184721"; //"mmg-sandbox"; 
 															// ServiceOptions.getDefaultProjectId();
+	private static final Map<String, String> MAP_ID_TIMEZONE = new HashMap<String, String>();
 	
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
@@ -54,7 +56,7 @@ public class CollectServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		createMapTimeZone();
 		System.out.println("CollectServlet.init() complited");
 	}
 	
@@ -80,7 +82,7 @@ public class CollectServlet extends HttpServlet {
 		//printRequest(req, "GET");
 
 		try {
-			postToPubSub(req);
+			postToPubSub(putParamToJSON(req));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -93,7 +95,7 @@ public class CollectServlet extends HttpServlet {
 		//printRequest(req, "POST");
 
 		try {
-			postToPubSub(req);
+			postToPubSub(putParamToJSON(req));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -103,19 +105,20 @@ public class CollectServlet extends HttpServlet {
 		resp.getWriter().print("POST collect servlet");
 	}
 
-	private void postToPubSub(HttpServletRequest req) throws Exception {
-
+	protected JSONObject putParamToJSON(HttpServletRequest req) {
+		
 		JSONObject reqJson = requestParamsToJSON(req);
-
+		
 		// add additional parameters if they not exist
 		tryToPutOnce(reqJson, "hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
 		
 		// --- userAgent & IP
 		tryToPutOnce(reqJson, "ua", req.getHeader("User-Agent"));
 		tryToPutOnce(reqJson, "__uip", req.getRemoteAddr());
-		
-		// --- date, time and so on
-		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Madrid"));  // TODO Determine and use Analytics account time zone;
+	
+		// --- date, time and so on default Europe/Madrid:
+		String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
 		calendar.setTime(new Date()); 
 		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime()); 
 		// Hit time on the server according to the time zone		
@@ -129,16 +132,51 @@ public class CollectServlet extends HttpServlet {
 		// corrected for daylight savings time.
 		tryToPutOnce(reqJson, "minute", "" + String.format("%02d", calendar.get(Calendar.MINUTE)));
 		// Returns the minutes, between 00 and 59, in the hour.
-
-		// ---------------
-
+					
+		// Set timeZone use of custom dimensions
+		try {
+			String countryAdServer = reqJson.get("cd33").toString();
+			String cityAdServer = reqJson.get("cd30").toString();
+			
+			if(MAP_ID_TIMEZONE.containsKey(cityAdServer)) {
+				idTimeZone = MAP_ID_TIMEZONE.get(cityAdServer);
+			} else if (MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
+				idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);				
+			} 
+		} catch (JSONException e) {}
+	
+		//TimeZone
+		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
+        tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
+		//LocalTime
+		format.applyPattern("HH:mm:ss.SSS");
+		tryToPutOnce(reqJson, "CD92", "" + format.format(calendar.getTime()));
+		//Day
+		format.applyPattern("dd");
+		tryToPutOnce(reqJson, "CD93", "" + format.format(calendar.getTime()));
+		//Weekday
+		format = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+		tryToPutOnce(reqJson, "CD94", "" + format.format(calendar.getTime()));
+		//Month
+		format.applyPattern("MM");
+		tryToPutOnce(reqJson, "CD95", "" + format.format(calendar.getTime()));
+		//Year 
+		format.applyPattern("yyyy");
+		tryToPutOnce(reqJson, "CD96", "" + format.format(calendar.getTime()));
+		
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
 		System.out.println("===request JSON===");
+		
+		return reqJson;
+		
+	}
+	
+	private void postToPubSub(JSONObject jsonObj) throws Exception {
 			
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-		ByteString data = ByteString.copyFromUtf8(reqJson.toString());
+		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
 
 		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
@@ -259,6 +297,20 @@ public class CollectServlet extends HttpServlet {
 		body = stringBuilder.toString();
 
 		return body;
+	}
+	
+	public static void createMapTimeZone() {
+		String [] list =  TimeZone.getAvailableIDs();
+
+		for (int i = 0; i < list.length; i++) {
+			String[] id = list[i].split("/");
+			
+			for (int j = 0; j < id.length; j++) {
+				if(!MAP_ID_TIMEZONE.containsKey(id[j])) {
+					MAP_ID_TIMEZONE.put(id[j], list[i]);
+				}
+			}
+		}
 	}
 
 }
