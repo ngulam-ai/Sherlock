@@ -18,7 +18,7 @@ public class putParamToJSONTest {
 	}
 	
 	@Test
-	public void customParamIDTimeZoneTest() throws Exception {
+	public void defaultParamIDTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
 		Assert.assertEquals("Europe/Madrid", json.get("CD91"));
@@ -41,4 +41,13 @@ public class putParamToJSONTest {
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
 		Assert.assertEquals("Europe/London", json.get("CD91"));
 	}
+	
+	@Test
+	public void getIDTimeZoneOnIpTest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setRemoteAddr("199.80.53.212");
+		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
+		Assert.assertEquals("America/New_York", json.get("CD91"));
+	}
+	
 }

@@ -1,9 +1,11 @@
 package agency.akcom.mmg.sherlock;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,6 +31,8 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.github.bfsmith.geotimezone.TimeZoneLookup;
+import com.github.bfsmith.geotimezone.TimeZoneResult;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -36,6 +40,8 @@ import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
+import com.maxmind.geoip.Location;
+import com.maxmind.geoip.LookupService;
 
 //@WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
 public class CollectServlet extends HttpServlet {
@@ -134,6 +140,7 @@ public class CollectServlet extends HttpServlet {
 		// Returns the minutes, between 00 and 59, in the hour.
 					
 		// Set timeZone use of custom dimensions
+		String idTimeZoneOnIp = null;
 		try {
 			String countryAdServer = reqJson.get("cd33").toString();
 			String cityAdServer = reqJson.get("cd30").toString();
@@ -142,8 +149,16 @@ public class CollectServlet extends HttpServlet {
 				idTimeZone = MAP_ID_TIMEZONE.get(cityAdServer);
 			} else if (MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
 				idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);				
-			} 
-		} catch (JSONException e) {}
+			} else {
+				idTimeZoneOnIp = findIDTimeZoneOnIP(reqJson);
+			}
+		} catch (JSONException e) {
+			idTimeZoneOnIp = findIDTimeZoneOnIP(reqJson);
+		}
+		
+		if(idTimeZoneOnIp != null) {
+			idTimeZone = idTimeZoneOnIp;
+		}
 	
 		//TimeZone
 		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
@@ -170,6 +185,20 @@ public class CollectServlet extends HttpServlet {
 		
 		return reqJson;
 		
+	}
+	
+	private String findIDTimeZoneOnIP(JSONObject reqJson) {
+		try {
+			String ip = reqJson.get("__uip").toString();
+			URL resource = CollectServlet.class.getClassLoader().getResource("GeoLiteCity.dat");
+	        LookupService lookupService = new LookupService(new File(resource.getFile()));
+	        Location location = lookupService.getLocation(ip);
+	        TimeZoneLookup timeZoneLookup = new TimeZoneLookup();
+	        TimeZoneResult timeZone = timeZoneLookup.getTimeZone(location.latitude, location.longitude);
+	        return timeZone.getResult();
+		} catch (JSONException | IOException | NullPointerException e ) {
+		}
+		return null;
 	}
 	
 	private void postToPubSub(JSONObject jsonObj) throws Exception {
