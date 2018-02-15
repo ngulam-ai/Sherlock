@@ -47,25 +47,28 @@ import com.maxmind.geoip.LookupService;
 public class CollectServlet extends HttpServlet {
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
-	private static final String PROJECT_ID =  "sherlock-184721"; //"mmg-sandbox"; 
-															// ServiceOptions.getDefaultProjectId();
+	private static final String PROJECT_ID = "sherlock-184721"; // "mmg-sandbox";
+	// ServiceOptions.getDefaultProjectId();
 	private static final Map<String, String> MAP_ID_TIMEZONE = new HashMap<String, String>();
-	
+
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
-	Publisher	publisher = null; //Publisher.newBuilder(topicName).build();
-	
+	Publisher publisher = null; // Publisher.newBuilder(topicName).build();
+	LookupService lookupService = null;
+
 	@Override
 	public void init() throws ServletException {
 		try {
 			publisher = Publisher.newBuilder(topicName).build();
+			URL resource = CollectServlet.class.getClassLoader().getResource("GeoLiteCity.dat");
+			lookupService = new LookupService(new File(resource.getFile()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		createMapTimeZone();
 		System.out.println("CollectServlet.init() complited");
 	}
-	
+
 	@Override
 	public void destroy() {
 		if (publisher != null) {
@@ -74,18 +77,18 @@ public class CollectServlet extends HttpServlet {
 				publisher.shutdown();
 			} catch (Exception e) {
 				e.printStackTrace();
-			} 
+			}
 		}
-			
+
 		super.destroy();
-		
+
 		System.out.println("CollectServlet.destroy() complited");
 	}
-	
+
 	@Override
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-		//printRequest(req, "GET");
+		// printRequest(req, "GET");
 
 		try {
 			postToPubSub(putParamToJSON(req));
@@ -98,7 +101,7 @@ public class CollectServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		//printRequest(req, "POST");
+		// printRequest(req, "POST");
 
 		try {
 			postToPubSub(putParamToJSON(req));
@@ -112,22 +115,22 @@ public class CollectServlet extends HttpServlet {
 	}
 
 	protected JSONObject putParamToJSON(HttpServletRequest req) {
-		
+
 		JSONObject reqJson = requestParamsToJSON(req);
-		
+
 		// add additional parameters if they not exist
 		tryToPutOnce(reqJson, "hitId", UUID.randomUUID().toString()); // Hit identifier represented as UUID (version 4)
-		
+
 		// --- userAgent & IP
 		tryToPutOnce(reqJson, "ua", req.getHeader("User-Agent"));
 		tryToPutOnce(reqJson, "__uip", req.getRemoteAddr());
-	
+
 		// --- date, time and so on default Europe/Madrid:
 		String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
-		calendar.setTime(new Date()); 
-		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime()); 
-		// Hit time on the server according to the time zone		
+		calendar.setTime(new Date());
+		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime());
+		// Hit time on the server according to the time zone
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
 		format.setCalendar(calendar);
 		tryToPutOnce(reqJson, "date", "" + format.format(calendar.getTime()));
@@ -138,71 +141,69 @@ public class CollectServlet extends HttpServlet {
 		// corrected for daylight savings time.
 		tryToPutOnce(reqJson, "minute", "" + String.format("%02d", calendar.get(Calendar.MINUTE)));
 		// Returns the minutes, between 00 and 59, in the hour.
-					
+
 		// Set timeZone use of custom dimensions
 		String idTimeZoneOnIp = null;
 		try {
 			String countryAdServer = reqJson.get("cd33").toString();
 			String cityAdServer = reqJson.get("cd30").toString();
-			
-			if(MAP_ID_TIMEZONE.containsKey(cityAdServer)) {
+
+			if (MAP_ID_TIMEZONE.containsKey(cityAdServer)) {
 				idTimeZone = MAP_ID_TIMEZONE.get(cityAdServer);
 			} else if (MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
-				idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);				
+				idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);
 			} else {
 				idTimeZoneOnIp = findIDTimeZoneOnIP(reqJson);
 			}
 		} catch (JSONException e) {
 			idTimeZoneOnIp = findIDTimeZoneOnIP(reqJson);
 		}
-		
-		if(idTimeZoneOnIp != null) {
+
+		if (idTimeZoneOnIp != null) {
 			idTimeZone = idTimeZoneOnIp;
 		}
-	
-		//TimeZone
+
+		// TimeZone
 		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
-        tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
-		//LocalTime
+		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
+		// LocalTime
 		format.applyPattern("HH:mm:ss.SSS");
 		tryToPutOnce(reqJson, "CD92", "" + format.format(calendar.getTime()));
-		//Day
+		// Day
 		format.applyPattern("dd");
 		tryToPutOnce(reqJson, "CD93", "" + format.format(calendar.getTime()));
-		//Weekday
+		// Weekday
 		format = new SimpleDateFormat("EEEE", Locale.ENGLISH);
 		tryToPutOnce(reqJson, "CD94", "" + format.format(calendar.getTime()));
-		//Month
+		// Month
 		format.applyPattern("MM");
 		tryToPutOnce(reqJson, "CD95", "" + format.format(calendar.getTime()));
-		//Year 
+		// Year
 		format.applyPattern("yyyy");
 		tryToPutOnce(reqJson, "CD96", "" + format.format(calendar.getTime()));
-		
+
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
 		System.out.println("===request JSON===");
-		
+
 		return reqJson;
-		
+
 	}
-	
+
 	private String findIDTimeZoneOnIP(JSONObject reqJson) {
 		try {
 			String ip = reqJson.get("__uip").toString();
-			URL resource = CollectServlet.class.getClassLoader().getResource("GeoLiteCity.dat");
-	        LookupService lookupService = new LookupService(new File(resource.getFile()));
-	        Location location = lookupService.getLocation(ip);
-	        TimeZoneLookup timeZoneLookup = new TimeZoneLookup();
-	        TimeZoneResult timeZone = timeZoneLookup.getTimeZone(location.latitude, location.longitude);
-	        return timeZone.getResult();
-		} catch (JSONException | IOException | NullPointerException e ) {
+			Location location = lookupService.getLocation(ip);
+			TimeZoneLookup timeZoneLookup = new TimeZoneLookup();
+			TimeZoneResult timeZone = timeZoneLookup.getTimeZone(location.latitude, location.longitude);
+			return timeZone.getResult();
+		} catch (JSONException | NullPointerException e) {
 		}
 		return null;
 	}
-	
+
 	private void postToPubSub(JSONObject jsonObj) throws Exception {
-			
+
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
 		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
@@ -219,7 +220,7 @@ public class CollectServlet extends HttpServlet {
 				System.out.println("failed to publish: " + t);
 			}
 		});
-		
+
 	}
 
 	private void tryToPutOnce(JSONObject jsonObj, String key, String value) {
@@ -240,7 +241,7 @@ public class CollectServlet extends HttpServlet {
 			String v[] = entry.getValue();
 			String s = (v.length == 1) ? v[0] : "";
 			tryToPutOnce(jsonObj, entry.getKey(), s);
-			//jsonObj.put(entry.getKey(), o);
+			// jsonObj.put(entry.getKey(), o);
 		}
 
 		List<NameValuePair> pairs = null;
@@ -251,9 +252,9 @@ public class CollectServlet extends HttpServlet {
 			Map<String, String> bodyParams = toMap(pairs);
 			for (Entry<String, String> entry : bodyParams.entrySet()) {
 				String v = entry.getValue();
-				//Object o = v;
+				// Object o = v;
 				tryToPutOnce(jsonObj, entry.getKey(), v);
-				//jsonObj.put(entry.getKey(), o);
+				// jsonObj.put(entry.getKey(), o);
 			}
 
 		} catch (IOException e) {
@@ -327,15 +328,15 @@ public class CollectServlet extends HttpServlet {
 
 		return body;
 	}
-	
+
 	public static void createMapTimeZone() {
-		String [] list =  TimeZone.getAvailableIDs();
+		String[] list = TimeZone.getAvailableIDs();
 
 		for (int i = 0; i < list.length; i++) {
 			String[] id = list[i].split("/");
-			
+
 			for (int j = 0; j < id.length; j++) {
-				if(!MAP_ID_TIMEZONE.containsKey(id[j])) {
+				if (!MAP_ID_TIMEZONE.containsKey(id[j])) {
 					MAP_ID_TIMEZONE.put(id[j], list[i]);
 				}
 			}
