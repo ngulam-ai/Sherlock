@@ -24,8 +24,6 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/spring-core-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/spring-mock-2.0.8.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/geoip-api-1.2.10.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/geotimezone-1.0.3.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/spatial4j-0.4.1.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-csv-1.5.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -1,5 +1,7 @@
 package agency.akcom.mmg.sherlock;
 
+import javax.servlet.ServletException;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,8 +15,8 @@ public class putParamToJSONTest {
 	static final CollectServlet COLLECT_SERVLET = new CollectServlet();
 	
 	@Before
-	public void init() {
-		COLLECT_SERVLET.createMapTimeZone();
+	public void init() throws ServletException {
+		COLLECT_SERVLET.init();
 	}
 	
 	@Test
@@ -25,16 +27,25 @@ public class putParamToJSONTest {
 	}
 	
 	@Test
-	public void setCountryCDidTimeZoneTest() throws Exception {
+	public void setBadParamCDidTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.addParameter("cd33", "Egypt");
-		request.addParameter("cd30", "Alexandria");
+		request.addParameter("cd33", "SDF ggs");
+		request.addParameter("cd30", "hdfwf");
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
-		Assert.assertEquals("Egypt", json.get("CD91"));
+		Assert.assertEquals("Europe/Madrid", json.get("CD91"));
 	}
 	
 	@Test
-	public void setSityIDTimeZoneTest() throws Exception {
+	public void setGoodParamCDidTimeZoneTest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addParameter("cd33", "Russia");
+		request.addParameter("cd30", "Yaroslavl");
+		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
+		Assert.assertEquals("Europe/Moscow", json.get("CD91"));
+	}
+	
+	@Test
+	public void setGoodParamCDidTimeZoneTest2() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter("cd33", "United Kingdom");
 		request.addParameter("cd30", "London");
@@ -43,11 +54,10 @@ public class putParamToJSONTest {
 	}
 	
 	@Test
-	public void getIDTimeZoneOnIpTest() throws Exception {
+	public void setOneCountryCDidTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setRemoteAddr("199.80.53.212");
+		request.addParameter("cd33", "Japan");
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
-		Assert.assertEquals("America/New_York", json.get("CD91"));
+		Assert.assertEquals("Asia/Tokyo", json.get("CD91"));
 	}
-	
 }

@@ -1,10 +1,11 @@
 package agency.akcom.mmg.sherlock;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -25,14 +26,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.github.bfsmith.geotimezone.TimeZoneLookup;
-import com.github.bfsmith.geotimezone.TimeZoneResult;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -40,8 +42,6 @@ import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
-import com.maxmind.geoip.Location;
-import com.maxmind.geoip.LookupService;
 
 //@WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
 public class CollectServlet extends HttpServlet {
@@ -49,19 +49,16 @@ public class CollectServlet extends HttpServlet {
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID = "sherlock-184721"; // "mmg-sandbox";
 	// ServiceOptions.getDefaultProjectId();
-	private static final Map<String, String> MAP_ID_TIMEZONE = new HashMap<String, String>();
+	private static final Map<String, String> MAP_ID_TIMEZONE = new HashMap<String, String>(); //key: "country/city" value "timezone"
 
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
 	Publisher publisher = null; // Publisher.newBuilder(topicName).build();
-	LookupService lookupService = null;
 
 	@Override
 	public void init() throws ServletException {
 		try {
 			publisher = Publisher.newBuilder(topicName).build();
-			URL resource = CollectServlet.class.getClassLoader().getResource("GeoLiteCity.dat");
-			lookupService = new LookupService(new File(resource.getFile()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -143,25 +140,8 @@ public class CollectServlet extends HttpServlet {
 		// Returns the minutes, between 00 and 59, in the hour.
 
 		// Set timeZone use of custom dimensions
-		String idTimeZoneOnIp = null;
-		try {
-			String countryAdServer = reqJson.get("cd33").toString();
-			String cityAdServer = reqJson.get("cd30").toString();
-
-			if (MAP_ID_TIMEZONE.containsKey(cityAdServer)) {
-				idTimeZone = MAP_ID_TIMEZONE.get(cityAdServer);
-			} else if (MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
-				idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);
-			} else {
-				idTimeZoneOnIp = findIDTimeZoneOnIP(reqJson);
-			}
-		} catch (JSONException e) {
-			idTimeZoneOnIp = findIDTimeZoneOnIP(reqJson);
-		}
-
-		if (idTimeZoneOnIp != null) {
-			idTimeZone = idTimeZoneOnIp;
-		}
+		
+		idTimeZone = getTimeZoneFromCD(reqJson);
 
 		// TimeZone
 		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
@@ -188,18 +168,6 @@ public class CollectServlet extends HttpServlet {
 
 		return reqJson;
 
-	}
-
-	private String findIDTimeZoneOnIP(JSONObject reqJson) {
-		try {
-			String ip = reqJson.get("__uip").toString();
-			Location location = lookupService.getLocation(ip);
-			TimeZoneLookup timeZoneLookup = new TimeZoneLookup();
-			TimeZoneResult timeZone = timeZoneLookup.getTimeZone(location.latitude, location.longitude);
-			return timeZone.getResult();
-		} catch (JSONException | NullPointerException e) {
-		}
-		return null;
 	}
 
 	private void postToPubSub(JSONObject jsonObj) throws Exception {
@@ -329,18 +297,58 @@ public class CollectServlet extends HttpServlet {
 		return body;
 	}
 
-	public static void createMapTimeZone() {
-		String[] list = TimeZone.getAvailableIDs();
-
-		for (int i = 0; i < list.length; i++) {
-			String[] id = list[i].split("/");
-
-			for (int j = 0; j < id.length; j++) {
-				if (!MAP_ID_TIMEZONE.containsKey(id[j])) {
-					MAP_ID_TIMEZONE.put(id[j], list[i]);
-				}
-			}
+	public static void createMapTimeZone () {
+		URL resourceCities = TestParser.class.getClassLoader().getResource("cities15000.txt"); // http://download.geonames.org/export/dump/ description file
+		URL resourceCountries = TestParser.class.getClassLoader().getResource("country.csv"); //contains "country code" and name "country"
+		Reader inCities;
+		Reader inCountries;
+		CSVParser parserCities;
+		CSVParser parserCountries;
+		List<CSVRecord> listCities = null;
+		List<CSVRecord> listCountries = null;
+		try {
+			inCities = new FileReader(resourceCities.getFile());
+			inCountries = new FileReader(resourceCountries.getFile());
+			parserCities = new CSVParser(inCities, CSVFormat.TDF.withQuote(null));
+			parserCountries = new CSVParser(inCountries, CSVFormat.DEFAULT);
+			listCities = parserCities.getRecords();
+			listCountries = parserCountries.getRecords();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		Map<String, String> countries = new HashMap<String, String>(); //key: "country code", value: "country"
+		for (CSVRecord p : listCountries) {
+			countries.put(p.get(0), p.get(1));
+		}	
+		for (CSVRecord parser : listCities) {
+			String country = countries.get(parser.get(8));
+			String country_city = country + "/" + parser.get(2);
+			String timeZone = parser.get(17);
+			MAP_ID_TIMEZONE.put(country_city, timeZone); //For full search "county/city"
+			MAP_ID_TIMEZONE.put(country, timeZone);		//For search only "country"
+		}
+	}
+	
+	public String getTimeZoneFromCD(JSONObject json) {
+		String timeZone = "Europe/Madrid";
+		String countryAdServer = null;
+		String cityAdServer = null;
+		
+		try {
+			countryAdServer = json.get("cd33").toString();
+		}catch (JSONException e) {
+		}
+		try {
+			cityAdServer = json.get("cd30").toString();
+		} catch (JSONException e) {
+		}
+		
+		if (MAP_ID_TIMEZONE.containsKey(countryAdServer + "/" + cityAdServer)) {
+			timeZone = MAP_ID_TIMEZONE.get(countryAdServer + "/" + cityAdServer);
+		} else if (MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
+			timeZone = MAP_ID_TIMEZONE.get(countryAdServer);
+		}
+		return timeZone;
 	}
 
 }
