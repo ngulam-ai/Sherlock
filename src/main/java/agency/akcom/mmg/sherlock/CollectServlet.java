@@ -146,22 +146,22 @@ public class CollectServlet extends HttpServlet {
 
 		// TimeZone
 		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
-		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
+		tryToPutOnce(reqJson, "cd91", "" + calendar.getTimeZone().getID());
 		// LocalTime
 		format.applyPattern("HH:mm:ss.SSS");
-		tryToPutOnce(reqJson, "CD92", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd92", "" + format.format(calendar.getTime()));
 		// Day
 		format.applyPattern("dd");
-		tryToPutOnce(reqJson, "CD93", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd93", "" + format.format(calendar.getTime()));
 		// Weekday
 		format = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-		tryToPutOnce(reqJson, "CD94", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd94", "" + format.format(calendar.getTime()));
 		// Month
 		format.applyPattern("MM");
-		tryToPutOnce(reqJson, "CD95", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd95", "" + format.format(calendar.getTime()));
 		// Year
 		format.applyPattern("yyyy");
-		tryToPutOnce(reqJson, "CD96", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd96", "" + format.format(calendar.getTime()));
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
