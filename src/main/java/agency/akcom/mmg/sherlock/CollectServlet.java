@@ -47,8 +47,9 @@ import com.google.pubsub.v1.TopicName;
 public class CollectServlet extends HttpServlet {
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
-	private static final String PROJECT_ID = "sherlock-184721"; // "mmg-sandbox";
-	// ServiceOptions.getDefaultProjectId();
+
+	private static final String PROJECT_ID = "sherlock-184721"; 
+
 	private static final Map<String, String> MAP_ID_TIMEZONE = new HashMap<String, String>(); //key: "country/city" value "timezone"
 
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
@@ -180,10 +181,12 @@ public class CollectServlet extends HttpServlet {
 		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
 
 		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
+			@Override
 			public void onSuccess(String messageId) {
 				System.out.println("published with message id: " + messageId);
 			}
 
+			@Override
 			public void onFailure(Throwable t) {
 				System.out.println("failed to publish: " + t);
 			}

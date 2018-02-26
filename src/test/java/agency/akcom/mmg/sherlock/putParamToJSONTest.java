@@ -12,8 +12,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 @RunWith(JUnit4.class)
 public class putParamToJSONTest {
-	static final CollectServlet COLLECT_SERVLET = new CollectServlet();
-	
+	private static final CollectServlet COLLECT_SERVLET = new CollectServlet();
+
 	@Before
 	public void init() throws ServletException {
 		COLLECT_SERVLET.init();
@@ -25,7 +25,7 @@ public class putParamToJSONTest {
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
 		Assert.assertEquals("Europe/Madrid", json.get("CD91"));
 	}
-	
+
 	@Test
 	public void setBadParamCDidTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -34,7 +34,7 @@ public class putParamToJSONTest {
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
 		Assert.assertEquals("Europe/Madrid", json.get("CD91"));
 	}
-	
+
 	@Test
 	public void setGoodParamCDidTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -43,7 +43,7 @@ public class putParamToJSONTest {
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
 		Assert.assertEquals("Europe/Moscow", json.get("CD91"));
 	}
-	
+
 	@Test
 	public void setGoodParamCDidTimeZoneTest2() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
