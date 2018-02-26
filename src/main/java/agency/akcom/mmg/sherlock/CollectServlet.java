@@ -50,7 +50,7 @@ public class CollectServlet extends HttpServlet {
 
 	private static final String PROJECT_ID = "sherlock-184721"; 
 
-	private static final Map<String, String> MAP_ID_TIMEZONE = new HashMap<String, String>(); //key: "country/city" value "timezone"
+	private static final Map<String, String> COUNTRY_CITY_TIMEZONE_MAP = new HashMap<String, String>(); //key: "country/city" value "timezone"
 
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
@@ -63,7 +63,7 @@ public class CollectServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		createMapTimeZone();
+		createTimeZoneMap();
 		System.out.println("CollectServlet.init() complited");
 	}
 
@@ -148,23 +148,22 @@ public class CollectServlet extends HttpServlet {
 
 		// TimeZone
 		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
-		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
-		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
+		tryToPutOnce(reqJson, "cd91", "" + calendar.getTimeZone().getID());
 		// LocalTime
 		format.applyPattern("HH:mm:ss.SSS");
-		tryToPutOnce(reqJson, "CD92", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd92", "" + format.format(calendar.getTime()));
 		// Day
 		format.applyPattern("dd");
-		tryToPutOnce(reqJson, "CD93", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd93", "" + format.format(calendar.getTime()));
 		// Weekday
 		format = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-		tryToPutOnce(reqJson, "CD94", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd94", "" + format.format(calendar.getTime()));
 		// Month
 		format.applyPattern("MM");
-		tryToPutOnce(reqJson, "CD95", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd95", "" + format.format(calendar.getTime()));
 		// Year
 		format.applyPattern("yyyy");
-		tryToPutOnce(reqJson, "CD96", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd96", "" + format.format(calendar.getTime()));
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
@@ -303,7 +302,7 @@ public class CollectServlet extends HttpServlet {
 		return body;
 	}
 
-	public static void createMapTimeZone () {
+	public static void createTimeZoneMap () {
 		URL resourceCities = CollectServlet.class.getClassLoader().getResource("cities15000.txt"); // http://download.geonames.org/export/dump/ description file
 		URL resourceCountries = CollectServlet.class.getClassLoader().getResource("country.csv"); //contains "country code" and name "country"
 		Reader inCities;
@@ -322,16 +321,16 @@ public class CollectServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Map<String, String> countries = new HashMap<String, String>(); //key: "country code", value: "country"
+		Map<String, String> countries = new HashMap<String, String>(); // key: "country code", value: "country"
 		for (CSVRecord p : listCountries) {
 			countries.put(p.get(0), p.get(1));
-		}	
+		}
 		for (CSVRecord parser : listCities) {
 			String country = countries.get(parser.get(8));
 			String country_city = country + "/" + parser.get(2);
 			String timeZone = parser.get(17);
-			MAP_ID_TIMEZONE.put(country_city, timeZone); //For full search "county/city"
-			MAP_ID_TIMEZONE.put(country, timeZone);		//For search only "country"
+			COUNTRY_CITY_TIMEZONE_MAP.put(country_city, timeZone); // For full search "county/city"
+			COUNTRY_CITY_TIMEZONE_MAP.put(country, timeZone); // For search only "country"
 		}
 	}
 	
@@ -339,20 +338,20 @@ public class CollectServlet extends HttpServlet {
 		String timeZone = "Europe/Madrid";
 		String countryAdServer = null;
 		String cityAdServer = null;
-		
+
 		try {
 			countryAdServer = json.get("cd33").toString();
-		}catch (JSONException e) {
+		} catch (JSONException e) {
 		}
 		try {
 			cityAdServer = json.get("cd30").toString();
 		} catch (JSONException e) {
 		}
-		
-		if (MAP_ID_TIMEZONE.containsKey(countryAdServer + "/" + cityAdServer)) {
-			timeZone = MAP_ID_TIMEZONE.get(countryAdServer + "/" + cityAdServer);
-		} else if (MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
-			timeZone = MAP_ID_TIMEZONE.get(countryAdServer);
+
+		if (COUNTRY_CITY_TIMEZONE_MAP.containsKey(countryAdServer + "/" + cityAdServer)) {
+			timeZone = COUNTRY_CITY_TIMEZONE_MAP.get(countryAdServer + "/" + cityAdServer);
+		} else if (COUNTRY_CITY_TIMEZONE_MAP.containsKey(countryAdServer)) {
+			timeZone = COUNTRY_CITY_TIMEZONE_MAP.get(countryAdServer);
 		}
 		return timeZone;
 	}
