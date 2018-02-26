@@ -301,8 +301,8 @@ public class CollectServlet extends HttpServlet {
 	}
 
 	public static void createMapTimeZone () {
-		URL resourceCities = TestParser.class.getClassLoader().getResource("cities15000.txt"); // http://download.geonames.org/export/dump/ description file
-		URL resourceCountries = TestParser.class.getClassLoader().getResource("country.csv"); //contains "country code" and name "country"
+		URL resourceCities = CollectServlet.class.getClassLoader().getResource("cities15000.txt"); // http://download.geonames.org/export/dump/ description file
+		URL resourceCountries = CollectServlet.class.getClassLoader().getResource("country.csv"); //contains "country code" and name "country"
 		Reader inCities;
 		Reader inCountries;
 		CSVParser parserCities;
