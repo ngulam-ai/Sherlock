@@ -126,10 +126,12 @@ public class CollectServlet extends HttpServlet {
 		// --- date, time and so on default Europe/Madrid:
 		String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
+		SimpleDateFormat format = new SimpleDateFormat();
+		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
 		calendar.setTime(new Date());
-		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime());
+		tryToPutOnce(reqJson, "time", "" + format.format(calendar.getTime()));
 		// Hit time on the server according to the time zone
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		format.applyPattern("yyyyMMdd");
 		format.setCalendar(calendar);
 		tryToPutOnce(reqJson, "date", "" + format.format(calendar.getTime()));
 		// The day of the month, a two-digit number from 01 to 31.
@@ -146,6 +148,7 @@ public class CollectServlet extends HttpServlet {
 
 		// TimeZone
 		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
+		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
 		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
 		// LocalTime
 		format.applyPattern("HH:mm:ss.SSS");
