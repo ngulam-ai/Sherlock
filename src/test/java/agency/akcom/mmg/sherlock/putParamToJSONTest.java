@@ -23,7 +23,7 @@ public class putParamToJSONTest {
 	public void defaultParamIDTimeZoneTest() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
-		Assert.assertEquals("Europe/Madrid", json.get("CD91"));
+		Assert.assertEquals("Europe/Madrid", json.get("cd91"));
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class putParamToJSONTest {
 		request.addParameter("cd33", "SDF ggs");
 		request.addParameter("cd30", "hdfwf");
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
-		Assert.assertEquals("Europe/Madrid", json.get("CD91"));
+		Assert.assertEquals("Europe/Madrid", json.get("cd91"));
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class putParamToJSONTest {
 		request.addParameter("cd33", "Russia");
 		request.addParameter("cd30", "Yaroslavl");
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
-		Assert.assertEquals("Europe/Moscow", json.get("CD91"));
+		Assert.assertEquals("Europe/Moscow", json.get("cd91"));
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class putParamToJSONTest {
 		request.addParameter("cd33", "United Kingdom");
 		request.addParameter("cd30", "London");
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
-		Assert.assertEquals("Europe/London", json.get("CD91"));
+		Assert.assertEquals("Europe/London", json.get("cd91"));
 	}
 	
 	@Test
@@ -58,6 +58,6 @@ public class putParamToJSONTest {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.addParameter("cd33", "Japan");
 		JSONObject json = COLLECT_SERVLET.putParamToJSON(request);
-		Assert.assertEquals("Asia/Tokyo", json.get("CD91"));
+		Assert.assertEquals("Asia/Tokyo", json.get("cd91"));
 	}
 }

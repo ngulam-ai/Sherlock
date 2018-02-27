@@ -128,7 +128,6 @@ public class CollectServlet extends HttpServlet {
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
 		SimpleDateFormat format = new SimpleDateFormat();
 		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
-		calendar.setTime(new Date());
 		tryToPutOnce(reqJson, "time", "" + format.format(calendar.getTime()));
 		// Hit time on the server according to the time zone
 		format.applyPattern("yyyyMMdd");
@@ -147,7 +146,7 @@ public class CollectServlet extends HttpServlet {
 		idTimeZone = getTimeZoneFromCD(reqJson);
 
 		// TimeZone
-		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
+		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
 		tryToPutOnce(reqJson, "cd91", "" + calendar.getTimeZone().getID());
 		// LocalTime
 		format.applyPattern("HH:mm:ss.SSS");
