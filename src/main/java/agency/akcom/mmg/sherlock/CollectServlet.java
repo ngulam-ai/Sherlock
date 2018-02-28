@@ -1,9 +1,12 @@
 package agency.akcom.mmg.sherlock;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -23,6 +26,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
@@ -41,9 +47,10 @@ import com.google.pubsub.v1.TopicName;
 public class CollectServlet extends HttpServlet {
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
+
 	private static final String PROJECT_ID = "sherlock-184721"; 
-	
-	private static final Map<String, String> MAP_ID_TIMEZONE = new HashMap<String, String>();
+
+	private static final Map<String, String> COUNTRY_CITY_TIMEZONE_MAP = new HashMap<String, String>(); //key: "country/city" value "timezone"
 
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
@@ -56,7 +63,7 @@ public class CollectServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		createMapTimeZone();
+		createTimeZoneMap();
 		System.out.println("CollectServlet.init() complited");
 	}
 
@@ -119,10 +126,12 @@ public class CollectServlet extends HttpServlet {
 		// --- date, time and so on default Europe/Madrid:
 		String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
-		calendar.setTime(new Date());
-		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime());
+		SimpleDateFormat format = new SimpleDateFormat();
+		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
+		int offsetTimeZone = TimeZone.getTimeZone(idTimeZone).getOffset(calendar.getTime().getTime());
+		tryToPutOnce(reqJson, "time", "" + (calendar.getTime().getTime()+offsetTimeZone));
 		// Hit time on the server according to the time zone
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+		format.applyPattern("yyyyMMdd");
 		format.setCalendar(calendar);
 		tryToPutOnce(reqJson, "date", "" + format.format(calendar.getTime()));
 		// The day of the month, a two-digit number from 01 to 31.
@@ -134,36 +143,27 @@ public class CollectServlet extends HttpServlet {
 		// Returns the minutes, between 00 and 59, in the hour.
 
 		// Set timeZone use of custom dimensions
-		try {
-			String countryAdServer = reqJson.get("cd33").toString();
-			String cityAdServer = reqJson.get("cd30").toString();
-
-			if (MAP_ID_TIMEZONE.containsKey(cityAdServer)) {
-				idTimeZone = MAP_ID_TIMEZONE.get(cityAdServer);
-			} else if (MAP_ID_TIMEZONE.containsKey(countryAdServer)) {
-				idTimeZone = MAP_ID_TIMEZONE.get(countryAdServer);
-			}
-		} catch (JSONException e) {
-		}
+		
+		idTimeZone = getTimeZoneFromCD(reqJson);
 
 		// TimeZone
-		calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
-		tryToPutOnce(reqJson, "CD91", "" + calendar.getTimeZone().getID());
+		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
+		tryToPutOnce(reqJson, "cd91", "" + calendar.getTimeZone().getID());
 		// LocalTime
 		format.applyPattern("HH:mm:ss.SSS");
-		tryToPutOnce(reqJson, "CD92", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd92", "" + format.format(calendar.getTime()));
 		// Day
 		format.applyPattern("dd");
-		tryToPutOnce(reqJson, "CD93", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd93", "" + format.format(calendar.getTime()));
 		// Weekday
 		format = new SimpleDateFormat("EEEE", Locale.ENGLISH);
-		tryToPutOnce(reqJson, "CD94", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd94", "" + format.format(calendar.getTime()));
 		// Month
 		format.applyPattern("MM");
-		tryToPutOnce(reqJson, "CD95", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd95", "" + format.format(calendar.getTime()));
 		// Year
 		format.applyPattern("yyyy");
-		tryToPutOnce(reqJson, "CD96", "" + format.format(calendar.getTime()));
+		tryToPutOnce(reqJson, "cd96", "" + format.format(calendar.getTime()));
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
@@ -302,18 +302,58 @@ public class CollectServlet extends HttpServlet {
 		return body;
 	}
 
-	private static void createMapTimeZone() {
-		String[] list = TimeZone.getAvailableIDs();
-
-		for (int i = 0; i < list.length; i++) {
-			String[] id = list[i].split("/");
-
-			for (int j = 0; j < id.length; j++) {
-				if (!MAP_ID_TIMEZONE.containsKey(id[j])) {
-					MAP_ID_TIMEZONE.put(id[j], list[i]);
-				}
-			}
+	public static void createTimeZoneMap () {
+		URL resourceCities = CollectServlet.class.getClassLoader().getResource("cities15000.txt"); // http://download.geonames.org/export/dump/ description file
+		URL resourceCountries = CollectServlet.class.getClassLoader().getResource("country.csv"); //contains "country code" and name "country"
+		Reader inCities;
+		Reader inCountries;
+		CSVParser parserCities;
+		CSVParser parserCountries;
+		List<CSVRecord> listCities = null;
+		List<CSVRecord> listCountries = null;
+		try {
+			inCities = new FileReader(resourceCities.getFile());
+			inCountries = new FileReader(resourceCountries.getFile());
+			parserCities = new CSVParser(inCities, CSVFormat.TDF.withQuote(null));
+			parserCountries = new CSVParser(inCountries, CSVFormat.DEFAULT);
+			listCities = parserCities.getRecords();
+			listCountries = parserCountries.getRecords();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		Map<String, String> countries = new HashMap<String, String>(); // key: "country code", value: "country"
+		for (CSVRecord p : listCountries) {
+			countries.put(p.get(0), p.get(1));
+		}
+		for (CSVRecord parser : listCities) {
+			String country = countries.get(parser.get(8));
+			String country_city = country + "/" + parser.get(2);
+			String timeZone = parser.get(17);
+			COUNTRY_CITY_TIMEZONE_MAP.put(country_city, timeZone); // For full search "county/city"
+			COUNTRY_CITY_TIMEZONE_MAP.put(country, timeZone); // For search only "country"
+		}
+	}
+	
+	public String getTimeZoneFromCD(JSONObject json) {
+		String timeZone = "Europe/Madrid";
+		String countryAdServer = null;
+		String cityAdServer = null;
+
+		try {
+			countryAdServer = json.get("cd33").toString();
+		} catch (JSONException e) {
+		}
+		try {
+			cityAdServer = json.get("cd30").toString();
+		} catch (JSONException e) {
+		}
+
+		if (COUNTRY_CITY_TIMEZONE_MAP.containsKey(countryAdServer + "/" + cityAdServer)) {
+			timeZone = COUNTRY_CITY_TIMEZONE_MAP.get(countryAdServer + "/" + cityAdServer);
+		} else if (COUNTRY_CITY_TIMEZONE_MAP.containsKey(countryAdServer)) {
+			timeZone = COUNTRY_CITY_TIMEZONE_MAP.get(countryAdServer);
+		}
+		return timeZone;
 	}
 
 }
