@@ -55,11 +55,7 @@ public class CollectServlet extends HttpServlet {
 	TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
 	// Create a publisher instance with default settings bound to the topic
 	Publisher publisher = null; // Publisher.newBuilder(topicName).build();
-	private static String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
-	private static Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
-	private static SimpleDateFormat format = new SimpleDateFormat();
-	private static int offsetTimeZone = TimeZone.getTimeZone(idTimeZone).getOffset(calendar.getTime().getTime());
-	
+
 	@Override
 	public void init() throws ServletException {
 		try {
@@ -68,7 +64,6 @@ public class CollectServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		createTimeZoneMap();
-		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
 		System.out.println("CollectServlet.init() complited");
 	}
 
@@ -129,8 +124,11 @@ public class CollectServlet extends HttpServlet {
 		tryToPutOnce(reqJson, "__uip", req.getRemoteAddr());
 
 		// --- date, time and so on default Europe/Madrid:
-		
-		tryToPutOnce(reqJson, "time", "" + (calendar.getTime().getTime() + offsetTimeZone));
+		String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
+		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
+		SimpleDateFormat format = new SimpleDateFormat();
+		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
+		tryToPutOnce(reqJson, "time", "" + calendar.getTime().getTime());
 		// Hit time on the server according to the time zone
 		format.applyPattern("yyyyMMdd");
 		format.setCalendar(calendar);
