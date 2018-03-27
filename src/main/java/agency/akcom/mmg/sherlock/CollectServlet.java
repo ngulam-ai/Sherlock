@@ -214,7 +214,6 @@ public class CollectServlet extends HttpServlet {
 			String v[] = entry.getValue();
 			String s = (v.length == 1) ? v[0] : "";
 			tryToPutOnce(jsonObj, entry.getKey(), s);
-			// jsonObj.put(entry.getKey(), o);
 		}
 
 		List<NameValuePair> pairs = null;
@@ -225,9 +224,7 @@ public class CollectServlet extends HttpServlet {
 			Map<String, String> bodyParams = toMap(pairs);
 			for (Entry<String, String> entry : bodyParams.entrySet()) {
 				String v = entry.getValue();
-				// Object o = v;
 				tryToPutOnce(jsonObj, entry.getKey(), v);
-				// jsonObj.put(entry.getKey(), o);
 			}
 
 		} catch (IOException e) {
