@@ -1,2 +1,4 @@
 /build/
 .settings/com.google.cloud.tools.eclipse.appengine.deploy.prefs
+/target/
+.settings/
