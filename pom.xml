@@ -11,6 +11,7 @@
 	<artifactId>mmg.sherlock</artifactId>
 
 	<properties>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<appengine.maven.plugin.version>1.3.2</appengine.maven.plugin.version>
 		<appengine.api.sdk.version>1.9.62</appengine.api.sdk.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,7 +31,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>1.9.62</version>
+			<version>1.9.63</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -48,12 +49,6 @@
 			<version>1.5</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpcore -->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.4.9</version>
-		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>
@@ -70,15 +65,23 @@
 			<version>20180130</version>
 		</dependency>
 
-		<dependency>                        <!-- Google Cloud Client Library for Java -->
+		<!-- Google Cloud Client Library for Java -->
+		<!-- dependency> <groupId>com.google.cloud</groupId> <artifactId>google-cloud</artifactId> 
+			<version>0.41.0-alpha</version> </dependency -->
+
+		<!-- https://github.com/GoogleCloudPlatform/google-cloud-java/tree/master/google-cloud-pubsub -->
+		<dependency>
 			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud</artifactId>
-			<version>0.41.0-alpha</version>
+			<artifactId>google-cloud-pubsub</artifactId>
+			<version>0.35.0-beta	</version>
 		</dependency>
 
-		<dependency>                        <!-- Google API client - for stuff that's not in gcloud -->
+
+		<!-- Google API client (included in the AppEngine client) - for stuff that's 
+			not in gcloud -->
+		<dependency>
 			<groupId>com.google.api-client</groupId>
-			<artifactId>google-api-client</artifactId>
+			<artifactId>google-api-client-appengine</artifactId>
 			<version>1.23.0</version>
 			<exclusions>
 				<exclusion>
@@ -87,7 +90,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
 
 
 		<!-- Test Dependencies -->
