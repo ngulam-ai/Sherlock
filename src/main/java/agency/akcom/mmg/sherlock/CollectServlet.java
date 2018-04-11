@@ -46,9 +46,9 @@ import com.google.pubsub.v1.TopicName;
 //@WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
 public class CollectServlet extends HttpServlet {
 
-	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
+	private static final String TOPIC_ID = "real-time-ga-hit-data"; //"sherlock-real-time-ga-hit-data";
 
-	private static final String PROJECT_ID = "sherlock-184721"; 
+	private static final String PROJECT_ID = "dmpmm-200620"; //"sherlock-184721"; 
 
 	private static final Map<String, String> COUNTRY_CITY_TIMEZONE_MAP = new HashMap<String, String>(); //key: "country/city" value "timezone"
 
