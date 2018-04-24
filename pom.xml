@@ -2,59 +2,73 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
-	
-	<prerequisites>
-		<maven>3.3.9</maven>
-	</prerequisites>	
 
 	<groupId>agency.akcom.mmg.sherlock</groupId>
 	<artifactId>sherlock</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<prerequisites>
+		<maven>3.3.9</maven>
+	</prerequisites>
+
 	<properties>
-		<appengine.app.name>sherlock-184721</appengine.app.name>
-		
-		<failOnMissingWebXml>false</failOnMissingWebXml>
-		<appengine.maven.plugin.version>1.3.2</appengine.maven.plugin.version>
-		<appengine.api.sdk.version>1.9.62</appengine.api.sdk.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<appengineProjectName>sherlock-184721</appengineProjectName>
+		<java.version>1.8</java.version>
+		<appengine.sdk.version>1.9.62</appengine.sdk.version>
+
+		<appengine.maven.plugin.version>1.3.2</appengine.maven.plugin.version>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.test.skip>true</maven.test.skip>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
 	</properties>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>display-dependency-updates</goal>
-							<goal>display-plugin-updates</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.google.cloud.tools</groupId>
-				<artifactId>appengine-maven-plugin</artifactId>
-				<version>${appengine.maven.plugin.version}</version>
-			</plugin>
-		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<version>2.5.1</version>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.3</version>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.3</version>
+					<executions>
+						<execution>
+							<phase>compile</phase>
+							<goals>
+								<goal>display-dependency-updates</goal>
+								<goal>display-plugin-updates</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>com.google.cloud.tools</groupId>
+					<artifactId>appengine-maven-plugin</artifactId>
+					<version>${appengine.maven.plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<modules>
-		<module>sherlock-ear</module>
 		<module>sherlock-collect</module>
-		<!-- module>sherlock-frontend</module -->
+		<module>sherlock-collect2</module>
 	</modules>
 </project>
