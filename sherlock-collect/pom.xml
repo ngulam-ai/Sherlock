@@ -136,11 +136,12 @@
 					<stage.enableJarClasses>false</stage.enableJarClasses>
 					<deploy.version>${appengine.app.version}</deploy.version>
 					<services>
+						<!-- your default service -->
 						<service>
 							${project.build.directory}/${project.name}-${project.version}
 						</service>
 						<service>
-							${project.parent.basedir}/jdo-backend/target/sherlock-collect2-${project.version}
+							${project.parent.basedir}/sherlock-collect2/target/sherlock-collect2-${project.version}
 						</service>
 					</services>
 				</configuration>
