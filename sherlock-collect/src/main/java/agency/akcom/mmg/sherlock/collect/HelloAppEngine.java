@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock;
+package agency.akcom.mmg.sherlock.collect;
 
 import java.io.IOException;
 

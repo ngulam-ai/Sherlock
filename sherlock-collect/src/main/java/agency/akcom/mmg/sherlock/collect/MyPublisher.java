@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package agency.akcom.mmg.sherlock;
+package agency.akcom.mmg.sherlock.collect;
 
 import java.util.ArrayList;
 import java.util.List;

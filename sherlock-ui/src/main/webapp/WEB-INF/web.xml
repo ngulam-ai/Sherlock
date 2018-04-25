@@ -4,20 +4,9 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-	<servlet>
-		<servlet-name>CollectServlet</servlet-name>
-		<servlet-class>agency.akcom.mmg.sherlock.CollectServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>CollectServlet</servlet-name>
-		<url-pattern>/collect</url-pattern>
-	</servlet-mapping>
-
+	
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
   
   

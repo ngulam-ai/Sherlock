@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock;
+package agency.akcom.mmg.sherlock.ui;
 
 import java.io.IOException;
 

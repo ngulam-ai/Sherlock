@@ -155,6 +155,6 @@
 
 	<modules>
 		<module>sherlock-collect</module>
-		<module>sherlock-collect2</module>
+		<module>sherlock-ui</module>
 	</modules>
 </project>

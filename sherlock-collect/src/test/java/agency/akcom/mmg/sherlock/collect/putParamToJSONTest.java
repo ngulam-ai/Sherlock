@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock;
+package agency.akcom.mmg.sherlock.collect;
 
 import javax.servlet.ServletException;
 
@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import agency.akcom.mmg.sherlock.collect.CollectServlet;
 
 @RunWith(JUnit4.class)
 public class putParamToJSONTest {

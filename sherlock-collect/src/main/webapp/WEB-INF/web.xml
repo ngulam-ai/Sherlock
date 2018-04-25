@@ -6,7 +6,7 @@
 
 	<servlet>
 		<servlet-name>CollectServlet</servlet-name>
-		<servlet-class>agency.akcom.mmg.sherlock.CollectServlet</servlet-class>
+		<servlet-class>agency.akcom.mmg.sherlock.collect.CollectServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

@@ -4,7 +4,7 @@
 	
 	<version>version-ignored-at-deploy-time-and-only-as-a-temporary-workaround</version>
 	
-	<service>second</service>
+	<service>ui</service>
 
 	<threadsafe>true</threadsafe>
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package agency.akcom.mmg.sherlock;
+package agency.akcom.mmg.sherlock.collect;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
