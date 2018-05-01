@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -12,7 +13,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import agency.akcom.mmg.sherlock.collect.CollectServlet;
 
+
 @RunWith(JUnit4.class)
+@Ignore
 public class putParamToJSONTest {
 	private static final CollectServlet COLLECT_SERVLET = new CollectServlet();
 
