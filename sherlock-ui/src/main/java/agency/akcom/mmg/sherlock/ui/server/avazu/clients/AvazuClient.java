@@ -1,7 +1,5 @@
 package agency.akcom.mmg.sherlock.ui.server.avazu.clients;
 
-import org.json.JSONObject;
-
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.Auth;
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.Report;
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.ReportRequest;
@@ -17,10 +15,6 @@ public interface AvazuClient {
 	@RequestLine("POST /reporting")
 	@Headers("Content-Type: application/json")
 	Report getReport(ReportRequest reportRequest);
-
-	@RequestLine("POST /reporting")
-	@Headers("Content-Type: application/json")
-	JSONObject getReportAsJSON(ReportRequest reportRequest);
 
 	//
 	//

@@ -1,6 +1,5 @@
 import static org.junit.Assert.assertNotNull;
 
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +9,8 @@ import agency.akcom.mmg.sherlock.ui.server.avazu.clients.AvazuClient;
 import agency.akcom.mmg.sherlock.ui.server.avazu.clients.AvazuClientBuilder;
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.Auth;
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.AuthRequest;
+import agency.akcom.mmg.sherlock.ui.server.avazu.models.Report;
+import agency.akcom.mmg.sherlock.ui.server.avazu.models.Report.Datum;
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.ReportRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,9 +40,14 @@ public class AvazuApiClientTest {
 		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "creative", "2018-04-01", "2018-04-30");
 		log.info(reportRequest.toString());
 
-		JSONObject reportJson = avazuClient.getReportAsJSON(reportRequest);
-		assertNotNull(reportJson);
-		log.info(reportJson.toString());
+		Report report = avazuClient.getReport(reportRequest);
+		assertNotNull(report);
+		log.info(report.toString());
+		
+		for (Datum datum : report.getData()) {
+			log.info(datum.toString());
+		}
+		
 
 	}
 
