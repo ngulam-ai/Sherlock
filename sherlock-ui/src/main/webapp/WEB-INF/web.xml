@@ -16,6 +16,16 @@
 		<servlet-name>greetServlet</servlet-name>
 		<url-pattern>/sherlockui/greet</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>cronServlet</servlet-name>
+		<servlet-class>agency.akcom.mmg.sherlock.ui.server.CronServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>cronServlet</servlet-name>
+		<url-pattern>/cron</url-pattern>
+	</servlet-mapping>
 
 	<!-- Default page to serve -->
 	<welcome-file-list>

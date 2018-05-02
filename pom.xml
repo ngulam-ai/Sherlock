@@ -18,7 +18,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<appengineProjectName>sherlock-184721</appengineProjectName>
 		<java.version>1.8</java.version>
-		<appengine.sdk.version>1.9.62</appengine.sdk.version>
 
 		<appengine.maven.plugin.version>1.3.2</appengine.maven.plugin.version>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
@@ -54,7 +53,6 @@
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
 			<version>1.9.63</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
