@@ -1,16 +1,17 @@
 package agency.akcom.mmg.sherlock.ui.server.avazu.clients;
 
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.Auth;
+import agency.akcom.mmg.sherlock.ui.server.avazu.models.AuthRequest;
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.Report;
 import agency.akcom.mmg.sherlock.ui.server.avazu.models.ReportRequest;
 import feign.Headers;
-import feign.Param;
 import feign.RequestLine;
 
 public interface AvazuClient {
-	@RequestLine("POST /auth/access_token?client_id={client_id}&client_secret={client_secret}&grant_type={grant_type}")
-	Auth getAuth(@Param("client_id") String client_id, @Param("client_secret") String client_secret,
-			@Param("grant_type") String grant_type);
+
+	@RequestLine("POST /auth/access_token")
+	@Headers("Content-Type: application/json")
+	Auth getAuth(AuthRequest authRequest);
 
 	@RequestLine("POST /reporting")
 	@Headers("Content-Type: application/json")

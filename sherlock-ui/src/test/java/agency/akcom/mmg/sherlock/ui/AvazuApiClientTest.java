@@ -1,3 +1,5 @@
+package agency.akcom.mmg.sherlock.ui;
+
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
@@ -31,13 +33,12 @@ public class AvazuApiClientTest {
 	public void test() throws Exception {
 		AuthRequest authRequest = new AuthRequest();
 		log.info(authRequest.toString());
-
-		Auth auth = avazuClient.getAuth(authRequest.getClient_id(), authRequest.getClient_secret(),
-				authRequest.getGrant_type());
+		
+		Auth auth = avazuClient.getAuth(authRequest);
 		assertNotNull(auth);
 		log.info(auth.toString());
 
-		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "creative", "2018-04-01", "2018-04-30");
+		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "campaign", "2018-04-02", "2018-04-02");
 		log.info(reportRequest.toString());
 
 		Report report = avazuClient.getReport(reportRequest);
@@ -45,7 +46,7 @@ public class AvazuApiClientTest {
 		log.info(report.toString());
 		
 		for (Datum datum : report.getData()) {
-			log.info(datum.toString());
+			log.info("{}", datum);
 		}
 		
 
