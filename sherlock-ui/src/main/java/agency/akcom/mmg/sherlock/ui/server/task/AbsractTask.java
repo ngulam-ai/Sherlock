@@ -8,7 +8,10 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+import lombok.extern.slf4j.Slf4j;
+
 @SuppressWarnings("serial")
+@Slf4j
 public abstract class AbsractTask implements DeferredTask, Serializable {
 	/**
 	 * Returns a particular key for the task name.
@@ -28,7 +31,13 @@ public abstract class AbsractTask implements DeferredTask, Serializable {
 
 	/** Add task to the queue */
 	public void enqueue() {
-		getQueue().add(TaskOptions.Builder.withPayload(this).taskName(getUniqueTaskName()));
+		log.info(ModulesServiceFactory.getModulesService().getVersionHostname(null, null));
+		log.info(ModulesServiceFactory.getModulesService().getVersionHostname("ui", null));
+
+		
+		getQueue().add(TaskOptions.Builder.withPayload(this)
+				.header("Host", ModulesServiceFactory.getModulesService().getVersionHostname(null, null))
+				.taskName(getUniqueTaskName()));
 	}
 
 	/**
@@ -38,10 +47,13 @@ public abstract class AbsractTask implements DeferredTask, Serializable {
 	 * @param countdown
 	 */
 	public void enqueue(long countdown) {
+		log.info(ModulesServiceFactory.getModulesService().getVersionHostname(null, null));
+		log.info(ModulesServiceFactory.getModulesService().getVersionHostname("ui", null));
+
 		getQueue().add(TaskOptions.Builder.withPayload(this)
 				.header("Host", ModulesServiceFactory.getModulesService().getVersionHostname("ui", null))
 				.taskName(getUniqueTaskName()).countdownMillis(countdown));
-		// TODO review tis workaround with time
+		// TODO review this workaround with time
 		// https://issuetracker.google.com/issues/35896906#comment27
 		// https://issuetracker.google.com/issues/35901044
 	}

@@ -16,10 +16,6 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<properties>
-		<appengine.app.version>develop</appengine.app.version>
-	</properties>
-
 	<build>
 		<!-- for hot reload of the web application -->
 		<outputDirectory>target/${project.artifactId}-${project.version}/WEB-INF/classes</outputDirectory>
