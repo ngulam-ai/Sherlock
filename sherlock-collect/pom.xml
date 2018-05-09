@@ -45,7 +45,7 @@
 				<configuration>
 					<deploy.project>${appengineProjectName}</deploy.project>
 					<stage.enableJarClasses>false</stage.enableJarClasses>
-					<deploy.promote>true</deploy.promote>
+					<deploy.promote>false</deploy.promote>
 					<services>
 						<!-- your default service -->
 						<service>
