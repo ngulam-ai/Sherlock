@@ -137,7 +137,7 @@ public class AvazuImportTask extends AbsractTask {
 		// jsonObject.put(CREATIVE_NAME_KEY, datum.getCreative_name());
 		// jsonObject.put(CREATIVE_ID_KEY, datum.getCreative_id());
 
-		jsonObject.put(SPEND_KEY, datum.getSpend());
+		jsonObject.put(SPEND_KEY, "" + datum.getSpend());
 
 		return jsonObject.toString();
 	}
