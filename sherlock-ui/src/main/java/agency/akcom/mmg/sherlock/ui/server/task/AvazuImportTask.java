@@ -57,10 +57,17 @@ public class AvazuImportTask extends AbsractTask {
 		Publisher publisher = preparePublisher();
 
 		if (publisher != null) {
-			Report report = getTodayReport();
+			Report report = getYesterdayReport();
 			for (Datum datum : report.getData()) {
 				log.info(datum.toString());
 				postToPubSub(publisher, datum);
+			}
+			
+			// When finished with the publisher, shutdown to free up resources.
+			try {
+				publisher.shutdown();
+			} catch (Exception e) {
+				log.error(e.toString());
 			}
 		}
 	}
@@ -76,7 +83,7 @@ public class AvazuImportTask extends AbsractTask {
 		return publisher;
 	}
 
-	private static Report getTodayReport() {
+	private static Report getYesterdayReport() {
 
 		String yesterday = getYesterdayFormated();
 
