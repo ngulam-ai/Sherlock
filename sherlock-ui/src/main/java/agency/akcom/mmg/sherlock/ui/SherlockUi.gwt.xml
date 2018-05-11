@@ -8,6 +8,7 @@
 <module rename-to='sherlockui'>
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.inject.Inject' />
 
   <!-- Inherit the default GWT style sheet.  You can change       -->
   <!-- the theme of your GWT application by uncommenting          -->
@@ -18,6 +19,8 @@
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
   <!-- Other module inherits                                      -->
+  <inherits name='com.gwtplatform.dispatch.Dispatch' />
+  <inherits name='com.gwtplatform.mvp.MvpWithEntryPoint' />
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='agency.akcom.mmg.sherlock.ui.client.SherlockUi'/>
@@ -28,4 +31,7 @@
 
   <!-- allow Super Dev Mode -->
   <add-linker name="xsiframe"/>
+  
+  <set-configuration-property name="gin.ginjector.modules" 
+                                value="agency.akcom.mmg.sherlock.ui.client.gin.ClientModule"/>
 </module>
