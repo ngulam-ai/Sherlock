@@ -1,9 +1,9 @@
-package agency.akcom.mmg.sherlock.ui.server.avazu.clients;
+package agency.akcom.mmg.sherlock.ui.server.avazu.client;
 
-import agency.akcom.mmg.sherlock.ui.server.avazu.models.Auth;
-import agency.akcom.mmg.sherlock.ui.server.avazu.models.AuthRequest;
-import agency.akcom.mmg.sherlock.ui.server.avazu.models.Report;
-import agency.akcom.mmg.sherlock.ui.server.avazu.models.ReportRequest;
+import agency.akcom.mmg.sherlock.ui.server.avazu.model.Auth;
+import agency.akcom.mmg.sherlock.ui.server.avazu.model.AuthRequest;
+import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report;
+import agency.akcom.mmg.sherlock.ui.server.avazu.model.ReportRequest;
 import feign.Headers;
 import feign.RequestLine;
 

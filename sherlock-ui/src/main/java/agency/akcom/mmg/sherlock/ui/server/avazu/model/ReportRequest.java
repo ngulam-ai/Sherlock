@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock.ui.server.avazu.models;
+package agency.akcom.mmg.sherlock.ui.server.avazu.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

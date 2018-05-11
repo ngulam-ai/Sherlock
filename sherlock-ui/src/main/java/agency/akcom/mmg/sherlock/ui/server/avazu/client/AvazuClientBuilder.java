@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock.ui.server.avazu.clients;
+package agency.akcom.mmg.sherlock.ui.server.avazu.client;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
