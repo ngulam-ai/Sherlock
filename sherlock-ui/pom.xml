@@ -24,6 +24,29 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<version>3.1</version> <!-- 3.7.0 ? -->
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+
+					<!-- annotationProcessorPaths>
+						<annotationProcessorPath>
+							<groupId>com.google.web.bindery</groupId>
+							<artifactId>requestfactory-apt</artifactId>
+							<version>2.8.2</version>
+						</annotationProcessorPath>
+						<annotationProcessorPath>
+							<groupId>com.gwtplatform</groupId>
+							<artifactId>gwtp-all</artifactId>
+							<version>1.6</version>
+						</annotationProcessorPath>
+					</annotationProcessorPaths -->
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
@@ -47,6 +70,7 @@
 					<deploy.version>${appengine.app.version}</deploy.version>
 				</configuration>
 			</plugin>
+
 
 			<!-- GWT Maven Plugin -->
 			<plugin>
@@ -85,16 +109,11 @@
 					</startupUrls>
 				</configuration>
 			</plugin>
+			
 
-			<!-- Skip normal test execution, we use gwt:test instead 
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.17</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			-->
+			<!-- Skip normal test execution, we use gwt:test instead <plugin> <artifactId>maven-surefire-plugin</artifactId> 
+				<version>2.17</version> <configuration> <skip>true</skip> </configuration> 
+				</plugin> -->
 		</plugins>
 	</build>
 </project>

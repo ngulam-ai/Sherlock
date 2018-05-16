@@ -10,3 +10,4 @@ sherlock-ear/target/
 sherlock-collect2/target/
 sherlock-ui/target/
 war/
+/.apt_generated/
