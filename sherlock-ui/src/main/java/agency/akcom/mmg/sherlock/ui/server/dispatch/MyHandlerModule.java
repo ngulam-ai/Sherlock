@@ -2,7 +2,9 @@ package agency.akcom.mmg.sherlock.ui.server.dispatch;
 
 import com.gwtplatform.dispatch.rpc.server.guice.HandlerModule;
 
+import agency.akcom.mmg.sherlock.ui.server.dispatch.auth.GetCurrentUserHandler;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.auth.SignOutHandler;
+import agency.akcom.mmg.sherlock.ui.shared.action.GetCurrentUserAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.SignOutAction;
 
 public class MyHandlerModule extends HandlerModule {
@@ -10,7 +12,7 @@ public class MyHandlerModule extends HandlerModule {
 	protected void configureHandlers() {
 
 		// Bind Action to Action Handler
-		//bindHandler(GetCurrentUserAction.class, GetCurrentUserHandler.class);
+		bindHandler(GetCurrentUserAction.class, GetCurrentUserHandler.class);
 		bindHandler(SignOutAction.class, SignOutHandler.class);
 
 		// ADMIN action handles (with validation)

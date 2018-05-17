@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock.ui.server.dispatch.auth;
+package agency.akcom.mmg.sherlock.ui.server.auth;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -18,7 +18,6 @@ import com.google.gson.Gson;
 import agency.akcom.mmg.sherlock.ui.domain.AppUser;
 import agency.akcom.mmg.sherlock.ui.domain.Customer;
 import agency.akcom.mmg.sherlock.ui.server.ServerUtils;
-import agency.akcom.mmg.sherlock.ui.server.auth.CurrentAppUserProvider;
 import agency.akcom.mmg.sherlock.ui.server.dao.AppUserDao;
 import agency.akcom.mmg.sherlock.ui.server.dao.CustomerDao;
 import agency.akcom.mmg.sherlock.ui.shared.TooManyResultsException;

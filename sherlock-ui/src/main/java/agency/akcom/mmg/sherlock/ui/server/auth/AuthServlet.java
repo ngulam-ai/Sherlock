@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock.ui.server.dispatch.auth;
+package agency.akcom.mmg.sherlock.ui.server.auth;
 
 import java.io.IOException;
 

@@ -16,7 +16,6 @@ import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.event.LoginResetEvent;
 import agency.akcom.mmg.sherlock.ui.client.security.IsLoggedInGatekeeper;
 import agency.akcom.mmg.sherlock.ui.shared.UserDto;
-
 import agency.akcom.mmg.sherlock.ui.shared.action.SignOutAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.SignOutResult;
 

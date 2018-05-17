@@ -9,7 +9,7 @@ import com.gwtplatform.dispatch.rpc.shared.ActionImpl;
 
 import agency.akcom.mmg.sherlock.ui.server.CronServlet;
 import agency.akcom.mmg.sherlock.ui.server.ServerUtils;
-import agency.akcom.mmg.sherlock.ui.server.dispatch.auth.AuthServlet;
+import agency.akcom.mmg.sherlock.ui.server.auth.AuthServlet;
 
 public class MyServletModule extends ServletModule {
 

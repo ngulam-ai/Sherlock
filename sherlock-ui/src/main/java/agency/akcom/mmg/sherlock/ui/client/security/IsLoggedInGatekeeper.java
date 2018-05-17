@@ -9,7 +9,7 @@ import agency.akcom.mmg.sherlock.ui.client.event.LoginAuthenticatedEvent;
 import agency.akcom.mmg.sherlock.ui.client.event.LoginResetEvent;
 import agency.akcom.mmg.sherlock.ui.shared.UserDto;
 
-abstract public class IsLoggedInGatekeeper implements Gatekeeper {
+public class IsLoggedInGatekeeper implements Gatekeeper {
 	private final EventBus eventBus;
 	private UserDto userDto;
 

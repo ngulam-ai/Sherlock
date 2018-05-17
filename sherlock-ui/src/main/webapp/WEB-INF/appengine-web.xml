@@ -8,7 +8,8 @@
 
 	<threadsafe>true</threadsafe>
 
-	<sessions-enabled>false</sessions-enabled>
+	<sessions-enabled>true</sessions-enabled>
+	
 	<runtime>java8</runtime>
 
 	<instance-class>F1</instance-class>

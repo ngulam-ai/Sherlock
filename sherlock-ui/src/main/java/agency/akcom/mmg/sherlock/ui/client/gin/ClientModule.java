@@ -1,5 +1,6 @@
 package agency.akcom.mmg.sherlock.ui.client.gin;
 
+import com.gwtplatform.dispatch.rpc.client.gin.RpcDispatchAsyncModule;
 import com.gwtplatform.mvp.client.annotations.DefaultPlace;
 import com.gwtplatform.mvp.client.annotations.ErrorPlace;
 import com.gwtplatform.mvp.client.annotations.UnauthorizedPlace;
@@ -19,6 +20,8 @@ public class ClientModule extends AbstractPresenterModule {
 	@Override
 	protected void configure() {
 		install(new DefaultModule.Builder().tokenFormatter(RouteTokenFormatter.class).build());
+		install(new RpcDispatchAsyncModule.Builder().build());
+		
 		install(new ApplicationModule());
 
 		// DefaultPlaceManager Places
