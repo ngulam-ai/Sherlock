@@ -9,6 +9,7 @@ import com.gwtplatform.mvp.client.gin.DefaultModule;
 import com.gwtplatform.mvp.shared.proxy.RouteTokenFormatter;
 
 import agency.akcom.mmg.sherlock.ui.client.application.ApplicationModule;
+import agency.akcom.mmg.sherlock.ui.client.login.LoginModule;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
 
 /**
@@ -23,11 +24,11 @@ public class ClientModule extends AbstractPresenterModule {
 		install(new RpcDispatchAsyncModule.Builder().build());
 		
 		install(new ApplicationModule());
+		install(new LoginModule());
 
 		// DefaultPlaceManager Places
-		bindConstant().annotatedWith(DefaultPlace.class).to(NameTokens.home);
-		bindConstant().annotatedWith(ErrorPlace.class).to(NameTokens.home);
-		bindConstant().annotatedWith(UnauthorizedPlace.class).to(NameTokens.home);
-
+		bindConstant().annotatedWith(DefaultPlace.class).to(NameTokens.HOME);
+		bindConstant().annotatedWith(ErrorPlace.class).to(NameTokens.HOME);
+		bindConstant().annotatedWith(UnauthorizedPlace.class).to(NameTokens.LOGIN);
 	}
 }
