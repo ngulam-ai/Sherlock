@@ -26,11 +26,13 @@ import com.google.api.client.util.store.DataStore;
 import com.google.api.services.oauth2.Oauth2Scopes;
 
 import agency.akcom.mmg.sherlock.ui.server.ServerUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Credential manager to get, save, delete user credentials.
  * 
  */
+@Slf4j
 public class CredentialManager {
 
 	/**
@@ -46,8 +48,8 @@ public class CredentialManager {
 	/**
 	 * Path component under war/ to locate client_secrets.json file.
 	 */
-	public static final String CLIENT_SECRETS_FILE_PRODUCTION_PATH = "client_secrets.json";
-	public static final String CLIENT_SECRETS_FILE_DEVELOPMENT_PATH = "client_secrets_dev.json";
+	public static final String CLIENT_SECRETS_FILE_PRODUCTION_PATH = "WEB-INF/resources/client_secrets.json";
+	public static final String CLIENT_SECRETS_FILE_DEVELOPMENT_PATH = "C:\\Users\\User\\workspaces_oxygen\\WS-MMG\\Sherlock\\sherlock-ui\\src\\main\\webapp\\WEB-INF\\resources\\client_secrets_dev.json";
 
 	/**
 	 * Scopes for which to request access from the user.
@@ -215,9 +217,20 @@ public class CredentialManager {
 		// TODO do not read on each request
 		String fileName = ServerUtils.isProduction() ? CLIENT_SECRETS_FILE_PRODUCTION_PATH
 				: CLIENT_SECRETS_FILE_DEVELOPMENT_PATH;
-
-		InputStreamReader streamReader = new InputStreamReader(new FileInputStream(new File(AbstractAuthServlet.class
-				.getResource("/" + fileName).toURI())));
+		
+//		File curDir = new File("target");
+//		File[] files = curDir.listFiles();
+//		for (File file: files) {
+//		  log.info(file.getName());
+//		}
+		
+		log.info(fileName);
+		
+		File file = new File(fileName);	
+		
+		FileInputStream fileInputStream = new FileInputStream(file);
+		
+		InputStreamReader streamReader = new InputStreamReader(fileInputStream);
 
 		try {
 			return GoogleClientSecrets.load(JSON_FACTORY, streamReader);

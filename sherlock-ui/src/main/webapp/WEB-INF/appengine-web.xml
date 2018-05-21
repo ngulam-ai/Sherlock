@@ -18,5 +18,9 @@
 		<!-- min-idle-instances>2</min-idle-instances> <max-pending-latency>1s</max-pending-latency> 
 			<min-pending-latency>1s</min-pending-latency -->
 	</automatic-scaling>
+	
+	<resource-files>
+        <include path="/resources/*" />
+	</resource-files>
 
 </appengine-web-app>
