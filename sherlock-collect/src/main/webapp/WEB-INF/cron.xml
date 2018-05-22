@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<cronentries>
-	<cron>
-		<url>/cron?task=avazu_daily_import</url>
-		<description>daily import Avazy data</description>
-		<schedule>every day 12:00</schedule>
-		<target>ui</target>
-	</cron>
-</cronentries>

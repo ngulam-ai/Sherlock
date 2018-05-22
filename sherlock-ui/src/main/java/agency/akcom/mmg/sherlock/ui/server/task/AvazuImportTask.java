@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AvazuImportTask extends AbsractTask {
 
-	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data-test";
+	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID = "sherlock-184721";
 
 	private static final TimeZone TZ = TimeZone.getTimeZone("Europe/Madrid");
@@ -137,7 +137,7 @@ public class AvazuImportTask extends AbsractTask {
 		jsonObject.put(SOURCE_KEY, "Avazu DSP");
 		jsonObject.put(MEDIUM_KEY, "Display");
 
-		jsonObject.put(DATE_KEY, datum.getDay());
+		jsonObject.put(DATE_KEY, datum.getDay().replaceAll("-", ""));
 		jsonObject.put(CAMPAIGN_NAME_KEY, datum.getCampaign_name());
 		jsonObject.put(CAMPAIGN_ID_KEY, datum.getCampaign_id());
 
