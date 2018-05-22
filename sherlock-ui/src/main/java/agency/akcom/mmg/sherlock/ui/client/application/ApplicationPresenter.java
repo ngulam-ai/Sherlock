@@ -44,7 +44,7 @@ public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView,
 		this.gatekeeper = gatekeeper;
 		this.dispatcher = dispatcher;
 		this.placeManager = placeManager;
-		
+
 		getView().setUiHandlers(this);
 	}
 

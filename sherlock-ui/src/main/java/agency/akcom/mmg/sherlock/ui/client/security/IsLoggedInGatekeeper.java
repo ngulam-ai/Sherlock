@@ -1,6 +1,7 @@
 package agency.akcom.mmg.sherlock.ui.client.security;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.mvp.client.proxy.Gatekeeper;
@@ -9,6 +10,7 @@ import agency.akcom.mmg.sherlock.ui.client.event.LoginAuthenticatedEvent;
 import agency.akcom.mmg.sherlock.ui.client.event.LoginResetEvent;
 import agency.akcom.mmg.sherlock.ui.shared.UserDto;
 
+@Singleton
 public class IsLoggedInGatekeeper implements Gatekeeper {
 	private final EventBus eventBus;
 	private UserDto userDto;

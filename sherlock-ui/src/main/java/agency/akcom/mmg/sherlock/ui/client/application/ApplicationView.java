@@ -10,6 +10,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
+import agency.akcom.mmg.sherlock.ui.client.widget.UserDropDownToggle;
+
 class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> implements ApplicationPresenter.MyView {
 	interface Binder extends UiBinder<Widget, ApplicationView> {
 	}
@@ -17,8 +19,8 @@ class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> implemen
 	@UiField
 	SimplePanel main;
 	
-	//@UiField
-	//UserDropDownToggle userDdAnchor;
+	@UiField
+	UserDropDownToggle userDdAnchor;
 
 	@Inject
 	ApplicationView(Binder uiBinder) {
@@ -29,8 +31,8 @@ class ApplicationView extends ViewWithUiHandlers<ApplicationUiHandlers> implemen
 	
 	@Override
 	public void displayUser(String userInfo, String userPictureURL) {
-		//userDdAnchor.displayUserPicture(userPictureURL);
-		//userDdAnchor.displayUserName(userInfo);
+		userDdAnchor.displayUserPicture(userPictureURL);
+		userDdAnchor.displayUserName(userInfo);
 	}
 	
 	@UiHandler("signOut")
