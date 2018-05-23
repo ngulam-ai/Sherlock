@@ -4,7 +4,7 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
 
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 public class LoginAuthenticatedEvent extends GwtEvent<LoginAuthenticatedEvent.LoginAuthenticatedHandler> {
 

@@ -12,9 +12,9 @@ import agency.akcom.mmg.sherlock.ui.domain.AppUser;
 import agency.akcom.mmg.sherlock.ui.server.ServerUtils;
 import agency.akcom.mmg.sherlock.ui.server.dao.AppUserDao;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetUsersAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetUsersResult;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 public class GetUsersHandler extends MyAbstractActionHandler<GetUsersAction, GetUsersResult> {
 	@Inject

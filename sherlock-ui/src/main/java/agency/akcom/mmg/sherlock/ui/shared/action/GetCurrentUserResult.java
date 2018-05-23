@@ -6,17 +6,17 @@ import com.gwtplatform.dispatch.rpc.shared.Result;
 
 public class GetCurrentUserResult implements Result { 
 
-  agency.akcom.mmg.sherlock.ui.shared.UserDto currentUserDto;
+  agency.akcom.mmg.sherlock.ui.shared.dto.UserDto currentUserDto;
 
   protected GetCurrentUserResult() {
     // Possibly for serialization.
   }
 
-  public GetCurrentUserResult(agency.akcom.mmg.sherlock.ui.shared.UserDto currentUserDto) {
+  public GetCurrentUserResult(agency.akcom.mmg.sherlock.ui.shared.dto.UserDto currentUserDto) {
     this.currentUserDto = currentUserDto;
   }
 
-  public agency.akcom.mmg.sherlock.ui.shared.UserDto getCurrentUserDto(){
+  public agency.akcom.mmg.sherlock.ui.shared.dto.UserDto getCurrentUserDto(){
     return currentUserDto;
   }
 

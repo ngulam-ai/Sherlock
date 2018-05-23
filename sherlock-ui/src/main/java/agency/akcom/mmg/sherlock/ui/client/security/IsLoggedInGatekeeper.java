@@ -8,7 +8,7 @@ import com.gwtplatform.mvp.client.proxy.Gatekeeper;
 
 import agency.akcom.mmg.sherlock.ui.client.event.LoginAuthenticatedEvent;
 import agency.akcom.mmg.sherlock.ui.client.event.LoginResetEvent;
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 @Singleton
 public class IsLoggedInGatekeeper implements Gatekeeper {

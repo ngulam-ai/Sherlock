@@ -6,17 +6,17 @@ import com.gwtplatform.dispatch.rpc.shared.Result;
 
 public class GetUsersResult implements Result { 
 
-  java.util.List<agency.akcom.mmg.sherlock.ui.shared.UserDto> users;
+  java.util.List<agency.akcom.mmg.sherlock.ui.shared.dto.UserDto> users;
 
   protected GetUsersResult() {
     // Possibly for serialization.
   }
 
-  public GetUsersResult(java.util.List<agency.akcom.mmg.sherlock.ui.shared.UserDto> users) {
+  public GetUsersResult(java.util.List<agency.akcom.mmg.sherlock.ui.shared.dto.UserDto> users) {
     this.users = users;
   }
 
-  public java.util.List<agency.akcom.mmg.sherlock.ui.shared.UserDto> getUsers(){
+  public java.util.List<agency.akcom.mmg.sherlock.ui.shared.dto.UserDto> getUsers(){
     return users;
   }
 

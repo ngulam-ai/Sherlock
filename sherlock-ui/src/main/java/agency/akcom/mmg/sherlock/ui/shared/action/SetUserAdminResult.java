@@ -6,17 +6,17 @@ import com.gwtplatform.dispatch.rpc.shared.Result;
 
 public class SetUserAdminResult implements Result { 
 
-  agency.akcom.mmg.sherlock.ui.shared.UserDto userDto;
+  agency.akcom.mmg.sherlock.ui.shared.dto.UserDto userDto;
 
   protected SetUserAdminResult() {
     // Possibly for serialization.
   }
 
-  public SetUserAdminResult(agency.akcom.mmg.sherlock.ui.shared.UserDto userDto) {
+  public SetUserAdminResult(agency.akcom.mmg.sherlock.ui.shared.dto.UserDto userDto) {
     this.userDto = userDto;
   }
 
-  public agency.akcom.mmg.sherlock.ui.shared.UserDto getUserDto(){
+  public agency.akcom.mmg.sherlock.ui.shared.dto.UserDto getUserDto(){
     return userDto;
   }
 

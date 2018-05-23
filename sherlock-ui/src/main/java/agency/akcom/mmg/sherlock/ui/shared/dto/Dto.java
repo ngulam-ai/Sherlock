@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock.ui.shared;
+package agency.akcom.mmg.sherlock.ui.shared.dto;
 
 import java.io.Serializable;
 

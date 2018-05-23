@@ -9,9 +9,9 @@ import com.gwtplatform.mvp.client.proxy.PlaceManager;
 
 import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.event.LoginAuthenticatedEvent;
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetCurrentUserAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetCurrentUserResult;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 public class BootstrapperImpl implements Bootstrapper {
 	private final PlaceManager placeManager;

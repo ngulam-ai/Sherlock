@@ -3,7 +3,7 @@ package agency.akcom.mmg.sherlock.ui.shared.action;
 import com.gwtplatform.dispatch.annotation.In;
 import com.gwtplatform.dispatch.annotation.Out;
 
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 // @GenDispatch(isSecure = false, serviceName = UnsecuredActionImpl.DEFAULT_SERVICE_NAME)
 public class SetUserAdmin {

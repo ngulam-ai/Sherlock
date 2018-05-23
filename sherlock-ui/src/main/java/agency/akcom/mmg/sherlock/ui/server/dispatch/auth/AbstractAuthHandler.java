@@ -9,7 +9,7 @@ import agency.akcom.mmg.sherlock.ui.server.ServerUtils;
 import agency.akcom.mmg.sherlock.ui.server.auth.CurrentAppUserProvider;
 import agency.akcom.mmg.sherlock.ui.server.dao.CustomerDao;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 public abstract class AbstractAuthHandler<A extends Action<R>, R extends Result> extends MyAbstractActionHandler<A, R> {
 

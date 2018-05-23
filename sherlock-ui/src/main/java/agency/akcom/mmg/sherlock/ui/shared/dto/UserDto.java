@@ -1,4 +1,4 @@
-package agency.akcom.mmg.sherlock.ui.shared;
+package agency.akcom.mmg.sherlock.ui.shared.dto;
 
 public class UserDto extends Dto {
 

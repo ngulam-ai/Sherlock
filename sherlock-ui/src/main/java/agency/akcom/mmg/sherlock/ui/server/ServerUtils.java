@@ -8,7 +8,7 @@ import com.gwtplatform.dispatch.shared.ActionException;
 import agency.akcom.mmg.sherlock.ui.domain.AppUser;
 import agency.akcom.mmg.sherlock.ui.domain.Customer;
 import agency.akcom.mmg.sherlock.ui.server.auth.CredentialManager;
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 public class ServerUtils {
 

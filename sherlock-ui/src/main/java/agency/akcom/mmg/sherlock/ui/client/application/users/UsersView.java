@@ -24,7 +24,7 @@ import com.google.gwt.view.client.RangeChangeEvent;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
 
 import agency.akcom.mmg.sherlock.ui.client.widget.MyImageCell;
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 class UsersView extends ViewWithUiHandlers<UsersUiHandlers> implements UsersPresenter.MyView {
 	interface Binder extends UiBinder<Widget, UsersView> {

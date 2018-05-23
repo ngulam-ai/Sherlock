@@ -18,13 +18,13 @@ import agency.akcom.mmg.sherlock.ui.client.application.ApplicationPresenter;
 import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
 import agency.akcom.mmg.sherlock.ui.client.security.IsLoggedInGatekeeper;
-import agency.akcom.mmg.sherlock.ui.shared.UserDto;
 import agency.akcom.mmg.sherlock.ui.shared.action.DeleteUserAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.DeleteUserResult;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetUsersAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetUsersResult;
 import agency.akcom.mmg.sherlock.ui.shared.action.SetUserAdminAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.SetUserAdminResult;
+import agency.akcom.mmg.sherlock.ui.shared.dto.UserDto;
 
 public class UsersPresenter extends Presenter<UsersPresenter.MyView, UsersPresenter.MyProxy> implements UsersUiHandlers {
 	interface MyView extends View, HasUiHandlers<UsersUiHandlers> {
