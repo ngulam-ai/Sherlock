@@ -10,13 +10,12 @@ import com.gwtplatform.dispatch.shared.ActionException;
 import agency.akcom.mmg.sherlock.ui.domain.AppUser;
 import agency.akcom.mmg.sherlock.ui.server.auth.CurrentAppUserProvider;
 
-// TODO re-implement basing on LoggedInActionValidator
-public class AdminActionValidator implements ActionValidator {
+public class LoggedInActionValidator implements ActionValidator {
 
 	CurrentAppUserProvider currentAppUserProvider;
 
 	@Inject
-	public AdminActionValidator(final CurrentAppUserProvider currentAppUserProvider) {
+	public LoggedInActionValidator(final CurrentAppUserProvider currentAppUserProvider) {
 		this.currentAppUserProvider = currentAppUserProvider;
 	}
 
@@ -27,7 +26,7 @@ public class AdminActionValidator implements ActionValidator {
 
 		AppUser appUser = currentAppUserProvider.get();
 
-		return appUser != null && appUser.isAdmin();
+		return appUser != null;
 	}
 
 }

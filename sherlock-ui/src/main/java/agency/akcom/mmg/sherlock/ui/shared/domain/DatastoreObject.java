@@ -3,10 +3,11 @@ package agency.akcom.mmg.sherlock.ui.shared.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.OnSave;
 
-public class DatastoreObject implements Serializable {
+public class DatastoreObject implements IsSerializable, Serializable {
 
 	private static final long serialVersionUID = 1L;
 

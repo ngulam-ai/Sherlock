@@ -8,6 +8,7 @@ import com.googlecode.objectify.ObjectifyFactory;
 
 import agency.akcom.mmg.sherlock.ui.domain.AppUser;
 import agency.akcom.mmg.sherlock.ui.domain.Customer;
+import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
 
 /**
  * Our version of ObjectifyFactory which integrates with Guice. You could and
@@ -28,6 +29,7 @@ public class OfyFactory extends ObjectifyFactory {
 
 		this.register(AppUser.class);
 		this.register(Customer.class);
+		this.register(ImportLog.class);
 
 		long millis = System.currentTimeMillis() - time;
 		System.out.println("Registration took " + millis + " millis");

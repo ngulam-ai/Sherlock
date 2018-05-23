@@ -23,6 +23,10 @@ import agency.akcom.mmg.sherlock.ui.server.avazu.model.Auth;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.AuthRequest;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.ReportRequest;
+import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
+import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
+import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
+import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.Datum;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +57,9 @@ public class AvazuImportTask extends AbsractTask {
 	@Override
 	public void run() {
 		log.info("AvazuImportTask runing");
+		ImportLog importLog = new ImportLog(Partner.AVAZU);
+		ImportLogDao importLogDao = new ImportLogDao();
+		importLogDao.save(importLog);
 
 		Publisher publisher = preparePublisher();
 
@@ -62,7 +69,7 @@ public class AvazuImportTask extends AbsractTask {
 				log.info(datum.toString());
 				postToPubSub(publisher, datum);
 			}
-			
+
 			// When finished with the publisher, shutdown to free up resources.
 			try {
 				publisher.shutdown();
@@ -70,6 +77,10 @@ public class AvazuImportTask extends AbsractTask {
 				log.error(e.toString());
 			}
 		}
+
+		importLog.setEnd(new Date());
+		importLog.setStatus(ImportStatus.SUCCESS);
+		importLogDao.save(importLog);
 	}
 
 	private static Publisher preparePublisher() {

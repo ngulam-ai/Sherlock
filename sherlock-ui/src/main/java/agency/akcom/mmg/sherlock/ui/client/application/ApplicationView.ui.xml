@@ -16,10 +16,9 @@
 					</b:NavbarHeader>
 					<b:NavbarCollapse b:id="navbar-collapse">
 						<b:NavbarNav pull="RIGHT">
-							<b:AnchorListItem text="Page 1"
-								targetHistoryToken="{nameTokens.getHome}" />
-							<b:AnchorListItem text="Page 2"
-								targetHistoryToken="{nameTokens.getHome}" />
+							
+							<b:AnchorListItem text="Import log"
+								targetHistoryToken="{nameTokens.getLog}" />
 							<b:AnchorListItem text="Users"
 								targetHistoryToken="{nameTokens.getUsers}" />
 							<b:ListDropDown>
