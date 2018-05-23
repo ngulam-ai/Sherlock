@@ -20,8 +20,8 @@
 								targetHistoryToken="{nameTokens.getHome}" />
 							<b:AnchorListItem text="Page 2"
 								targetHistoryToken="{nameTokens.getHome}" />
-							<b:AnchorListItem text="Page 3"
-								targetHistoryToken="{nameTokens.getHome}" />
+							<b:AnchorListItem text="Users"
+								targetHistoryToken="{nameTokens.getUsers}" />
 							<b:ListDropDown>
 								<m:UserDropDownToggle ui:field="userDdAnchor" />
 								<b:DropDownMenu>
