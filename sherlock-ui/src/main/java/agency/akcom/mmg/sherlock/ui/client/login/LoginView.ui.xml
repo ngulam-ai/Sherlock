@@ -10,7 +10,8 @@
 			<b:Container>
 				<b:Row>
 					<b:Column size="XS_12">
-						<b:PageHeader text="SHERLOCK web application" subText="" />
+						<b:PageHeader text="SHERLOCK web application"
+							subText="" />
 						<b:Panel>
 							<b:PanelHeader>
 								<b:Heading size="H3" text="Login" />
@@ -20,6 +21,15 @@
 									<b:Column size="XS_12">
 										<b:Button text="Sign in with Google"
 											ui:field="signInWithGoogle" />
+										<b:Well visible="false" ui:field="notApprovedWarn">
+											<b.html:Paragraph emphasis="WARNING">
+												Hello
+												<b.html:Text ui:field="nameText" />
+												, You are not approved now. You have wait for approving
+												and try
+												again.
+											</b.html:Paragraph>
+										</b:Well>
 									</b:Column>
 								</b:Row>
 							</b:PanelBody>

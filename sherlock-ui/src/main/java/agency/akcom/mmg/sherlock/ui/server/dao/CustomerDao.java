@@ -32,7 +32,8 @@ public class CustomerDao extends BaseDao<Customer> {
 		// should be updated because it can be modified in one of set methods above
 		appUser.setCustomer(customer);
 		// TODO all new USERS will be admins - remove after testing
-		appUser.setAdmin(true);
+		// appUser.setAdmin(true);
+		appUser.setAdmin(false);
 		// ---
 		appUserDao.save(appUser);
 

@@ -6,4 +6,6 @@ public interface LoginUiHandlers extends UiHandlers {
 	void onSignInClick();
 
 	void onSignInWithGoogleClick();
+
+	void onSignOutClick();
 }

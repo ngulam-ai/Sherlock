@@ -11,13 +11,11 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
-import com.gwtplatform.mvp.client.annotations.UseGatekeeper;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
 import agency.akcom.mmg.sherlock.ui.client.application.ApplicationPresenter;
 import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
-import agency.akcom.mmg.sherlock.ui.client.security.IsLoggedInGatekeeper;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetImportLogAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetImportLogResult;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
@@ -31,7 +29,6 @@ public class LogPresenter extends Presenter<LogPresenter.MyView, LogPresenter.My
 
 	@ProxyStandard
 	@NameToken(NameTokens.LOG)
-	@UseGatekeeper(IsLoggedInGatekeeper.class)
 	interface MyProxy extends ProxyPlace<LogPresenter> {
 	}
 
