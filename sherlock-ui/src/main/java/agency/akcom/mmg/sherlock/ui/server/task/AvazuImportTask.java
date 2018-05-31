@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.json.JSONObject;
@@ -17,17 +18,18 @@ import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 
+import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
 import agency.akcom.mmg.sherlock.ui.server.avazu.client.AvazuClient;
 import agency.akcom.mmg.sherlock.ui.server.avazu.client.AvazuClientBuilder;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Auth;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.AuthRequest;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report;
+import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.Datum;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.ReportRequest;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
 import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
-import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.Datum;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -64,8 +66,11 @@ public class AvazuImportTask extends AbsractTask {
 		Publisher publisher = preparePublisher();
 
 		if (publisher != null) {
-			Report report = getYesterdayReport();
-			for (Datum datum : report.getData()) {
+					
+			String yesterday = getYesterdayFormated();
+			List<Datum> datums = AvazuUtils.getFullReportDatum("campaign", yesterday, yesterday, "site");
+			
+			for (Datum datum : datums) {
 				log.info(datum.toString());
 				postToPubSub(publisher, datum);
 			}
@@ -92,18 +97,6 @@ public class AvazuImportTask extends AbsractTask {
 			log.error(e.toString());
 		}
 		return publisher;
-	}
-
-	private static Report getYesterdayReport() {
-
-		String yesterday = getYesterdayFormated();
-
-		AvazuClient avazuClient = new AvazuClientBuilder().getAvazuClient();
-		Auth auth = avazuClient.getAuth(new AuthRequest());
-
-		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "campaign", yesterday, yesterday);
-		Report report = avazuClient.getReport(reportRequest);
-		return report;
 	}
 
 	private static String getYesterdayFormated() {
