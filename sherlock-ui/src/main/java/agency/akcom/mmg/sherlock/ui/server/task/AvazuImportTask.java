@@ -47,14 +47,23 @@ public class AvazuImportTask extends AbsractTask {
 	private static final String DATE_KEY = "date";
 	// based on
 	// https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters?hl=en#trafficsources
+	private static final String DSP_KEY = "cd12";
+	private static final String MODEL_KEY = "cd98";
 	private static final String SOURCE_KEY = "cs";
 	private static final String MEDIUM_KEY = "cm";
-	private static final String TIME_KEY = "time";
+	private static final String CONTENT_KEY = "cc";
+	private static final String TERM_KEY = "ck";
 	private static final String CAMPAIGN_NAME_KEY = "cn";
 	private static final String CAMPAIGN_ID_KEY = "ci";
-	private static final String CREATIVE_NAME_KEY = null;
-	private static final String CREATIVE_ID_KEY = null;
+	
+	private static final String TIME_KEY = "time";
+
+	private static final String IMPRESSIONS_KEY = "_imp";
+	private static final String CLICKS_KEY = "_clk";
+	private static final String CONVERSION_KEY = "_cnv";
 	private static final String SPEND_KEY = "cp.ap";
+
+	private static final String SITE_NAME_KEY = "_sn";
 
 	@Override
 	public void run() {
@@ -68,7 +77,7 @@ public class AvazuImportTask extends AbsractTask {
 		if (publisher != null) {
 					
 			String yesterday = getYesterdayFormated();
-			List<Datum> datums = AvazuUtils.getFullReportDatum("campaign", yesterday, yesterday, "site");
+			List<Datum> datums = AvazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
 			
 			for (Datum datum : datums) {
 				log.info(datum.toString());
@@ -136,20 +145,28 @@ public class AvazuImportTask extends AbsractTask {
 		// hitId ?
 		// time ?
 		// cid ?
-		jsonObject.put(TIME_KEY, new GregorianCalendar(TZ).getTime().getTime());
+		jsonObject.put(TIME_KEY, new GregorianCalendar(TZ).getTime().getTime());		
 
-		jsonObject.put(SOURCE_KEY, "Avazu DSP");
-		jsonObject.put(MEDIUM_KEY, "Display");
-
-		jsonObject.put(DATE_KEY, datum.getDay().replaceAll("-", ""));
+		jsonObject.put(DSP_KEY, "Avazu MDSP");
+		jsonObject.put(MODEL_KEY, "cpm"); //TODO determine: cpc or cpm
+		jsonObject.put(SOURCE_KEY, datum.getSite_id());
+		jsonObject.put(MEDIUM_KEY, "Display"); //TODO other possible options?
+		jsonObject.put(CONTENT_KEY, datum.getCreative_id());
+		log.warn(CONTENT_KEY + " " + datum.getCreative_id());
+		///jsonObject.put(TERM_KEY, null); // not used in these campaigns
 		jsonObject.put(CAMPAIGN_NAME_KEY, datum.getCampaign_name());
 		jsonObject.put(CAMPAIGN_ID_KEY, datum.getCampaign_id());
 
-		// jsonObject.put(CREATIVE_NAME_KEY, datum.getCreative_name());
-		// jsonObject.put(CREATIVE_ID_KEY, datum.getCreative_id());
-
+		jsonObject.put(DATE_KEY, datum.getDay().replaceAll("-", ""));
+		
+		jsonObject.put(IMPRESSIONS_KEY, "" + datum.getImpressions());
+		jsonObject.put(CLICKS_KEY, "" + datum.getClicks());		
+		jsonObject.put(CONVERSION_KEY, "" + datum.getConversions());	
 		jsonObject.put(SPEND_KEY, "" + datum.getSpend());
-
+		
+		// not for Cost table insertion, just for debug
+		jsonObject.put(SITE_NAME_KEY, datum.getSite_name());
+		
 		return jsonObject.toString();
 	}
 
