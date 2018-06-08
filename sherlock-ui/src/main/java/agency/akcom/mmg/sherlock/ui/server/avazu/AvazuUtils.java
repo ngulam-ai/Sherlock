@@ -34,7 +34,7 @@ public class AvazuUtils {
 					groupby, page);
 			log.info(reportRequest.toString());
 			Report report = avazuClient.getReport(reportRequest);
-			log.info(report.toString());
+			log.info("Page " + page + ": " + report.toString());
 			
 			if (lastPage == 0) {
 				//first loop - do initializations
