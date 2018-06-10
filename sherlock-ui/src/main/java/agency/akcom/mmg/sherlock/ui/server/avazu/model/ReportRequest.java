@@ -10,19 +10,19 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportRequest {
-	String access_token; // The access token issued by Avazu authorization server.
+	private String access_token; // The access token issued by Avazu authorization server.
 
-	String command; // Reports dimensions, can be one of the following value: "user", "campaign",
+	private String command; // Reports dimensions, can be one of the following value: "user", "campaign",
 					// "creative"
 
-	String startdate; // Timezone: UTC Format: YYYY-MM-DD. The date range from startdate to the
+	private String startdate; // Timezone: UTC Format: YYYY-MM-DD. The date range from startdate to the
 						// current date must be less than or equal to 180 days.
 
-	String enddate; // Timezone: UTC Format: YYYY-MM-DD. Enddate must be larger than or equal to
+	private String enddate; // Timezone: UTC Format: YYYY-MM-DD. Enddate must be larger than or equal to
 					// startdate, and the date range from the startdate to the end date must be less
 					// than or equal to 30 days.
 
-	String groupby; // Which variable will be grouped by, note that "groupby" filed only for
+	private String groupby; // Which variable will be grouped by, note that "groupby" filed only for
 					// campiagn and creative dimension reports, can be one of the following value:
 					// Value -- Description
 					// creative -- creative
@@ -41,5 +41,5 @@ public class ReportRequest {
 					// publisher -- publisher(seller)
 					// site -- site
 					// inventorytype -- inventory type
-	int page; // Each page contains a maximum 100 items. Default value is 1. (Note that "page" field only for campaign and creative dimension reports)
+	private int page; // Each page contains a maximum 100 items. Default value is 1. (Note that "page" field only for campaign and creative dimension reports)
 }

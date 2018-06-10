@@ -17,13 +17,13 @@ public class Report {
 	private int totalcount; // Total amount of items
 	private int page; // Page number currently displayed
 	private int pagemaxcount; // Maximum items of each page
-	private List<Datum> data;
+	private List<ReportDatum> data;
 
 	@Data
 	@ToString
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public class Datum {
+	public class ReportDatum {
 
 		private String campaign_id; // Campaign id
 		private String creative_id; // Creative id

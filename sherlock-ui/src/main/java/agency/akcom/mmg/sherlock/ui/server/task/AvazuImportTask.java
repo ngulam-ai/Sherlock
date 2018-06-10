@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.json.JSONObject;
@@ -19,13 +20,7 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 
 import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
-import agency.akcom.mmg.sherlock.ui.server.avazu.client.AvazuClient;
-import agency.akcom.mmg.sherlock.ui.server.avazu.client.AvazuClientBuilder;
-import agency.akcom.mmg.sherlock.ui.server.avazu.model.Auth;
-import agency.akcom.mmg.sherlock.ui.server.avazu.model.AuthRequest;
-import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report;
-import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.Datum;
-import agency.akcom.mmg.sherlock.ui.server.avazu.model.ReportRequest;
+import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
 import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
@@ -55,7 +50,7 @@ public class AvazuImportTask extends AbsractTask {
 	private static final String TERM_KEY = "ck";
 	private static final String CAMPAIGN_NAME_KEY = "cn";
 	private static final String CAMPAIGN_ID_KEY = "ci";
-	
+
 	private static final String TIME_KEY = "time";
 
 	private static final String IMPRESSIONS_KEY = "_imp";
@@ -75,13 +70,15 @@ public class AvazuImportTask extends AbsractTask {
 		Publisher publisher = preparePublisher();
 
 		if (publisher != null) {
-					
+
 			String yesterday = getYesterdayFormated();
-			List<Datum> datums = AvazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
-			
-			for (Datum datum : datums) {
+			List<ReportDatum> reportDatums = AvazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
+
+			Map<String, String> campaignsBidTypes = AvazuUtils.getCampaignsWithBidTypes();
+
+			for (ReportDatum datum : reportDatums) {
 				log.info(datum.toString());
-				postToPubSub(publisher, datum);
+				postToPubSub(publisher, datum, campaignsBidTypes);
 			}
 
 			// When finished with the publisher, shutdown to free up resources.
@@ -117,10 +114,10 @@ public class AvazuImportTask extends AbsractTask {
 		return yesterday;
 	}
 
-	private static void postToPubSub(Publisher publisher, Datum datum) {
+	private static void postToPubSub(Publisher publisher, ReportDatum datum, Map<String, String> campaignsBidTypes) {
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-		ByteString data = ByteString.copyFromUtf8(prepareMessage(datum));
+		ByteString data = ByteString.copyFromUtf8(prepareMessage(datum, campaignsBidTypes));
 
 		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
@@ -138,35 +135,35 @@ public class AvazuImportTask extends AbsractTask {
 		});
 	}
 
-	private static String prepareMessage(Datum datum) {
+	private static String prepareMessage(ReportDatum datum, Map<String, String> campaignsBidTypes) {
 		JSONObject jsonObject = new JSONObject();
 
 		// TODO Add all other required Hit values
 		// hitId ?
 		// time ?
 		// cid ?
-		jsonObject.put(TIME_KEY, new GregorianCalendar(TZ).getTime().getTime());		
+		jsonObject.put(TIME_KEY, new GregorianCalendar(TZ).getTime().getTime());
 
 		jsonObject.put(DSP_KEY, "Avazu MDSP");
-		jsonObject.put(MODEL_KEY, "cpm"); //TODO determine: cpc or cpm
+		jsonObject.put(MODEL_KEY, campaignsBidTypes.get(datum.getCampaign_id()));
 		jsonObject.put(SOURCE_KEY, datum.getSite_id());
-		jsonObject.put(MEDIUM_KEY, "Display"); //TODO other possible options?
+		jsonObject.put(MEDIUM_KEY, "Display"); // TODO other possible options?
 		jsonObject.put(CONTENT_KEY, datum.getCreative_id());
 		log.warn(CONTENT_KEY + " " + datum.getCreative_id());
-		///jsonObject.put(TERM_KEY, null); // not used in these campaigns
+		/// jsonObject.put(TERM_KEY, null); // not used in these campaigns
 		jsonObject.put(CAMPAIGN_NAME_KEY, datum.getCampaign_name());
 		jsonObject.put(CAMPAIGN_ID_KEY, datum.getCampaign_id());
 
 		jsonObject.put(DATE_KEY, datum.getDay().replaceAll("-", ""));
-		
+
 		jsonObject.put(IMPRESSIONS_KEY, "" + datum.getImpressions());
-		jsonObject.put(CLICKS_KEY, "" + datum.getClicks());		
-		jsonObject.put(CONVERSION_KEY, "" + datum.getConversions());	
+		jsonObject.put(CLICKS_KEY, "" + datum.getClicks());
+		jsonObject.put(CONVERSION_KEY, "" + datum.getConversions());
 		jsonObject.put(SPEND_KEY, "" + datum.getSpend());
-		
+
 		// not for Cost table insertion, just for debug
 		jsonObject.put(SITE_NAME_KEY, datum.getSite_name());
-		
+
 		return jsonObject.toString();
 	}
 
