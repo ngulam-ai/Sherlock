@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>1.9.63</version>
+			<version>1.9.64</version>
 		</dependency>
 
 		<dependency>
@@ -248,6 +248,22 @@
 			<artifactId>google-api-services-oauth2</artifactId>
 			<version>v2-rev137-1.23.0</version>
 		</dependency>
+
+
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-dataflow</artifactId>
+			<version>v1b3-rev247-1.23.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client-gson -->
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client-gson</artifactId>
+			<version>1.23.0</version>
+		</dependency>
+
+
 
 		<!-- https://mvnrepository.com/artifact/org.gwtbootstrap3/gwtbootstrap3 -->
 		<dependency>
