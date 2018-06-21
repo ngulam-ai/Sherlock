@@ -95,6 +95,12 @@
 			<version>0.35.0-beta	</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-bigquery</artifactId>
+			<version>1.31.0</version>
+		</dependency>
+
 
 		<!-- Google API client (included in the AppEngine client) - for stuff that's 
 			not in gcloud -->
