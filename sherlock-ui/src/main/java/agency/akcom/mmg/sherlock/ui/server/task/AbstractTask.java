@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("serial")
 @Slf4j
-public abstract class AbsractTask implements DeferredTask, Serializable {
+public abstract class AbstractTask implements DeferredTask, Serializable {
 	/**
 	 * Returns a particular key for the task name.
 	 *

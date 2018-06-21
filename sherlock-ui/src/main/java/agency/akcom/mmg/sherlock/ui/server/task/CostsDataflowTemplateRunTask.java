@@ -25,7 +25,7 @@ import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CostsDataflowTemplateRunTask extends AbsractTask {
+public class CostsDataflowTemplateRunTask extends AbstractTask {
 
 	private static final String PROJECT = "sherlock-184721";
 	private static final String BUCKET = "gs://sherlock-dataflow-template";

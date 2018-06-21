@@ -28,7 +28,7 @@ import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AvazuImportTask extends AbsractTask {
+public class AvazuImportTask extends AbstractTask {
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 	private static final String PROJECT_ID = "sherlock-184721";
