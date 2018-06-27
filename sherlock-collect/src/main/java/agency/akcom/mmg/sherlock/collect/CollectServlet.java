@@ -10,7 +10,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -127,6 +126,7 @@ public class CollectServlet extends HttpServlet {
 		String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
 		SimpleDateFormat format = new SimpleDateFormat();
+		//TODO consider to implement with several static formats with different patterns - should speed up
 		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
 		int offsetTimeZone = TimeZone.getTimeZone(idTimeZone).getOffset(calendar.getTime().getTime());
 		tryToPutOnce(reqJson, "time", "" + (calendar.getTime().getTime()+offsetTimeZone));
@@ -164,6 +164,8 @@ public class CollectServlet extends HttpServlet {
 		// Year
 		format.applyPattern("yyyy");
 		tryToPutOnce(reqJson, "cd96", "" + format.format(calendar.getTime()));
+		
+		AudienceService.processUIds(reqJson);
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
