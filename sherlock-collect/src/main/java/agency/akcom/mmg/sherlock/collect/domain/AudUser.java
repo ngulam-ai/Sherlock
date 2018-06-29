@@ -15,9 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 public class AudUser extends DatastoreObject {
-	
+
 	@Index
 	private String uid;
+
+	@Index
+	private Long frequency;
 
 	// • Uid
 	// • GA_ClientID
@@ -122,6 +125,16 @@ public class AudUser extends DatastoreObject {
 		if (uid == null || uid.isEmpty()) {
 			uid = "emty_original_uid_" + UUID.randomUUID().toString();
 		}
+
+		increaseFrequency();
+	}
+
+	public Long increaseFrequency() {
+		frequency = (frequency == null) ? 1 : frequency + 1;
+		return frequency;
+	}
+
+	public AudUser() {
 
 	}
 

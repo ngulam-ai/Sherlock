@@ -20,12 +20,16 @@ public class AudienceService {
 		List<AudUser> users = dao.listAllMatched(tmpUser);
 
 		if (users.isEmpty()) {
-			log.info("No matched user records found - create new record");
+			log.info("No matched user records found - create new user record");
 			// Just store new record
 			tmpUser = dao.saveAndReturn(tmpUser);
 
 		} else if (users.size() == 1) {
-			log.info("Just one user record found - update if needed");
+			log.info("Just one user record found - update if needed (count visits at least)");
+			// just count for now
+			users.get(0).increaseFrequency();
+			tmpUser = dao.saveAndReturn(users.get(0));
+
 			// TODO implement more complex logic
 			// UC 1,2,4: 1 match is found - update (or not), query UID, replace it before
 			// the insert in BQ
