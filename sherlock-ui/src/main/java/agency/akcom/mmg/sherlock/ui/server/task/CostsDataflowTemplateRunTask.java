@@ -46,12 +46,13 @@ public class CostsDataflowTemplateRunTask extends AbstractTask {
 		Map<String, String> parameters = new HashMap();
 		
 		// set "dateString" parameter by yesterday date
-		parameters.put("dateString", LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+		String dateString = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		parameters.put("dateString", dateString);
 
 		Dataflow dataflow = new Dataflow(new UrlFetchTransport(), GsonFactory.getDefaultInstance(), null);
 
 		CreateJobFromTemplateRequest content = new CreateJobFromTemplateRequest();
-		content.setJobName(JOB_NAME_PREFIX + UUID.randomUUID().toString());
+		content.setJobName(JOB_NAME_PREFIX + dateString + "-" + UUID.randomUUID().toString());
 		content.setGcsPath(MY_TEMPLATE_FULL_PATH);
 		content.setParameters(parameters);
 
