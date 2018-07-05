@@ -44,7 +44,9 @@ public class CostsDataflowTemplateRunTask extends AbstractTask {
 	@Override
 	public void run() {
 		Map<String, String> parameters = new HashMap();
-		parameters.put("dateString", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+		
+		// set "dateString" parameter by yesterday date
+		parameters.put("dateString", LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
 		Dataflow dataflow = new Dataflow(new UrlFetchTransport(), GsonFactory.getDefaultInstance(), null);
 
