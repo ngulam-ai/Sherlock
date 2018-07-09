@@ -2,6 +2,8 @@ package agency.akcom.mmg.sherlock.ui.server.task;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -142,14 +144,17 @@ public class AvazuImportTask extends AbstractTask {
 		// hitId ?
 		// time ?
 		// cid ?
-		jsonObject.put(TIME_KEY, new GregorianCalendar(TZ).getTime().getTime());
+		
+		// in order to put it in proper day of the costdata_* tables
+		jsonObject.put(TIME_KEY,
+				LocalDate.parse(datum.getDay()).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli());
+		// new GregorianCalendar(TZ).getTime().getTime());
 
 		jsonObject.put(DSP_KEY, "Avazu MDSP");
 		jsonObject.put(MODEL_KEY, campaignsBidTypes.get(datum.getCampaign_id()));
 		jsonObject.put(SOURCE_KEY, datum.getSite_id());
 		jsonObject.put(MEDIUM_KEY, "Display"); // TODO other possible options?
 		jsonObject.put(CONTENT_KEY, datum.getCreative_id());
-		log.warn(CONTENT_KEY + " " + datum.getCreative_id());
 		/// jsonObject.put(TERM_KEY, null); // not used in these campaigns
 		jsonObject.put(CAMPAIGN_NAME_KEY, datum.getCampaign_name());
 		jsonObject.put(CAMPAIGN_ID_KEY, datum.getCampaign_id());
