@@ -20,9 +20,24 @@ import lombok.extern.slf4j.Slf4j;
 public class SessionCostsUpdateTask extends AbstractTask {
 
 	private static final int NUMBER_OF_DAYS_TO_PROCESS_BACK = 11;
-
+	
 	@Override 
 	public void run() {
+		// set "dateString" parameter by yesterday date
+		// TODO return back to LocalDate.now().minusDays(1); after tests 
+		LocalDate dayToProcess = LocalDate.parse("2018-07-05"); //LocalDate.now().minusDays(1);
+		for (int count = 0; count < NUMBER_OF_DAYS_TO_PROCESS_BACK; count++) {
+
+			String dateString = dayToProcess.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+			
+			SessionCostsOneDayUpdateTask task = new SessionCostsOneDayUpdateTask(dateString);
+			task.enqueue();
+
+			dayToProcess = dayToProcess.minusDays(1); // move one day back
+		}
+	}
+
+	public void runAllAtOnce() {
 		// Instantiate a client. If you don't specify credentials when constructing a
 		// client, the
 		// client library will look for credentials in the environment, such as the
