@@ -58,8 +58,7 @@ public class AvazuUtils {
 		Auth auth = avazuClient.getAuth(authRequest);
 
 		// set number of records per page very big to avoid to use paging
-		CampaignsRequest campaignsRequest = new CampaignsRequest(auth.getAccess_token(), "get", 1, Integer.MAX_VALUE,
-				0);
+		CampaignsRequest campaignsRequest = new CampaignsRequest(auth.getAccess_token(), "get", 1, Integer.MAX_VALUE);
 		Campaigns campaigns = avazuClient.getCampaigns(campaignsRequest);
 		log.info(campaigns.toString());
 

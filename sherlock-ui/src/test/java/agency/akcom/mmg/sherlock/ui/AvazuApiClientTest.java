@@ -72,8 +72,7 @@ public class AvazuApiClientTest {
 		assertNotNull(auth);
 		log.info(auth.toString());
 
-		CampaignsRequest campaignsRequest = new CampaignsRequest(auth.getAccess_token(), "get", 1, Integer.MAX_VALUE,
-				0);
+		CampaignsRequest campaignsRequest = new CampaignsRequest(auth.getAccess_token(), "get", 1, Integer.MAX_VALUE);
 		log.info(campaignsRequest.toString());
 
 		Campaigns campaigns = avazuClient.getCampaigns(campaignsRequest);

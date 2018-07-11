@@ -18,7 +18,7 @@ public class SessionCostsUpdateTask extends AbstractTask {
 
 	static final String QUERY_TEMPLATE = " UPDATE `sherlock-184721.MMG_Streaming.sessions_copy_%1$s` AS s"
 			+ " SET trafficSource.adCost = adCostTotal, trafficSource.attributedAdCost = attributedAdCostTotal"
-			+ " FROM `sherlock-184721.MMG_Streaming.daily_sessions_copy_with_cost_increments` AS c"
+			+ " FROM `sherlock-184721.MMG_Streaming.daily_sessions_with_cost_increments` AS c"
 	        + " WHERE ((s.sessionId is NULL and c.sessionId is NULL) OR (s.sessionId = c.sessionId)) AND ((s.clientId is NULL and c.clientId is NULL) OR (s.clientId = c.clientId))"
 			+ "       AND c.tableDate = '%1$s'";
 	private static final int NUMBER_OF_DAYS_TO_PROCESS_BACK = 200;
