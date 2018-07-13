@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SessionCostsUpdateTask extends AbstractTask {
 
-	static final String QUERY_TEMPLATE = " UPDATE `sherlock-184721.MMG_Streaming.sessions_copy_%1$s` AS s"
+	static final String QUERY_TEMPLATE = " UPDATE `sherlock-184721.MMG_Streaming.sessions_%1$s` AS s"
 			+ " SET trafficSource.adCost = adCostTotal, trafficSource.attributedAdCost = attributedAdCostTotal"
 			+ " FROM `sherlock-184721.MMG_Streaming.daily_sessions_with_cost_increments` AS c"
 	        + " WHERE ((s.sessionId is NULL and c.sessionId is NULL) OR (s.sessionId = c.sessionId)) AND ((s.clientId is NULL and c.clientId is NULL) OR (s.clientId = c.clientId))"
@@ -27,8 +27,7 @@ public class SessionCostsUpdateTask extends AbstractTask {
 	@Override 
 	public void run() {
 		// set "dateString" parameter by yesterday date
-		// TODO return back to LocalDate.now().minusDays(1); after tests 
-		LocalDate dateToProcess = LocalDate.parse("2018-07-05"); // LocalDate.now().minusDays(1);
+		LocalDate dateToProcess = LocalDate.now().minusDays(1);
 		for (int count = 0; count < NUMBER_OF_DAYS_TO_PROCESS_BACK
 				&& dateToProcess.isAfter(EARLIEST_POSSIBLE_START_DATE.minusDays(1)); count++) {
 
