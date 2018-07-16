@@ -17,7 +17,7 @@ public class CampaignsRequest {
 				// field only for campaign and creative dimension reports)
 	
 	private int pagecount; // Maximum items of each page
-	private int status; // Campaign status
+	//private int status; // Campaign status
 	//Value -- Status
 	//1 -- Active
 	//0 -- Inactive

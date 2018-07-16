@@ -7,7 +7,11 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
@@ -29,9 +33,9 @@ public class CostsDataflowTemplateRunTask extends AbstractTask {
 
 	private static final String PROJECT = "sherlock-184721";
 	private static final String BUCKET = "gs://sherlock-dataflow-template";
-	private static final String MY_TEMPLATE_PATH = "/templates/MyTemplate";
+	private static final String MY_TEMPLATE_PATH = "/templates/costIncrementsTemplate";
 	private static final String MY_TEMPLATE_FULL_PATH = BUCKET + MY_TEMPLATE_PATH;
-	private static final String JOB_NAME_PREFIX = "my-template-gae-run-";
+	private static final String JOB_NAME_PREFIX = "cost-increments-";
 	private static final ArrayList<String> scopes = new ArrayList<String>();
 	{
 		scopes.add("https://www.googleapis.com/auth/cloud-platform");
@@ -39,14 +43,21 @@ public class CostsDataflowTemplateRunTask extends AbstractTask {
 
 	@Override
 	public void run() {
+		Map<String, String> parameters = new HashMap();
+		
+		// set "dateString" parameter by yesterday date
+		String dateString = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		parameters.put("dateString", dateString);
 
 		Dataflow dataflow = new Dataflow(new UrlFetchTransport(), GsonFactory.getDefaultInstance(), null);
 
 		CreateJobFromTemplateRequest content = new CreateJobFromTemplateRequest();
-		content.setJobName(JOB_NAME_PREFIX + UUID.randomUUID().toString());
+		content.setJobName(JOB_NAME_PREFIX + dateString + "-" + UUID.randomUUID().toString());
 		content.setGcsPath(MY_TEMPLATE_FULL_PATH);
+		content.setParameters(parameters);
 
 		try {
+			// TODO determine actual project automatically 
 			Job job = dataflow.projects().templates().create(PROJECT, content).setAccessToken(getAccessToken())
 					.execute();
 			log.info(job.toPrettyString());
