@@ -179,22 +179,22 @@ public class CollectServlet extends HttpServlet {
 
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
-
-		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
-
-		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
-			@Override
-			public void onSuccess(String messageId) {
-				System.out.println("published with message id: " + messageId);
-			}
-
-			@Override
-			public void onFailure(Throwable t) {
-				System.out.println("failed to publish: " + t);
-			}
-		});
+//		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
+//
+//		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+//		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
+//
+//		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
+//			@Override
+//			public void onSuccess(String messageId) {
+//				System.out.println("published with message id: " + messageId);
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable t) {
+//				System.out.println("failed to publish: " + t);
+//			}
+//		});
 
 	}
 
