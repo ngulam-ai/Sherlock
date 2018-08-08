@@ -62,15 +62,19 @@ public class AudUser extends DatastoreObject {
 	@Index
 	private String msisdn;
 
+	@JsonField(name = "ios_ifa")
 	@Index
 	private String ios;
 
+	@JsonField(name = "google_aid")
 	@Index
 	private String android;
 
+	@JsonField(name = "platform_aid")
 	@Index
 	private String amazonfire;
 
+	@JsonField(name = "windows_aid")
 	@Index
 	private String windowsphone;
 
@@ -208,15 +212,6 @@ public class AudUser extends DatastoreObject {
 		setEngagementType(reqJson);
 		crm = new CRM(reqJson);
 
-		System.out.println("Fields: uid" + uid.toString() + " ga_clientid:" + ga_clientid.toString());
-		try {
-			uid = reqJson.getString("uid");
-			// TODO add all other uids
-			// ...
-		} catch (JSONException e) {
-			log.warn(e.getMessage());
-		}
-
 		// avoid empty or null values
 		// TODO consider the sense
 		if (uid == null || uid.isEmpty()) {
@@ -291,6 +286,7 @@ public class AudUser extends DatastoreObject {
 		@JsonField(name = "cd33")
 		String country;
 
+		@JsonField(name = "cd57")
 		String carrier;
 
 		@JsonField(name = "cd69")
@@ -307,6 +303,7 @@ public class AudUser extends DatastoreObject {
 	}
 
 	private class Demography {
+		@JsonField(name = "cd43")
 		String gender;
 		String age;
 		String language;
