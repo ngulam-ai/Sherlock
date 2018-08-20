@@ -2,15 +2,13 @@ package agency.akcom.mmg.sherlock.collect.domain;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
+
+import javax.inject.Inject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.inject.internal.Annotations;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Index;
 
@@ -32,63 +30,115 @@ public class AudUser extends DatastoreObject {
 	@Index
 	private String ga_clientid;
 
+	@JsonField(name = "cd107")
 	@Index
 	private String mparticleuserid;
 
+	@JsonField(name = "cd108")
 	@Index
 	private String customerid;
 
+	@JsonField(name = "cd109")
 	@Index
 	private String facebookid;
 
+	@JsonField(name = "cd110")
 	@Index
 	private String twitterid;
 
+	@JsonField(name = "cd111")
 	@Index
 	private String googleuserid;
 
+	@JsonField(name = "cd112")
 	@Index
 	private String microsoftuserid;
 
+	@JsonField(name = "cd113")
 	@Index
 	private String yahoouserid;
 
+	@JsonField(name = "cd114")
 	@Index
 	private String email;
 
+	@JsonField(name = "cd115")
 	@Index
 	private String otheruserid;
 
+	@JsonField(name = "cd116")
 	@Index
 	private String msisdn;
 
-	@JsonField(name = "ios_ifa")
+	@JsonField(name = "cd74")
 	@Index
-	private String ios;
-
-	@JsonField(name = "google_aid")
+	private String iOSifaRaw;
+	
+	@JsonField(name = "cd68")
 	@Index
-	private String android;
+	private String androidAidRaw;
 
-	@JsonField(name = "platform_aid")
+	@JsonField(name = "cd102")
 	@Index
-	private String amazonfire;
-
-	@JsonField(name = "windows_aid")
+	private String iOSifaSHA1;
+	
+	@JsonField(name = "cd103")
 	@Index
-	private String windowsphone;
-
+	private String androidAidSHA1;
+	
+	@JsonField(name = "cd117")
 	@Index
-	private String openudid;
-
+	private String amazonfireAID;
+	
+	@JsonField(name = "cd118")
 	@Index
-	private String androidid;
+	private String windowsphoneAID;
+	
+	//TODO review this fields =====
+//	@JsonField(name = "ios_ifa")
+//	@Index
+//	private String iOSifaTune;
+//
+//	@JsonField(name = "google_aid")
+//	@Index
+//	private String android;
+//
+//	@JsonField(name = "platform_aid")
+//	@Index
+//	private String amazonfire;
+//
+//	@JsonField(name = "windows_aid")
+//	@Index
+//	private String windowsphone;
+	//=============================
 
+	@JsonField(name = "cd8")
 	@Index
-	private String deviceid;
+	private String openUDIDSHA1;
 
+	@JsonField(name = "cd40")
+	@Index
+	private String openUdidMD5;
+	
+	@JsonField(name = "cd119")
+	@Index
+	private String androidID;
+
+	@JsonField(name = "cd7")
+	@Index
+	private String deviceIdSHA1;
+	
+	@JsonField(name = "cd38")
+	@Index
+	private String deviceIdMD5;
+
+	@JsonField(name = "cd120")
 	@Index
 	private String macaddress;
+	
+	@JsonField(name = "cd42")
+	@Index
+	private String exchangeUID;
 	// ==========
 
 	@Index
@@ -231,7 +281,7 @@ public class AudUser extends DatastoreObject {
 	}
 
 	//Set fields in class with "JsonField" annotation
-	private void setFieldsWithAnnotation(Object clazz, JSONObject reqJson) {
+	private static void setFieldsWithAnnotation(Object clazz, JSONObject reqJson) {
 		Field[] fieldsArr = clazz.getClass().getDeclaredFields();
 		for (int i = 0; i < fieldsArr.length; i++) {
 			boolean annotation = checkExistenceAnnotation(fieldsArr[i]);
@@ -254,7 +304,7 @@ public class AudUser extends DatastoreObject {
 	}
 
 	// Checking that JsonField annotation is exist in field
-	private boolean checkExistenceAnnotation(Field f) {
+	private static boolean checkExistenceAnnotation(Field f) {
 		Annotation[] annotations = f.getDeclaredAnnotations();
 		for (int i = 0; i < annotations.length; i++) {
 			if (annotations[i] instanceof JsonField) {
@@ -264,7 +314,7 @@ public class AudUser extends DatastoreObject {
 		return false;
 	}
 	
-	private String getJsonValue(String[] jsonFieldName, JSONObject reqJson) {
+	private static String getJsonValue(String[] jsonFieldName, JSONObject reqJson) {
 		String value = null;
 		for (int i = 0; i < jsonFieldName.length; i++) {
 			try {
@@ -279,8 +329,9 @@ public class AudUser extends DatastoreObject {
 		return value;
 	}
 
-	private class Geography {
+	public static class Geography {
 
+		@JsonField(name = "cd121")
 		String continent;
 
 		@JsonField(name = "cd33")
@@ -292,33 +343,51 @@ public class AudUser extends DatastoreObject {
 		@JsonField(name = "cd69")
 		String region;
 
+		@JsonField(name = "cd122")
 		String state;
 
 		@JsonField(name = "cd30")
 		String city;
 
-		Geography(JSONObject reqJson) {
+		@Inject
+		public Geography(JSONObject reqJson) {
 			setFieldsWithAnnotation(this, reqJson);
 		}
 	}
 
-	private class Demography {
+	private static class Demography {
+		
 		@JsonField(name = "cd43")
 		String gender;
+		
+		@JsonField(name = "cd84")
 		String age;
+		
+		@JsonField(name = "cd51")
 		String language;
+		
+		@JsonField(name = "cd85")
 		String education_majority_ZIP;
+		
+		@JsonField(name = "cd86")
 		String ethnicity_majority_ZIP;
+		
+		@JsonField(name = "cd87")
 		String income_average_ZIP;
+		
+		@JsonField(name = "cd88")
 		String unemployment_average_ZIP;
+		
+		@JsonField(name = "cd89")
 		String crimes_average_ZIP;
 
+		@Inject
 		Demography(JSONObject reqJson) {
 			setFieldsWithAnnotation(this, reqJson);
 		}
 	}
 
-	private class Behavior {
+	private static class Behavior {
 
 		// is describe new user or returning user.
 		// new user - true, returning user - false
@@ -329,20 +398,22 @@ public class AudUser extends DatastoreObject {
 		// Number of iterations before purchase
 		long iterations;
 
+		@Inject
 		Behavior(JSONObject reqJson) {
 			// TODO set fields
 		}
 	}
 
-	private class Category {
+	private static class Category {
 		String category;
 
+		@Inject
 		Category(JSONObject reqJson) {
 			// TODO set field
 		}
 	}
 
-	private class Device {
+	private static class Device {
 		// TODO review this, I set field from device.* from hits data
 		@JsonField(name = "ua")
 		String os;
@@ -357,15 +428,18 @@ public class AudUser extends DatastoreObject {
 		@JsonField(name = "__dm")
 		String model;
 
+		@Inject
 		Device(JSONObject reqJson) {
 			setFieldsWithAnnotation(this, reqJson);
 		}
 	}
 
-	private class CRM {
+	private static class CRM {
+		@JsonField(name = "cd123")
 		String ispostpaid;
 		String subscribedto;
 
+		@Inject
 		CRM(JSONObject reqJson) {
 			setFieldsWithAnnotation(this, reqJson);
 		}
@@ -387,19 +461,23 @@ public class AudUser extends DatastoreObject {
 		// o Purchase Intent - add (добавление в корзину), checkout (оформление покупки)
 		// o Purchase -purchase (покупка)
 		// o Install - ?
-		switch (action) {
-		case "detail":
-			engagementType = "Impression";
-		case "click":
-			engagementType = "Click";
-		case "add":
-			engagementType = "Purchase Intent";
-		case "checkout":
-			engagementType = "Purchase Intent";
-		case "purchase":
-			engagementType = "Purchaset";
-		default:
+		if(action == null) {
 			engagementType = null;
+		} else {
+			switch (action) {
+			case "detail":
+				engagementType = "Impression";
+			case "click":
+				engagementType = "Click";
+			case "add":
+				engagementType = "Purchase Intent";
+			case "checkout":
+				engagementType = "Purchase Intent";
+			case "purchase":
+				engagementType = "Purchaset";
+			default:
+				engagementType = null;
+			}
 		}
 	}
 
