@@ -26,70 +26,87 @@ public class AudUser extends DatastoreObject {
 	@Index
 	private String uid;
 
+	@IDField
 	@JsonField(name = "cd11")
 	@Index
 	private String ga_clientid;
 
+	@IDField
 	@JsonField(name = "cd107")
 	@Index
 	private String mparticleuserid;
 
+	@IDField
 	@JsonField(name = "cd108")
 	@Index
 	private String customerid;
 
+	@IDField
 	@JsonField(name = "cd109")
 	@Index
 	private String facebookid;
 
+	@IDField
 	@JsonField(name = "cd110")
 	@Index
 	private String twitterid;
 
+	@IDField
 	@JsonField(name = "cd111")
 	@Index
 	private String googleuserid;
 
+	@IDField
 	@JsonField(name = "cd112")
 	@Index
 	private String microsoftuserid;
 
+	@IDField
 	@JsonField(name = "cd113")
 	@Index
 	private String yahoouserid;
 
+	@IDField
 	@JsonField(name = "cd114")
 	@Index
 	private String email;
 
+	@IDField
 	@JsonField(name = "cd115")
 	@Index
 	private String otheruserid;
 
+	@IDField
 	@JsonField(name = "cd116")
 	@Index
 	private String msisdn;
 
+	@IDField
 	@JsonField(name = "cd74")
 	@Index
 	private String iOSifaRaw;
 	
+	@IDField
 	@JsonField(name = "cd68")
 	@Index
 	private String androidAidRaw;
 
+	@IDField
 	@JsonField(name = "cd102")
 	@Index
 	private String iOSifaSHA1;
 	
+	@IDField
 	@JsonField(name = "cd103")
 	@Index
 	private String androidAidSHA1;
 	
+	@IDField
 	@JsonField(name = "cd117")
 	@Index
 	private String amazonfireAID;
 	
+	@IDField
 	@JsonField(name = "cd118")
 	@Index
 	private String windowsphoneAID;
@@ -112,30 +129,37 @@ public class AudUser extends DatastoreObject {
 //	private String windowsphone;
 	//=============================
 
+	@IDField
 	@JsonField(name = "cd8")
 	@Index
 	private String openUDIDSHA1;
 
+	@IDField
 	@JsonField(name = "cd40")
 	@Index
 	private String openUdidMD5;
 	
+	@IDField
 	@JsonField(name = "cd119")
 	@Index
 	private String androidID;
 
+	@IDField
 	@JsonField(name = "cd7")
 	@Index
 	private String deviceIdSHA1;
 	
+	@IDField
 	@JsonField(name = "cd38")
 	@Index
 	private String deviceIdMD5;
 
+	@IDField
 	@JsonField(name = "cd120")
 	@Index
 	private String macaddress;
 	
+	@IDField
 	@JsonField(name = "cd42")
 	@Index
 	private String exchangeUID;
@@ -303,7 +327,7 @@ public class AudUser extends DatastoreObject {
 		}
 	}
 
-	// Checking that JsonField annotation is exist in field
+	// Checking JsonField annotation is exist in field
 	private static boolean checkExistenceAnnotation(Field f) {
 		Annotation[] annotations = f.getDeclaredAnnotations();
 		for (int i = 0; i < annotations.length; i++) {
