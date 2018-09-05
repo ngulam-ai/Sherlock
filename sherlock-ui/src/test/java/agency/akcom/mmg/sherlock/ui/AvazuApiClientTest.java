@@ -1,10 +1,10 @@
 package agency.akcom.mmg.sherlock.ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -48,7 +48,7 @@ public class AvazuApiClientTest {
 		assertNotNull(auth);
 		log.info(auth.toString());
 
-		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "creative", "2018-05-30", "2018-05-30",
+		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "creative", "2018-08-29", "2018-08-29",
 				"site", 1);
 		log.info(reportRequest.toString());
 
@@ -60,6 +60,33 @@ public class AvazuApiClientTest {
 		// log.info("{}", datum);
 		// }
 
+	}
+
+	@Test
+	public void testFullReportSumms() throws Exception {
+		log.info("--------------------------");
+
+		long impressions = 0;
+		long clicks = 0;
+		long conversions = 0;
+		double spend = 0f;
+
+		for (ReportDatum datum : AvazuUtils.getFullReportDatum("creative", "2018-08-27", "2018-08-27", null)) {
+			//log.info("{}", datum);
+			impressions += datum.getImpressions();
+			clicks += datum.getClicks();
+			conversions += datum.getConversions();
+			spend += datum.getSpend();
+		}
+		log.info("impressions: " + impressions);
+		log.info("clicks: " + clicks);
+		log.info("conversions: " + conversions);
+		log.info("spend: " + spend);
+
+		assertEquals(56436, impressions);
+		assertEquals(19768, clicks);
+		assertEquals(0, conversions);
+		assertEquals(24.33f, spend, 0.01f);
 	}
 
 	@Test
@@ -91,15 +118,15 @@ public class AvazuApiClientTest {
 		List<CampaignDatum> datums = AvazuUtils.getFullCampaignsDatum();
 		assertNotNull(datums);
 
-		//for (CampaignDatum datum : datums) {
-		//	log.info("{}", datum);
-		//}
+		// for (CampaignDatum datum : datums) {
+		// log.info("{}", datum);
+		// }
 		log.info("Number of campains " + datums.size());
 
 		Map<String, String> campaignsWithBidTypes = AvazuUtils.getCampaignsWithBidTypes();
-		//for (Entry<String, String> entry : campaignsWithBidTypes.entrySet()) {
-		//	log.info("{}", entry);			
-		//}
+		// for (Entry<String, String> entry : campaignsWithBidTypes.entrySet()) {
+		// log.info("{}", entry);
+		// }
 	}
 
 	@Test
