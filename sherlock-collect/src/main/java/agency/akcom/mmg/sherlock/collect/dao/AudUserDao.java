@@ -23,7 +23,7 @@ public class AudUserDao extends BaseDao<AudUser> {
 		// TODO implement match by all possible UIds one by one
 		Set<AudUser> userSet = new HashSet();
 
-		// 1: get all available IDs
+		// 1: get all IDs
 		List<String> nameIDsFields = getListFieldNameID(tmpUser);
 
 		// 2: Use this for finding in datastore
@@ -54,7 +54,7 @@ public class AudUserDao extends BaseDao<AudUser> {
 		return nameIDsFields;
 	}
 
-	public static Object getFieldValue(AudUser audUser, String nameField) {
+	public static Object getFieldValue(Object audUser, String nameField) {
 		Object value = null;
 		Field field = null;
 		try {

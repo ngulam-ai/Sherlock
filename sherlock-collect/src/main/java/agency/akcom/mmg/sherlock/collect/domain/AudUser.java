@@ -1,7 +1,9 @@
 package agency.akcom.mmg.sherlock.collect.domain;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -18,10 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 @Entity
 @Data
 @Slf4j
-public class AudUser extends DatastoreObject {
+public class AudUser extends DatastoreObject implements Serializable {
 //	http://localhost:8080/collect?uid=1&cd11=2&cd30=testCity&cd69=testRegion&cd33=testCountry&ua=testOS&__bv=testosVersion&__dc=testDeviceType&__ul=testLang&pa=add
 
 	// =====ID=====
+	@IDField
 	@JsonField(name = "uid")
 	@Index
 	private String uid;
@@ -167,6 +170,10 @@ public class AudUser extends DatastoreObject {
 
 	@Index
 	private Long frequency;
+	
+	private String engagementType;
+	
+	private Date latestHitTime;
 
 	private Geography geography;
 
@@ -178,9 +185,9 @@ public class AudUser extends DatastoreObject {
 
 	private Device device;
 
-	String engagementType;
-	
 	private CRM crm;
+	
+	
 
 	// -• Uid
 	// -• GA_ClientID
@@ -285,11 +292,12 @@ public class AudUser extends DatastoreObject {
 		device = new Device(reqJson);
 		setEngagementType(reqJson);
 		crm = new CRM(reqJson);
+		latestHitTime = setlatestHitTime(reqJson);
 
 		// avoid empty or null values
 		// TODO consider the sense
 		if (uid == null || uid.isEmpty()) {
-			uid = "emty_original_uid_" + UUID.randomUUID().toString();
+			uid = "empty_original_uid_" + UUID.randomUUID().toString();
 		}
 
 		increaseFrequency();
@@ -353,7 +361,7 @@ public class AudUser extends DatastoreObject {
 		return value;
 	}
 
-	public static class Geography {
+	public static class Geography implements Serializable  {
 
 		@JsonField(name = "cd121")
 		String continent;
@@ -379,7 +387,7 @@ public class AudUser extends DatastoreObject {
 		}
 	}
 
-	private static class Demography {
+	private static class Demography implements Serializable {
 		
 		@JsonField(name = "cd43")
 		String gender;
@@ -411,16 +419,16 @@ public class AudUser extends DatastoreObject {
 		}
 	}
 
-	private static class Behavior {
+	private static class Behavior implements Serializable  {
 
 		// is describe new user or returning user.
 		// new user - true, returning user - false
-		boolean entrance;
+		Boolean entrance;
 		// Number of transactions (0, 1, 2, etc)
-		long transactions;
-		long totalAmountSpent;
+		Long transactions;
+		Long totalAmountSpent;
 		// Number of iterations before purchase
-		long iterations;
+		Long iterations;
 
 		@Inject
 		Behavior(JSONObject reqJson) {
@@ -428,8 +436,8 @@ public class AudUser extends DatastoreObject {
 		}
 	}
 
-	private static class Category {
-		String category;
+	private static class Category implements Serializable {
+		String appOnDevice;
 
 		@Inject
 		Category(JSONObject reqJson) {
@@ -437,7 +445,7 @@ public class AudUser extends DatastoreObject {
 		}
 	}
 
-	private static class Device {
+	private static class Device implements Serializable {
 		// TODO review this, I set field from device.* from hits data
 		@JsonField(name = "ua")
 		String os;
@@ -458,7 +466,7 @@ public class AudUser extends DatastoreObject {
 		}
 	}
 
-	private static class CRM {
+	private static class CRM implements Serializable {
 		@JsonField(name = "cd123")
 		String ispostpaid;
 		String subscribedto;
@@ -503,6 +511,12 @@ public class AudUser extends DatastoreObject {
 				engagementType = null;
 			}
 		}
+	}
+	
+	private Date setlatestHitTime(JSONObject reqJson) {
+		Date date = new Date();
+		date.setTime(reqJson.getLong("time"));
+		return date;
 	}
 
 }

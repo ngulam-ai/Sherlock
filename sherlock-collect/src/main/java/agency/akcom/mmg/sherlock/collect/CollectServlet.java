@@ -165,7 +165,13 @@ public class CollectServlet extends HttpServlet {
 		format.applyPattern("yyyy");
 		tryToPutOnce(reqJson, "cd96", "" + format.format(calendar.getTime()));
 		
-		AudienceService.processUIds(reqJson);
+		try {
+			AudienceService.processUIds(reqJson);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("WARN!");
+			System.out.println(e.getMessage());
+		}
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
