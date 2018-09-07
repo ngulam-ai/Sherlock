@@ -117,7 +117,8 @@ public class MergeAudUserFieldsWithDifferentFieldsTest {
 		AUDUSER_1_MERGE.setFrequency(2L);
 		Assert.assertEquals(true, CompareFieldAudUsers.compareFields(AUDUSER_1_MERGE, entityList.get(0)));
 		List<Entity> backupList = getEntityList("BackupAudUser");
-		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_BACKUP_1, backupList.get(0), 0));
+		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_BACKUP_1, backupList.get(0).getProperty("backupAudUser")));
+		Assert.assertEquals("compare replacedAudUser in backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_1_MERGE, backupList.get(0).getProperty("replacedAudUser")));
 
 		// field is different. AudUser is defined by cd
 		AudienceService.processUIds(USER_1_V3);
@@ -126,9 +127,11 @@ public class MergeAudUserFieldsWithDifferentFieldsTest {
 		AUDUSER_1_MERGE_V2.setFrequency(3L);
 		Assert.assertEquals(true, CompareFieldAudUsers.compareFields(AUDUSER_1_MERGE_V2, entityList.get(0)));
 		backupList = getEntityList("BackupAudUser");
-		Assert.assertEquals("count backup", 1, backupList.size());
-		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_1_V1, backupList.get(0), 0));
-		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_BACKUP_1_V2, backupList.get(0), 1));
+		Assert.assertEquals("count backup", 2, backupList.size());
+		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_BACKUP_1, backupList.get(0).getProperty("backupAudUser")));
+		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_1_MERGE, backupList.get(0).getProperty("replacedAudUser")));
+		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_BACKUP_1_V2, backupList.get(1).getProperty("backupAudUser")));
+		Assert.assertEquals("compare backup", true,	CompareFieldAudUsers.compareBackUpFields(AUDUSER_1_MERGE_V2, backupList.get(1).getProperty("replacedAudUser")));
 
 	}
 

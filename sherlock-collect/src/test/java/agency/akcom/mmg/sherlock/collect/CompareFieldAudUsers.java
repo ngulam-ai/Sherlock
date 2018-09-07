@@ -1,6 +1,5 @@
 package agency.akcom.mmg.sherlock.collect;
 
-import java.util.List;
 import java.util.Map;
 
 import com.google.appengine.api.datastore.EmbeddedEntity;
@@ -14,9 +13,9 @@ public class CompareFieldAudUsers {
 		return compare(user1, user2.getProperties(), AudienceService.AUDUSER_FIELD_NAMES);
 	}
 	
-	public static boolean compareBackUpFields(AudUser user1, Entity user2, int numberEntity) {
-		List<EmbeddedEntity> backupAudUserList = (List<EmbeddedEntity>) user2.getProperty("backupAudUserList");
-		return compare(user1, backupAudUserList.get(numberEntity).getProperties(), AudienceService.AUDUSER_FIELD_NAMES) ;
+	public static boolean compareBackUpFields(AudUser user1, Object object) {
+		EmbeddedEntity ent = (EmbeddedEntity) object;
+		return compare(user1, ent.getProperties(), AudienceService.AUDUSER_FIELD_NAMES) ;
 	}
 	
 	public static boolean compare(Object trueFields, Map<String, Object> entityFieldsMap, Map<String, Map> fieldsMap) {

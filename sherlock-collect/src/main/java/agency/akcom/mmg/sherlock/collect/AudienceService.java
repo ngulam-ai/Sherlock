@@ -69,7 +69,7 @@ public class AudienceService {
 					// To save if field has different value
 					// Or to delete previously version AudUser after merge
 					if (mustSaveAudUser) {
-						buckupDao.saveBackup(backupUser);
+						buckupDao.saveBackup(backupUser, tmpUser);
 					}
 
 					mustSaveAudUser = false;
