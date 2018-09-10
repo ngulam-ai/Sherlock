@@ -33,6 +33,8 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
@@ -44,6 +46,8 @@ import com.google.pubsub.v1.TopicName;
 
 //@WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
 public class CollectServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CollectServlet.class);
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 
@@ -169,8 +173,8 @@ public class CollectServlet extends HttpServlet {
 			AudienceService.processUIds(reqJson);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("WARN!");
-			System.out.println(e.getMessage());
+			LOG.warn("AudienceService error");
+			LOG.warn(e.getMessage());
 		}
 
 		System.out.println("---request JSON---");
@@ -185,22 +189,22 @@ public class CollectServlet extends HttpServlet {
 
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-//		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
-//
-//		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-//		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
-//
-//		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
-//			@Override
-//			public void onSuccess(String messageId) {
-//				System.out.println("published with message id: " + messageId);
-//			}
-//
-//			@Override
-//			public void onFailure(Throwable t) {
-//				System.out.println("failed to publish: " + t);
-//			}
-//		});
+		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
+
+		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
+
+		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
+			@Override
+			public void onSuccess(String messageId) {
+				System.out.println("published with message id: " + messageId);
+			}
+
+			@Override
+			public void onFailure(Throwable t) {
+				System.out.println("failed to publish: " + t);
+			}
+		});
 
 	}
 
