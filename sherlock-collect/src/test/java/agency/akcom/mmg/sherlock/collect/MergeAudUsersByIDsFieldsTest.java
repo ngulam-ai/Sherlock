@@ -22,7 +22,7 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.googlecode.objectify.ObjectifyService;
 
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
-//@Ignore
+@Ignore
 public class MergeAudUsersByIDsFieldsTest {
 	
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());

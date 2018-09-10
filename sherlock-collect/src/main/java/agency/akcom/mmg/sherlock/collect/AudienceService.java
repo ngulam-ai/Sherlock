@@ -59,6 +59,9 @@ public class AudienceService {
 				} else {
 					// Merged and updated field fresh data
 					if (tmpUser.getLatestHitTime().after(comparedUser.getLatestHitTime())) {
+						if (tmpUser.getId() != null) {
+							dao.delete(tmpUser);
+						}
 						mustSaveAudUser = mergeAudUsersFields(tmpUser, comparedUser, AUDUSER_FIELD_NAMES);
 						tmpUser = comparedUser;
 					} else {
@@ -128,18 +131,19 @@ public class AudienceService {
 				continue;
 			}
 
+			boolean differentField = false;
 			if (fieldsMap.get(fieldName) == null) {
 				if (fromFieldsValue != null) {
 					if (toFieldsValue != null) {
-						saveBackUpAudUser = !fromFieldsValue.toString().equalsIgnoreCase(toFieldsValue.toString());
+						differentField = !fromFieldsValue.toString().equalsIgnoreCase(toFieldsValue.toString());
 					}
 					setFieldValue(toFields, fromFieldsValue, fieldName);
 				}
 			} else {
-				boolean differentField = mergeAudUsersFields(fromFieldsValue, toFieldsValue, fieldsMap.get(fieldName));
-				if (differentField) {
-					saveBackUpAudUser = true;
-				}
+				differentField = mergeAudUsersFields(fromFieldsValue, toFieldsValue, fieldsMap.get(fieldName));
+			}
+			if (differentField) {
+				saveBackUpAudUser = true;
 			}
 		}
 		return saveBackUpAudUser;

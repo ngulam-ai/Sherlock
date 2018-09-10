@@ -7,6 +7,7 @@ import com.google.inject.Injector;
 import com.googlecode.objectify.ObjectifyFactory;
 
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
+import agency.akcom.mmg.sherlock.collect.domain.BackupAudUser;
 
 /**
  * Our version of ObjectifyFactory which integrates with Guice. You could and
@@ -26,6 +27,7 @@ public class OfyFactory extends ObjectifyFactory {
 		long time = System.currentTimeMillis();
 
 		this.register(AudUser.class);
+		this.register(BackupAudUser.class);
 
 		long millis = System.currentTimeMillis() - time;
 		System.out.println("Registration took " + millis + " millis");
