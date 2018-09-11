@@ -58,7 +58,10 @@ public class AudienceService {
 					tmpUser = comparedUser;
 				} else {
 					// Merged and updated field fresh data
-					if (tmpUser.getLatestHitTime().after(comparedUser.getLatestHitTime())) {
+					Date tmpUserDate = getLatestTime(tmpUser);
+					Date comparedUserDate = getLatestTime(comparedUser);
+					
+					if (tmpUserDate.after(comparedUserDate)) {
 						if (tmpUser.getId() != null) {
 							dao.delete(tmpUser);
 						}
@@ -86,6 +89,14 @@ public class AudienceService {
 		// replace uid in any case before sending to BQ
 		reqJson.put("uid", tmpUser.getUid());
 
+	}
+
+	private static Date getLatestTime(AudUser audUser) {
+		Date d = audUser.getLatestHitTime();
+		if (d == null) {
+			d = audUser.getDoModified();
+		}
+		return d;
 	}
 
 	private static AudUser getCopy(AudUser comparedUser) throws Exception {

@@ -5,9 +5,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Enumeration;
@@ -169,12 +172,19 @@ public class CollectServlet extends HttpServlet {
 		format.applyPattern("yyyy");
 		tryToPutOnce(reqJson, "cd96", "" + format.format(calendar.getTime()));
 		
+		jsonValuesReplaceToNull(reqJson);
+		
 		try {
 			AudienceService.processUIds(reqJson);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			LOG.warn("AudienceService error");
 			LOG.warn(e.getMessage());
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			String sStackTrace = sw.toString(); // stack trace as a string
+			LOG.warn(sStackTrace);
 		}
 
 		System.out.println("---request JSON---");
@@ -183,6 +193,36 @@ public class CollectServlet extends HttpServlet {
 
 		return reqJson;
 
+	}
+
+	private void jsonValuesReplaceToNull(JSONObject elementJSON) {
+		List<String> keysToDelete = new ArrayList<>();
+
+		for (String key : elementJSON.keySet()) {
+
+			String value = "";
+
+			try {
+				value = elementJSON.getString(key);
+			} catch (JSONException e) {
+				continue;
+			}
+            if ((value.equalsIgnoreCase("n/a")) 
+            		|| (value.equalsIgnoreCase("unknown"))
+            		|| (value.equalsIgnoreCase("null"))
+                    || ((value.startsWith("${") || value.startsWith("{")) && value.endsWith("}"))
+                    || (value.startsWith("$$") && value.endsWith("$$"))
+                    || (value.startsWith("@") && value.endsWith("@")) 
+                    || (value.startsWith("$$CUSTOM_PARAM("))) {
+                LOG.debug(String.format("Remove key='%s' value='%s'", key, value));
+                keysToDelete.add(key);
+                continue;
+            }
+		}
+
+		for (String key : keysToDelete) {
+			elementJSON.remove(key);
+		}
 	}
 
 	private void postToPubSub(JSONObject jsonObj) throws Exception {

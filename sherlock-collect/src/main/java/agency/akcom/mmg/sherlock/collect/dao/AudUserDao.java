@@ -62,7 +62,10 @@ public class AudUserDao extends BaseDao<AudUser> {
 		} catch (NoSuchFieldException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			return value;
 		}
+
 		field.setAccessible(true);
 		try {
 			value = field.get(audUser);
