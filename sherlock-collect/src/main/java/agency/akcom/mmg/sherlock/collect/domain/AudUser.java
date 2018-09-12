@@ -292,7 +292,7 @@ public class AudUser extends DatastoreObject implements Serializable {
 		device = new Device(reqJson);
 		setEngagementType(reqJson);
 		crm = new CRM(reqJson);
-		latestHitTime = setlatestHitTime(reqJson);
+		latestHitTime = getHitTime(reqJson);
 
 		// avoid empty or null values
 		// TODO consider the sense
@@ -513,7 +513,7 @@ public class AudUser extends DatastoreObject implements Serializable {
 		}
 	}
 	
-	private Date setlatestHitTime(JSONObject reqJson) {
+	private Date getHitTime(JSONObject reqJson) {
 		Date date = new Date();
 		date.setTime(reqJson.getLong("time"));
 		return date;

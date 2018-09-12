@@ -60,7 +60,7 @@ public class AudienceService {
 					// Merged and updated field fresh data
 					Date tmpUserDate = getLatestTime(tmpUser);
 					Date comparedUserDate = getLatestTime(comparedUser);
-					
+					log.info("Mergering AudUsers with uid : " + uid);
 					if (tmpUserDate.after(comparedUserDate)) {
 						if (tmpUser.getId() != null) {
 							dao.delete(tmpUser);
@@ -133,8 +133,21 @@ public class AudienceService {
 		boolean saveBackUpAudUser = false;
 		for (String fieldName : fieldsMap.keySet()) {
 
-			Object fromFieldsValue = AudUserDao.getFieldValue(fromFields, fieldName);
-			Object toFieldsValue = AudUserDao.getFieldValue(toFields, fieldName);
+			Object fromFieldsValue = null;
+			Object toFieldsValue = null;
+
+			try {
+				fromFieldsValue = AudUserDao.getFieldValue(fromFields, fieldName);
+			} catch (NullPointerException e) {
+				continue;
+			}
+
+			try {
+				toFieldsValue = AudUserDao.getFieldValue(toFields, fieldName);
+			} catch (NullPointerException e) {
+				toFieldsValue = fromFieldsValue;
+				continue;
+			}
 
 			if (fieldName.equalsIgnoreCase("frequency")) {
 				toFieldsValue = (long) fromFieldsValue + (long) toFieldsValue;
