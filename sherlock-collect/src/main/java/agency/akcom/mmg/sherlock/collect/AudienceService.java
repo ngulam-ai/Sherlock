@@ -134,20 +134,13 @@ public class AudienceService {
 		for (String fieldName : fieldsMap.keySet()) {
 
 			Object fromFieldsValue = null;
-			Object toFieldsValue = null;
-
 			try {
 				fromFieldsValue = AudUserDao.getFieldValue(fromFields, fieldName);
 			} catch (NullPointerException e) {
 				continue;
 			}
 
-			try {
-				toFieldsValue = AudUserDao.getFieldValue(toFields, fieldName);
-			} catch (NullPointerException e) {
-				toFieldsValue = fromFieldsValue;
-				continue;
-			}
+			Object toFieldsValue = AudUserDao.getFieldValue(toFields, fieldName);
 
 			if (fieldName.equalsIgnoreCase("frequency")) {
 				toFieldsValue = (long) fromFieldsValue + (long) toFieldsValue;
@@ -164,7 +157,11 @@ public class AudienceService {
 					setFieldValue(toFields, fromFieldsValue, fieldName);
 				}
 			} else {
-				differentField = mergeAudUsersFields(fromFieldsValue, toFieldsValue, fieldsMap.get(fieldName));
+				try {
+					differentField = mergeAudUsersFields(fromFieldsValue, toFieldsValue, fieldsMap.get(fieldName));
+				} catch (NullPointerException e) {
+					setFieldValue(toFields, fromFieldsValue, fieldName);
+				}
 			}
 			if (differentField) {
 				saveBackUpAudUser = true;
