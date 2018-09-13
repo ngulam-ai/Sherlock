@@ -205,6 +205,7 @@ public class CollectServlet extends HttpServlet {
 			try {
 				value = elementJSON.getString(key);
 			} catch (JSONException e) {
+				LOG.warn(e.getMessage());
 				continue;
 			}
             if ((value.equalsIgnoreCase("n/a")) 
@@ -213,7 +214,8 @@ public class CollectServlet extends HttpServlet {
                     || ((value.startsWith("${") || value.startsWith("{")) && value.endsWith("}"))
                     || (value.startsWith("$$") && value.endsWith("$$"))
                     || (value.startsWith("@") && value.endsWith("@")) 
-                    || (value.startsWith("$$CUSTOM_PARAM("))) {
+                    || (value.startsWith("$$CUSTOM_PARAM("))
+                    || (value.isEmpty())) {
                 LOG.debug(String.format("Remove key='%s' value='%s'", key, value));
                 keysToDelete.add(key);
                 continue;
