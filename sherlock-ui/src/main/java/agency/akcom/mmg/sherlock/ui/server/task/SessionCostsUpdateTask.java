@@ -98,10 +98,11 @@ public class SessionCostsUpdateTask extends AbstractTask {
 	 * SUM(c.attributedAdCostIncrement) attributedAdCostTotal
 	 * 
 	 * FROM `sherlock-184721.MMG_Streaming.sessions_*` AS s JOIN
-	 * `sherlock-184721.MMG_Streaming.daily_cost_increments` AS c -- both NULL or
+	 * `sherlock-184721.MMG_Streaming.daily_cost_increments_*` AS c -- both NULL or
 	 * equels ON ((s.sessionId is NULL and c.sessionId is NULL) OR (s.sessionId =
 	 * c.sessionId)) AND ((s.clientId is NULL and c.clientId is NULL) OR (s.clientId
-	 * = c.clientId)) AND (s._TABLE_SUFFIX = c.tableDate)
+	 * = c.clientId)) AND (s._TABLE_SUFFIX = c.tableDate) AND (c._TABLE_SUFFIX =
+	 * FORMAT_DATE("%Y%m%d" , DATE_SUB( CURRENT_DATE("+00:00"), INTERVAL 1 DAY)))
 	 * 
 	 * GROUP BY c.tableDate, s.sessionId, s.clientId
 	 */
