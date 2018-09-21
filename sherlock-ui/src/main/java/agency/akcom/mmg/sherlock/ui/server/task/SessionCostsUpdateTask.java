@@ -28,18 +28,9 @@ public class SessionCostsUpdateTask extends AbstractTask {
 	public void run() {
 		// set "dateString" parameter by yesterday date
 		LocalDate dateToProcess = LocalDate.now().minusDays(1);
-		for (int count = 0; count < NUMBER_OF_DAYS_TO_PROCESS_BACK
-				&& dateToProcess.isAfter(EARLIEST_POSSIBLE_START_DATE.minusDays(1)); count++) {
-
-			String dateString = dateToProcess.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-			
-			// runAllWithinThisTask(dateString) ;
-			
-			SessionCostsOneDayUpdateTask task = new SessionCostsOneDayUpdateTask(dateString);
-			task.enqueue();
-
-			dateToProcess = dateToProcess.minusDays(1); // move one day back
-		}
+		String dateString = dateToProcess.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		SessionCostsOneDayUpdateTask task = new SessionCostsOneDayUpdateTask(dateString);
+		task.enqueue();
 	}
 
 	private void runAllWithinThisTask(String dateString) {
