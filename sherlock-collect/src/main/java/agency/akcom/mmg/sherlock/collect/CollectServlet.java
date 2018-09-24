@@ -220,6 +220,14 @@ public class CollectServlet extends HttpServlet {
                 keysToDelete.add(key);
                 continue;
             }
+            //we have row like "Spain;Galicia;Cee;unknown;unknown;Androi..." just do not delete all row
+            elementJSON.put(key, value.replaceAll("(?i)n/a", "null")  
+            		.replaceAll("(?i)unknown", "null")
+                    .replaceAll("\\$\\$.+?\\$\\$", "null") // $$xxx$$
+                    .replaceAll("\\$\\{.+?\\}", "null") // ${xxx}
+                    .replaceAll("\\{.+?\\}", "null") // {xxx}
+                    .replaceAll("@.+?@", "null") // @xxx@
+            );
 		}
 
 		for (String key : keysToDelete) {
