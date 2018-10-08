@@ -171,6 +171,9 @@ public class AudUser extends DatastoreObject implements Serializable {
 	@Index
 	private Long frequency;
 	
+	@Index
+	private Date doModified;
+	
 	private String engagementType;
 	
 	private Date latestHitTime;
@@ -297,7 +300,7 @@ public class AudUser extends DatastoreObject implements Serializable {
 		// avoid empty or null values
 		// TODO consider the sense
 		if (uid == null || uid.isEmpty()) {
-			uid = "empty_original_uid_" + UUID.randomUUID().toString();
+			uid = UUID.randomUUID().toString();
 		}
 
 		increaseFrequency();
