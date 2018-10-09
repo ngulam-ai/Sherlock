@@ -25,7 +25,6 @@ public class AudUser extends DatastoreObject implements Serializable {
 
 	// =====ID=====
 	@IDField
-	@JsonField(name = "uid")
 	@Index
 	private String uid;
 
@@ -287,6 +286,7 @@ public class AudUser extends DatastoreObject implements Serializable {
 	//
 
 	public AudUser(JSONObject reqJson) {
+		createUid(reqJson);
 		setFieldsWithAnnotation(this, reqJson);
 		geography = new Geography(reqJson);
 		demography = new Demography(reqJson);
@@ -296,12 +296,6 @@ public class AudUser extends DatastoreObject implements Serializable {
 		setEngagementType(reqJson);
 		crm = new CRM(reqJson);
 		latestHitTime = getHitTime(reqJson);
-
-		// avoid empty or null values
-		// TODO consider the sense
-		if (uid == null || uid.isEmpty()) {
-			uid = UUID.randomUUID().toString();
-		}
 
 		increaseFrequency();
 	}
@@ -313,6 +307,20 @@ public class AudUser extends DatastoreObject implements Serializable {
 
 	public AudUser() {
 
+	}
+	
+	public void createUid(JSONObject reqJson) {
+		String uid = getJsonValue(new String[] { "uid" }, reqJson);
+
+		if (uid == null || uid.isEmpty()) {
+			uid = UUID.randomUUID().toString();
+		} else {
+			try {
+				this.uid = UUID.fromString(uid).toString();
+			} catch (IllegalArgumentException e) {
+				this.uid = UUID.nameUUIDFromBytes(uid.getBytes()).toString(); // If uid is provided wrong, like "Africa;Saldanha;unknown;Android...etc"
+			}
+		}
 	}
 
 	//Set fields in class with "JsonField" annotation
