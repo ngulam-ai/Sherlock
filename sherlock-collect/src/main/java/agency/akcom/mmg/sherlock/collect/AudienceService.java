@@ -34,8 +34,9 @@ public class AudienceService {
 		boolean mustSaveAudUser = true;
 
 		if (users.isEmpty()) {
-			log.info("No matched user records found - create new user record");
+			log.info("No matched user records found - create new user record. uid: " + tmpUser.getUid());
 			// Just store new record
+			tmpUser.setDoModified(new Date());
 			tmpUser = dao.saveAndReturn(tmpUser);
 
 		} else {
@@ -53,6 +54,7 @@ public class AudienceService {
 
 				if (conflictID) {
 					if (mustSaveAudUser) {
+						tmpUser.setDoModified(new Date());
 						dao.save(tmpUser);
 					}
 					tmpUser = comparedUser;
@@ -80,7 +82,7 @@ public class AudienceService {
 
 					mustSaveAudUser = false;
 				}
-
+				tmpUser.setDoModified(new Date());
 				dao.save(tmpUser);
 
 			}
@@ -197,7 +199,8 @@ public class AudienceService {
 
 			String fieldName = f.getName();
 			if (fieldName.equalsIgnoreCase("log") || fieldName.equalsIgnoreCase("uid")
-					|| fieldName.equalsIgnoreCase("latestHitTime") || fieldName.equalsIgnoreCase("uid_adserver")) {
+					|| fieldName.equalsIgnoreCase("latestHitTime") || fieldName.equalsIgnoreCase("uid_adserver")
+					|| fieldName.equalsIgnoreCase("doModified")) {
 				continue;
 			}
 
