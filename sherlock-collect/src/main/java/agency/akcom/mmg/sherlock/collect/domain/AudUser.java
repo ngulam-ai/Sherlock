@@ -189,6 +189,8 @@ public class AudUser extends DatastoreObject implements Serializable {
 
 	private CRM crm;
 	
+	@JsonField(name = "uid")
+	private String uid_adserver;
 	
 
 	// -• Uid

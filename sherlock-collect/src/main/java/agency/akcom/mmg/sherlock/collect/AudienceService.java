@@ -196,7 +196,8 @@ public class AudienceService {
 		for (Field f : fields) {
 
 			String fieldName = f.getName();
-			if (fieldName.equalsIgnoreCase("log") || fieldName.equalsIgnoreCase("uid") || fieldName.equalsIgnoreCase("latestHitTime")) {
+			if (fieldName.equalsIgnoreCase("log") || fieldName.equalsIgnoreCase("uid")
+					|| fieldName.equalsIgnoreCase("latestHitTime") || fieldName.equalsIgnoreCase("uid_adserver")) {
 				continue;
 			}
 
