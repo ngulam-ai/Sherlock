@@ -39,7 +39,7 @@ public class SessionCostsOneDayUpdateTask extends AbstractTask {
 
 		try {
 			// Wait for the query to complete.
-			queryJob = queryJob.waitFor();
+			queryJob = queryJob.waitFor(); //TODO set more time for job. com.google.apphosting.runtime.HardDeadlineExceededError: This request (00000166a026fc2a) started at 2018/10/23 09:00:01.450 UTC and was still executing at 2018/10/23 09:10:01.859 UTC.
 
 			// Check for errors
 			if (queryJob == null) {
