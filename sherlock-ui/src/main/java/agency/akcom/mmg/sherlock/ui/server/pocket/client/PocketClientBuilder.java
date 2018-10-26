@@ -25,9 +25,9 @@ public class PocketClientBuilder {
 	
 	PocketClient pocketClient = createClient(PocketClient.class, "https://api.pocketmath.com");
 	@Getter
-	private static Map<String, Collection<String>> headers;
+	private Map<String, Collection<String>> headers;
 	@Getter
-	private static int status;
+	private int status;
 
 	static Gson gson = new GsonBuilder().setLenient().create();
 			

@@ -3,6 +3,11 @@ cron:
   url: /cron?task=avazu_daily_import
   schedule: every day 07:00
   target: ui
+  
+- description: "daily import PocketMath data"
+  url: /cron?task=pocketmath_daily_import
+  schedule: every day 07:00
+  target: ui
 
 - description: "daily cost increments calculation"
   url: /cron?task=costs_daily_df_pipeline

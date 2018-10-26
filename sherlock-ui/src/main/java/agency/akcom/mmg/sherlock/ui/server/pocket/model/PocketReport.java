@@ -1,6 +1,5 @@
 package agency.akcom.mmg.sherlock.ui.server.pocket.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -10,58 +9,13 @@ import lombok.ToString;
 
 @Data
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 public class PocketReport {
 
-	private ArrayList<ReportDatum> data;
-
 	@Data
 	@ToString
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public class ReportDatum {
-
-		String id;
-		String name;
-		String total_budget;
-		String start_at;
-		String end_at;
-		String created_at;
-		String updated_at;
-
-	}
-
-	public class ReportCompaigns {
-		String id;
-		String name;
-		String total_budget;
-		String start_at;
-		String end_at;
-		String created_at;
-		String updated_at;
-		String terminated_at;
-		String created_by;
-		String clicks;
-		String conversions;
-		String cpm;
-		String status;
-		String impressions;
-		String spend;
-
-		List<Orders> orders;
-
-		public class Orders {
-			String id;
-			String pocketmath_id;
-		}
-	}
-
-	@Data
-	@ToString
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public class ReportOrders {
+	public class ReportOrderInfo {
 		String name;
 		String total_budget;
 		String daily_budget;
@@ -103,7 +57,7 @@ public class PocketReport {
 	@ToString
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public class ReportOrdersStats {
+	public class ReportOrderStats {
 		List<Order> orders;
 
 		@Data
