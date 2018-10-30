@@ -16,6 +16,7 @@ public class PocketReport {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public class ReportOrderInfo {
+		Creative creative;
 		String name;
 		String total_budget;
 		String daily_budget;
@@ -51,6 +52,14 @@ public class PocketReport {
 		String spend;
 		String id;
 		String pocketmath_id;
+		
+		@Data
+		@ToString
+		@NoArgsConstructor
+		@AllArgsConstructor
+		public class Creative {
+			String name;
+		}
 	}
 
 	@Data
@@ -74,5 +83,16 @@ public class PocketReport {
 			String clicks;
 			String conversions;
 		}
+	}
+	
+	//v3/publisher_lists
+	//[{"id":55034,"name":"320x480 - Aligned to CPC","status":"archived"},{"id":57872,"name":"AU - EXPLOIT - GAMES - Bundle_ID","status":"archived"}]
+	@Data
+	@ToString
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public class ReportPublisher {
+		String name;
+		String id;
 	}
 }

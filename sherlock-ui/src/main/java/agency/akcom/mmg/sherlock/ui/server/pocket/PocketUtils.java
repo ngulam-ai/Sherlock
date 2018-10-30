@@ -10,6 +10,7 @@ import agency.akcom.mmg.sherlock.ui.server.pocket.client.PocketClientBuilder;
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportOrderInfo;
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportOrderStats;
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportOrderStats.Order;
+import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportPublisher;
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.ReportDatum;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,14 +35,22 @@ public class PocketUtils {
 		reportList = new ArrayList<>(stats.getOrders().size());
 
 		for (Order order : stats.getOrders()) {
-			ReportOrderInfo reportOrders = getReportOrders(order.getId());// TODO check to null;
+			ReportOrderInfo reportOrders = getReportOrders(order.getId());
+//			ReportPublisher reportPublisher = getReportPublisher(order.getId());
 			ReportDatum report = new ReportDatum();
 			report.setOrder(order);
+			
 			if (reportOrders != null) {
 				report.setInfoOrder(reportOrders);
 			} else {
-				log.error("Report for orderId:" + order.getId() + " failed!");
+				log.error("Report info for orderId:" + order.getId() + " failed!");
 			}
+
+//			if (reportPublisher != null) {
+//				report.setReportPublisher(reportPublisher);
+//			} else {
+//				log.error("Report publisher for orderId:" + order.getId() + " failed!");
+//			}
 			reportList.add(report);
 		}
 		return reportList; 
@@ -58,6 +67,22 @@ public class PocketUtils {
 			} else {
 				backoff(i);
 				report = pocketClient.orderDetails(id);
+			}
+		}
+		return null;
+	}
+	
+	public static ReportPublisher getReportPublisher(String id) {
+		ReportPublisher report = pocketClient.reportPublisher(id);
+		
+		int maxAttempts = 8; //last attempt (8) has max backoff 1.06 min
+		
+		for (int i = 0; i < maxAttempts; i++) {
+			if (POCKET_CLIENT_BUILDER.getStatus() == 200) {
+				return report;
+			} else {
+				backoff(i);
+				report = pocketClient.reportPublisher(id);
 			}
 		}
 		return null;

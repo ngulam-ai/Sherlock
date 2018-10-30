@@ -50,7 +50,7 @@ public class PocketMathImportTask extends AbstractTask {
 	private static final String SOURCE_KEY = "cs"; 			//Publisher name (example: Spotify App)
 	private static final String MEDIUM_KEY = "cm"; 			//Display
 	private static final String CONTENT_KEY = "cc";			//"name" in order stats ??Why adContent == campaign name??
-	private static final String TERM_KEY = "ck"; 			//
+	private static final String TERM_KEY = "ck"; 			//does not apply to pocketmath because they do not use keywords
 	private static final String CAMPAIGN_NAME_KEY = "cn"; 	//"name" in order info by OrderId
 	private static final String CAMPAIGN_ID_KEY = "ci";   	//"campaign_id" in order stats
 
@@ -81,6 +81,7 @@ public class PocketMathImportTask extends AbstractTask {
 			List<ReportDatum> report = PocketUtils.getReport(startDate, endDate);
 
 			for (ReportDatum rep : report) {
+				System.out.println(rep.toString());
 				postToPubSub(publisher, rep, yesterday);
 			}
 
@@ -146,9 +147,9 @@ public class PocketMathImportTask extends AbstractTask {
 
 		jsonObject.put(DSP_KEY, "Pocketmath");
 		jsonObject.put(MODEL_KEY, "cpm");
-		jsonObject.put(SOURCE_KEY, "");
+//		jsonObject.put(SOURCE_KEY, datum.getReportPublisher().getName());
 		jsonObject.put(MEDIUM_KEY, "Display");
-		jsonObject.put(CONTENT_KEY, datum.getInfoOrder().getName());
+		jsonObject.put(CONTENT_KEY, datum.getInfoOrder().getCreative().getName());
 		
 		jsonObject.put(CAMPAIGN_NAME_KEY, datum.getInfoOrder().getName());
 		jsonObject.put(CAMPAIGN_ID_KEY, datum.getInfoOrder().getCampaign_id());
