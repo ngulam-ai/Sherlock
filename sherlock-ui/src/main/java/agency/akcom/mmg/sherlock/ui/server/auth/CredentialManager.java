@@ -49,7 +49,7 @@ public class CredentialManager {
 	 * Path component under war/ to locate client_secrets.json file.
 	 */
 	public static final String CLIENT_SECRETS_FILE_PRODUCTION_PATH = "WEB-INF/resources/client_secrets.json";
-	public static final String CLIENT_SECRETS_FILE_DEVELOPMENT_PATH = "C:\\Users\\User\\workspaces_oxygen\\WS-MMG\\Sherlock\\sherlock-ui\\src\\main\\webapp\\WEB-INF\\resources\\client_secrets_dev.json";
+	public static final String CLIENT_SECRETS_FILE_DEVELOPMENT_PATH = "C:\\Users\\JavaDev\\Sherlock\\sherlock-ui\\src\\main\\webapp\\WEB-INF\\resources\\client_secrets_dev.json";
 
 	/**
 	 * Scopes for which to request access from the user.
