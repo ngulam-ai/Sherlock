@@ -1,0 +1,6 @@
+indexes:
+
+- kind: BackupAudUser
+  properties:
+  - name: replacedAudUser.geography.city
+  - name: replacedAudUser.doModified
