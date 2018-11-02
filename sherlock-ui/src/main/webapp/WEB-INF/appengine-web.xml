@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app
+	xmlns="http://appengine.google.com/ns/1.0">
+	
+	<version>version-ignored-at-deploy-time-and-only-as-a-temporary-workaround</version>
+	
+	<service>ui</service>
+
+	<threadsafe>true</threadsafe>
+
+	<sessions-enabled>true</sessions-enabled>
+	
+	<runtime>java8</runtime>
+
+	<instance-class>F1</instance-class>
+
+	<automatic-scaling>
+		<!-- min-idle-instances>2</min-idle-instances> <max-pending-latency>1s</max-pending-latency> 
+			<min-pending-latency>1s</min-pending-latency -->
+	</automatic-scaling>
+	
+	<resource-files>
+        <include path="/resources/*" />
+	</resource-files>
+
+</appengine-web-app>
