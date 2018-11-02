@@ -27,8 +27,10 @@ public class PocketUtils {
 	
 	static PocketClientBuilder POCKET_CLIENT_BUILDER = new PocketClientBuilder();
 	static PocketClient pocketClient = POCKET_CLIENT_BUILDER.getPocketClient();
+	private static String token;
 
-	public static List<ReportDatum> getReport(String startDate, String endDate) {
+	public static List<ReportDatum> getReport(String token_, String startDate, String endDate) {
+		token = token_;
 		//First report with 1 page
 		ReportOrderStats stats = getReportOrders(startDate, endDate, 1);// TODO check to null (Maybe throw Exception, to restart task);
 		
@@ -55,9 +57,9 @@ public class PocketUtils {
 		}
 		return reportList; 
 	}
-
+	
 	public static ReportOrderInfo getReportOrders(String id) {
-		ReportOrderInfo report = pocketClient.orderDetails(id);
+		ReportOrderInfo report = pocketClient.orderDetails(token, id);
 		
 		int maxAttempts = 8; //last attempt (8) has max backoff 1.06 min
 
@@ -66,14 +68,14 @@ public class PocketUtils {
 				return report;
 			} else {
 				backoff(i);
-				report = pocketClient.orderDetails(id);
+				report = pocketClient.orderDetails(token, id);
 			}
 		}
 		return null;
 	}
 	
 	public static ReportPublisher getReportPublisher(String id) {
-		ReportPublisher report = pocketClient.reportPublisher(id);
+		ReportPublisher report = pocketClient.reportPublisher(token, id);
 		
 		int maxAttempts = 8; //last attempt (8) has max backoff 1.06 min
 		
@@ -82,14 +84,14 @@ public class PocketUtils {
 				return report;
 			} else {
 				backoff(i);
-				report = pocketClient.reportPublisher(id);
+				report = pocketClient.reportPublisher(token, id);
 			}
 		}
 		return null;
 	}
 
 	public static ReportOrderStats getReportOrders(String startDate, String endDate, int page) {
-		ReportOrderStats stats = pocketClient.reportOrdersStats(startDate, endDate, page);
+		ReportOrderStats stats = pocketClient.reportOrdersStats(token, startDate, endDate, page);
 		
 		int maxAttempts = 8; //last attempt (8) has max backoff 1.06 min
 
@@ -109,7 +111,7 @@ public class PocketUtils {
 				return stats;
 			} else {
 				backoff(i);
-				stats = pocketClient.reportOrdersStats(startDate, endDate, page);
+				stats = pocketClient.reportOrdersStats(token, startDate, endDate, page);
 			}
 		}
 		log.error("PocketMath: Exceeded max attempts for getting Orders stats");

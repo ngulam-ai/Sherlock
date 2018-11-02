@@ -12,7 +12,8 @@ public class PocketMathClientTest {
 	public static void main(String... args) {
 		
 		//Set date:
-		String date = "20170326";
+		String date = "20181102";
+		String token = "f569c162f3c4c9142d8813355928b272aec227b4801cfe0273b7e6120a4886ac";
 		
 		String startDate = PocketMathImportTask.getFromDate(date);
 		String endDate = PocketMathImportTask.getToDate(date);
@@ -20,7 +21,7 @@ public class PocketMathClientTest {
 		System.out.println(endDate);
 		
 		long time = System.nanoTime();
-		List<ReportDatum> report = PocketUtils.getReport(startDate, endDate);
+		List<ReportDatum> report = PocketUtils.getReport(token, startDate, endDate);
 		for(ReportDatum rep : report) {
 			log.info(PocketMathImportTask.prepareMessage(rep, PocketMathImportTask.getYesterday(startDate)));
 		}
