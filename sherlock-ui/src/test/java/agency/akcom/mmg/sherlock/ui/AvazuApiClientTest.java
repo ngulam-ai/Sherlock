@@ -62,7 +62,7 @@ public class AvazuApiClientTest {
 
 	}
 
-	@Test
+/*	@Test
 	public void testFullReportSumms() throws Exception {
 		log.info("--------------------------");
 
@@ -140,6 +140,6 @@ public class AvazuApiClientTest {
 		// log.info("{}", datum);
 		// }
 
-	}
+	}*/
 
 }
