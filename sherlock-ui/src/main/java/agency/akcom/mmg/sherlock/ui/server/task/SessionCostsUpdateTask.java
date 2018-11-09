@@ -16,14 +16,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SessionCostsUpdateTask extends AbstractTask {
 
-	static final String QUERY_TEMPLATE = " UPDATE `sherlock-184721.MMG_Streaming.sessions_%1$s` AS s"
-			+ " SET trafficSource.adCost = adCostTotal, trafficSource.attributedAdCost = attributedAdCostTotal"
-			+ " FROM `sherlock-184721.MMG_Streaming.daily_sessions_with_cost_increments` AS c"
-	        + " WHERE ((s.sessionId is NULL and c.sessionId is NULL) OR (s.sessionId = c.sessionId)) AND ((s.clientId is NULL and c.clientId is NULL) OR (s.clientId = c.clientId))"
-			+ "       AND c.tableDate = '%1$s'";
-	private static final int NUMBER_OF_DAYS_TO_PROCESS_BACK = 200;
-	private static final LocalDate EARLIEST_POSSIBLE_START_DATE = LocalDate.parse("2018-06-04");
-	
+	static final String QUERY_TEMPLATE = "UPDATE `sherlock-184721.MMG_Streaming.sessions_%1$s` AS s "
+			+ "SET trafficSource.adCost = IFNULL(trafficSource.adCost, 0) + c.adCostIncrement, "
+			+ "trafficSource.attributedAdCost = IFNULL(trafficSource.attributedAdCost, 0) + c.attributedAdCostIncrement "
+			+ "FROM ("
+			+ "  SELECT sum(adCostIncrement) AS adCostIncrement, sum(attributedAdCostIncrement) AS attributedAdCostIncrement, sessionId, clientId "
+			+ "  FROM `sherlock-184721.MMG_Streaming.daily_cost_increments_%1$s`" 
+			+ "  GROUP BY sessionId, clientId "
+			+ ") AS c "
+			+ "WHERE ((s.sessionId is NULL and c.sessionId is NULL) OR (s.sessionId = c.sessionId)) AND ((s.clientId is NULL and c.clientId is NULL) OR (s.clientId = c.clientId))";
+			
 	@Override 
 	public void run() {
 		// set "dateString" parameter by yesterday date
@@ -74,28 +76,5 @@ public class SessionCostsUpdateTask extends AbstractTask {
 	protected String getUniqueKey() {
 		return "";
 	}
-
-	/*
-	 * Definition for 'daily_sessions_with_cost_increments' - just attempt to
-	 * Versioning it
-	 * 
-	 * SELECT count(*) number, c.tableDate, s.sessionId, s.clientId,
-	 * SUM(IFNULL(s.trafficSource.adCost, 0)) adCost, SUM(c.adCostIncrement)
-	 * adCostIncrement, SUM(IFNULL(s.trafficSource.adCost, 0)) +
-	 * SUM(c.adCostIncrement) adCostTotal,
-	 * SUM(IFNULL(s.trafficSource.attributedAdCost, 0)) attributedAdCost,
-	 * SUM(c.attributedAdCostIncrement) attributedAdCostIncrement,
-	 * SUM(IFNULL(s.trafficSource.attributedAdCost, 0)) +
-	 * SUM(c.attributedAdCostIncrement) attributedAdCostTotal
-	 * 
-	 * FROM `sherlock-184721.MMG_Streaming.sessions_*` AS s JOIN
-	 * `sherlock-184721.MMG_Streaming.daily_cost_increments_*` AS c -- both NULL or
-	 * equels ON ((s.sessionId is NULL and c.sessionId is NULL) OR (s.sessionId =
-	 * c.sessionId)) AND ((s.clientId is NULL and c.clientId is NULL) OR (s.clientId
-	 * = c.clientId)) AND (s._TABLE_SUFFIX = c.tableDate) AND (c._TABLE_SUFFIX =
-	 * FORMAT_DATE("%Y%m%d" , DATE_SUB( CURRENT_DATE("+00:00"), INTERVAL 1 DAY)))
-	 * 
-	 * GROUP BY c.tableDate, s.sessionId, s.clientId
-	 */
 
 }
