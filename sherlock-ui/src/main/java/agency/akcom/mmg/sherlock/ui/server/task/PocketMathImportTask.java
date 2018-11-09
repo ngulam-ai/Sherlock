@@ -1,7 +1,6 @@
 package agency.akcom.mmg.sherlock.ui.server.task;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -12,7 +11,6 @@ import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.json.JSONObject;
 
@@ -27,6 +25,7 @@ import com.google.pubsub.v1.TopicName;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
 import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions;
 import agency.akcom.mmg.sherlock.ui.server.pocket.PocketUtils;
+import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportPublisher;
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.ReportDatum;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
 import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
@@ -52,14 +51,17 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 			String endDate = getToDate();
 			String yesterday = getYesterday(startDate);
 
-			List<ReportDatum> report = new ArrayList<>();
+			List<ReportDatum> reportDatum = new ArrayList<>();
 
+			//for multiply tokens
 			for (String token : tokens) {
-				report.addAll(PocketUtils.getReport(token, startDate, endDate));
+				reportDatum.addAll(PocketUtils.getReport(token, startDate, endDate));
 			}
 
-			for (ReportDatum rep : report) {
-				postToPubSub(publisher, rep, yesterday);
+			for (ReportDatum rep : reportDatum) {
+				for(ReportPublisher report : rep.getReportPublisher()) {
+					postToPubSub(publisher, report, yesterday);
+				}
 			}
 
 			// When finished with the publisher, shutdown to free up resources.
@@ -93,10 +95,10 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 	}
 
 	// TODO same the logic with Avazu
-	private static void postToPubSub(Publisher publisher, ReportDatum datum, String date) {
+	private static void postToPubSub(Publisher publisher, ReportPublisher report, String date) {
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-		ByteString data = ByteString.copyFromUtf8(prepareMessage(datum, date));
+		ByteString data = ByteString.copyFromUtf8(prepareMessage(report, date));
 
 		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
@@ -114,7 +116,7 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 		});
 	}
 
-	public static String prepareMessage(ReportDatum datum, String date) {
+	public static String prepareMessage(ReportPublisher report, String date) {
 		JSONObject jsonObject = new JSONObject();
 
 		// in order to put it in proper day of the costdata_* tables
@@ -122,21 +124,21 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 		jsonObject.put(Keys.getTIME_KEY(),
 				LocalDate.parse(date).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli());
 
-		jsonObject.put(Keys.getDSP_KEY(), "Pocketmath");										//Pocketmath
-		jsonObject.put(Keys.getMODEL_KEY(), "cpm");												//cpm
-//		jsonObject.put(SOURCE_KEY, datum.getReportPublisher().getName());						//Publisher name (example: Spotify App)
-		jsonObject.put(Keys.getMEDIUM_KEY(), "Display");										//Display
-		jsonObject.put(Keys.getCONTENT_KEY(), datum.getInfoOrder().getCreative().getName());	//Creative.name
-		
-		jsonObject.put(Keys.getCAMPAIGN_NAME_KEY(), datum.getInfoOrder().getName());			//"name" in order info by OrderId
-		jsonObject.put(Keys.getCAMPAIGN_ID_KEY(), datum.getInfoOrder().getCampaign_id());		//"campaign_id" in order stats
+		jsonObject.put(Keys.getDSP_KEY(), "Pocketmath");			//Pocketmath
+		jsonObject.put(Keys.getMODEL_KEY(), "cpm");					//cpm
+		jsonObject.put(Keys.getSOURCE_KEY(), report.getName());		//Publisher name
+		jsonObject.put(Keys.getMEDIUM_KEY(), "Display");			//Display
+		jsonObject.put(Keys.getCONTENT_KEY(), report.getReportDatum().getInfoOrder().getCreative().getName()); // Creative.name
+
+		jsonObject.put(Keys.getCAMPAIGN_NAME_KEY(), report.getReportDatum().getInfoOrder().getName());			//"name" in order info by OrderId
+		jsonObject.put(Keys.getCAMPAIGN_ID_KEY(), report.getReportDatum().getInfoOrder().getCampaign_id());		//"campaign_id" in order stats
 
 		jsonObject.put(Keys.getDATE_KEY(), date.replaceAll("-", ""));
 
-		jsonObject.put(Keys.getIMPRESSIONS_KEY(), datum.getOrder().getImpressions());			//"impressions"
-		jsonObject.put(Keys.getCLICKS_KEY(), datum.getOrder().getClicks());						//"clicks"
-		jsonObject.put(Keys.getCONVERSION_KEY(), datum.getOrder().getConversions());			//"conversions"
-		jsonObject.put(Keys.getSPEND_KEY(), datum.getOrder().getSpend());						//"spend"
+		jsonObject.put(Keys.getIMPRESSIONS_KEY(), report.getImpressions());			//"impressions"
+		jsonObject.put(Keys.getCLICKS_KEY(), report.getClicks());					//"clicks"
+		jsonObject.put(Keys.getCONVERSION_KEY(), report.getConversions());			//"conversions"
+		jsonObject.put(Keys.getSPEND_KEY(), report.getSpend());						//"spend"
 
 		return jsonObject.toString();
 	}

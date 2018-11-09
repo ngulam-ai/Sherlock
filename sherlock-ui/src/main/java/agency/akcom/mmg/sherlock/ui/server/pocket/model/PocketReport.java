@@ -68,6 +68,7 @@ public class PocketReport {
 	@AllArgsConstructor
 	public class ReportOrderStats {
 		List<Order> orders;
+		ReportOrderInfo reportOrderInfo;
 
 		@Data
 		@ToString
@@ -84,15 +85,20 @@ public class PocketReport {
 			String conversions;
 		}
 	}
-	
-	//v3/publisher_lists
-	//[{"id":55034,"name":"320x480 - Aligned to CPC","status":"archived"},{"id":57872,"name":"AU - EXPLOIT - GAMES - Bundle_ID","status":"archived"}]
+
 	@Data
 	@ToString
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public class ReportPublisher {
+		ReportDatum reportDatum;
 		String name;
-		String id;
+		String exchange;
+		String spend;
+		String impressions;
+		String clicks;
+		String conversions;
+//			String win_rate;
+//			String bid_count;
 	}
 }
