@@ -2,7 +2,7 @@ package agency.akcom.mmg.sherlock.ui.client.application.settings;
 
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
-import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -21,13 +21,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 	interface Binder extends UiBinder<Widget, SettingsView> {
 	}
 
-
-	/*@UiField
-	NavPills dspNav;*/
-
-	/*@UiField
-	InputGroupButton inputGroup;*/
-
 	@UiField
 	Button buttonSave;
 
@@ -36,18 +29,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 
 	@UiField
 	TextBox textSecret;
-
-	/*@UiField
-	AnchorListItem anchorListItem;
-*/
-/*	@UiField
-	Text nameText1;
-
-	@UiField
-	Text nameText2;
-
-	@UiField
-	Text nameText3;*/
 
 	@UiHandler("textSecretId")
 	void onSecretIdKeyUp(KeyUpEvent event) {
@@ -79,8 +60,9 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 
 	@Override
 	public void displayConfig(DspDto dspDto) {
-		TypeConnectionDto typeConnectionDto = dspDto.getConfigConnectionDtos().get(0).getTypeConnectionDto();
-		if (typeConnectionDto== TypeConnectionDto.SECRET_ID) {
+		TypeConnection typeConnection = dspDto.getConfigConnectionDtos().get(0).getTypeConnection();
+		GWT.log(String.valueOf(typeConnection));
+		if (typeConnection == TypeConnection.SECRET_ID) {
 			AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) dspDto.getConfigConnectionDtos().get(0);
 			displayConfigWithSecret(avazuConnectionDto);
 		}

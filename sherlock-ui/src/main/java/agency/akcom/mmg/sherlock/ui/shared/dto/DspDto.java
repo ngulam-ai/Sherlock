@@ -7,9 +7,9 @@ import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 
 public class DspDto extends Dto {
 	
-	Partner partner;
-	String name;
-	ArrayList<ConfigConnectionDto> configConnectionDtos;
+	private Partner partner;
+	private String name;
+	private ArrayList<ConfigConnectionDto> configConnectionDtos;
 	
 	public void setAttributes(Partner partner,String name,ArrayList<ConfigConnectionDto> configConnectionDtos) {
 		this.partner = partner;

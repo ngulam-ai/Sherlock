@@ -1,0 +1,45 @@
+package agency.akcom.mmg.sherlock.ui.server.dispatch.common;
+
+import agency.akcom.mmg.sherlock.ui.domain.Dsp;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
+import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
+import agency.akcom.mmg.sherlock.ui.shared.action.GetDspAction;
+import agency.akcom.mmg.sherlock.ui.shared.action.GetDspResult;
+import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
+import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
+import com.gwtplatform.dispatch.rpc.server.ExecutionContext;
+import com.gwtplatform.dispatch.shared.ActionException;
+
+import java.util.ArrayList;
+
+public class GetDspHandler extends MyAbstractActionHandler<GetDspAction, GetDspResult> {
+    public GetDspHandler(){super(GetDspAction.class);}
+
+
+    @Override
+    public GetDspResult execute(GetDspAction action, ExecutionContext context) throws ActionException {
+        DspDao dspDao = new DspDao();
+        ArrayList<Dsp> dsps = new ArrayList<Dsp>(dspDao.listAll());
+        ArrayList<DspDto> dspDtos = new ArrayList<>();
+        DspDto dspDto = new DspDto();
+        for (Dsp dsp : dsps) {
+
+            ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<>();
+
+
+            for (ConfigConnection configConnection : dsp.getConfigConnections()) {
+                if (configConnection.getTypeConnection()== TypeConnection.SECRET_ID){
+                    AvazuConnection avazuConnection = (AvazuConnection) configConnection;
+                    AvazuConnectionDto avazuConnectionDto = new AvazuConnectionDto(avazuConnection.getTypeConnection(),avazuConnection.getClientId(),avazuConnection.getClientSecret(),avazuConnection.getGrantType());
+                    configConnectionDtos.add(avazuConnectionDto);
+            }
+
+            dspDto.setAttributes(dsp.getPartner(),dsp.getName(), );
+        }
+        return null;
+    }
+}

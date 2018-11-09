@@ -10,9 +10,16 @@ import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 public class Dsp extends DatastoreObject {
 	
 	private static final long serialVersionUID = 1L;
-	Partner partner;
-	String name;
-	ArrayList<ConfigConnection> configConnections; 
+	private Partner partner;
+	private String name;
+	private ArrayList<ConfigConnection> configConnections;
+
+	public Dsp() {}
+
+	public Dsp(Partner partner, String name) {
+		this.partner = partner;
+		this.name = name;
+	}
 
 	public ArrayList<ConfigConnection> getConfigConnections() {
 		return configConnections;
@@ -37,5 +44,4 @@ public class Dsp extends DatastoreObject {
 	public void setPartner(Partner partner) {
 		this.partner = partner;
 	}
-	
 }

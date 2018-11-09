@@ -1,6 +1,6 @@
 package agency.akcom.mmg.sherlock.ui.shared.dto;
 
-import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 
 public class AvazuConnectionDto extends ConfigConnectionDto {
 
@@ -14,7 +14,14 @@ public class AvazuConnectionDto extends ConfigConnectionDto {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		grantType = "client_credentials";
-		TypeConnectionDto typeConnectionDto = TypeConnectionDto.SECRET_ID;
+		TypeConnection typeConnection = TypeConnection.SECRET_ID;
+	}
+
+	public AvazuConnectionDto(TypeConnection typeConnection, String clientId, String clientSecret, String grantType) {
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
+		this.grantType = grantType;
+		this.typeConnection = typeConnection;
 	}
 
 	public AvazuConnectionDto() {

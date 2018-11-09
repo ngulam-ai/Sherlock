@@ -1,14 +1,15 @@
 package agency.akcom.mmg.sherlock.ui.client.application.settings;
 
 import agency.akcom.mmg.sherlock.ui.client.application.ApplicationPresenter;
+import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
-import agency.akcom.mmg.sherlock.ui.client.security.IsLoggedInGatekeeper;
+import agency.akcom.mmg.sherlock.ui.shared.action.AddDspAction;
+import agency.akcom.mmg.sherlock.ui.shared.action.AddDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
+import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.dispatch.rpc.shared.DispatchAsync;
 import com.gwtplatform.mvp.client.HasUiHandlers;
@@ -16,7 +17,6 @@ import com.gwtplatform.mvp.client.Presenter;
 import com.gwtplatform.mvp.client.View;
 import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyStandard;
-import com.gwtplatform.mvp.client.proxy.PlaceManager;
 import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
 import javax.inject.Inject;
@@ -71,6 +71,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
 		dspDtos = new ArrayList<>();
 		DspDto dspDto = new DspDto();
 		AvazuConnectionDto connection = new AvazuConnectionDto("Client_id","Client_secret");
+		connection.setTypeConnection(TypeConnection.SECRET_ID);
 		dspDto.setPartner(Partner.AVAZU);
 		dspDto.setName("Avazu");
 		ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
@@ -88,7 +89,12 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
 
 	@Override
 	public void onSaveClick(DspDto dspDto) {
-		Window.alert(dspDto.getName());
+		dispatcher.execute(new AddDspAction("ghgfhg", "hjdfhj"), new AsyncCallbackImpl<AddDspResult>() {
+			@Override
+			public void onSuccess(AddDspResult result) {
+				DspDto resultDspDto = result.getDspDto();
+			}
+		});
 	}
 
 }
