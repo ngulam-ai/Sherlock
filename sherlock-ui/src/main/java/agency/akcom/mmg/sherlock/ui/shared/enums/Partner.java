@@ -2,6 +2,10 @@ package agency.akcom.mmg.sherlock.ui.shared.enums;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-public enum Partner implements IsSerializable  {
-	AVAZU
+import java.io.Serializable;
+
+public enum Partner implements Serializable, IsSerializable  {
+	AVAZU;
+
+	Partner() {}
 }

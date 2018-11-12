@@ -23,39 +23,42 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 
 public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, SettingsPresenter.MyProxy>
-		implements SettingsUiHandlers {
+        implements SettingsUiHandlers {
 
-	private final DispatchAsync dispatcher;
-	private ArrayList<DspDto> dspDtos;
+    interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
+        void displayConfig(DspDto dspDto);
 
-	interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
-		void displayConfig(DspDto dspDto);
-		void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto);
-		//void displayLogs(List<ImportLog> importLogs);
-	}
+        void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto);
+        //void displayLogs(List<ImportLog> importLogs);
+    }
+
+    private final DispatchAsync dispatcher;
 
 
-	@ProxyStandard
-	@NameToken(NameTokens.SETTINGS)
-	interface MyProxy extends ProxyPlace<SettingsPresenter> {
-	}
+    private ArrayList<DspDto> dspDtos;
 
-	private void displayConfig(DspDto dsp) {
-	}
 
-	private void displayConfigWithSecret(AvazuConnectionDto avazuConnection) {
-	}
+    @ProxyStandard
+    @NameToken(NameTokens.SETTINGS)
+    interface MyProxy extends ProxyPlace<SettingsPresenter> {
+    }
 
-	@Inject
-	SettingsPresenter(final EventBus eventBus, final MyView view, final MyProxy proxy, final DispatchAsync dispatcher) {
-		super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
-		this.dispatcher = dispatcher;
-		getView().setUiHandlers(this);
-	}
+    private void displayConfig(DspDto dsp) {
+    }
 
-	@Override
-	protected void onReset() {
-		super.onReset();
+    private void displayConfigWithSecret(AvazuConnectionDto avazuConnection) {
+    }
+
+    @Inject
+    SettingsPresenter(final EventBus eventBus, final MyView view, final MyProxy proxy, final DispatchAsync dispatcher) {
+        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
+        this.dispatcher = dispatcher;
+//        getView().setUiHandlers(this);
+    }
+
+    @Override
+    protected void onReset() {
+        super.onReset();
 //		dispatcher.execute(new GetImportLogAction(), new AsyncCallbackImpl<GetImportLogResult>() {
 //			@Override
 //			public void onSuccess(GetImportLogResult result) {
@@ -63,38 +66,37 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
 //
 //			}
 //		});
-	}
+    }
 
-	@Override
-	protected void onBind() {
-		super.onBind();
-		dspDtos = new ArrayList<>();
-		DspDto dspDto = new DspDto();
-		AvazuConnectionDto connection = new AvazuConnectionDto("Client_id","Client_secret");
-		connection.setTypeConnection(TypeConnection.SECRET_ID);
-		dspDto.setPartner(Partner.AVAZU);
-		dspDto.setName("Avazu");
-		ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
-		configConnectionDtos.add(connection);
-		dspDto.setConfigConnectionDtos(configConnectionDtos);
-		dspDtos.add(dspDto);
-	}
+    @Override
+    protected void onBind() {
+        super.onBind();
+        dspDtos = new ArrayList<>();
+        DspDto dspDto = new DspDto();
+        AvazuConnectionDto connection = new AvazuConnectionDto("Client_id", "Client_secret");
+        connection.setTypeConnection(TypeConnection.SECRET_ID);
+        dspDto.setPartner(Partner.AVAZU);
+        dspDto.setName("Avazu");
+        ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
+        configConnectionDtos.add(connection);
+        dspDto.setConfigConnectionDtos(configConnectionDtos);
+        dspDtos.add(dspDto);
+    }
 
 
-	@Override
-	protected void onReveal() {
-		super.onReveal();
-		getView().displayConfig(dspDtos.get(0));
-	}
+    @Override
+    protected void onReveal() {
+        super.onReveal();
+        getView().displayConfig(dspDtos.get(0));
+    }
 
-	@Override
-	public void onSaveClick(DspDto dspDto) {
-		dispatcher.execute(new AddDspAction("ghgfhg", "hjdfhj"), new AsyncCallbackImpl<AddDspResult>() {
-			@Override
-			public void onSuccess(AddDspResult result) {
-				DspDto resultDspDto = result.getDspDto();
-			}
-		});
-	}
+    @Override
+    public void onSaveClick(DspDto dspDto) {
+       dispatcher.execute(new AddDspAction("Hui", "Pizda", "Djigurda"), new AsyncCallbackImpl<AddDspResult>() {
+           @Override
+           public void onSuccess(AddDspResult result) {
 
+           }
+       });
+    }
 }

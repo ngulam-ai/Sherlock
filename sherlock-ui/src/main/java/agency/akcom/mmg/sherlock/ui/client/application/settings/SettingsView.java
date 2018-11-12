@@ -12,14 +12,18 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtplatform.mvp.client.ViewWithUiHandlers;
-import org.gwtbootstrap3.client.ui.*;
-
+import org.gwtbootstrap3.client.ui.Button;
+import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.html.Text;
 
 import javax.inject.Inject;
 
 class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements SettingsPresenter.MyView {
 	interface Binder extends UiBinder<Widget, SettingsView> {
 	}
+
+	/*@UiField
+	Button buttonCreate;*/
 
 	@UiField
 	Button buttonSave;
@@ -29,6 +33,12 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 
 	@UiField
 	TextBox textSecret;
+
+	@UiField
+	TextBox textGrantType;
+
+	@UiField
+	Text nameText;
 
 	@UiHandler("textSecretId")
 	void onSecretIdKeyUp(KeyUpEvent event) {
@@ -44,18 +54,23 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 
 	@UiHandler("buttonSave")
 	void onButtonSecret(ClickEvent event)  {
-		DspDto dsp = new DspDto();  //tepory
+		DspDto dsp = new DspDto();  //tempory
 		dsp.setName("Avazu");
 		GWT.log(event.toDebugString());
 		getUiHandlers().onSaveClick(dsp);
 	}
 
+	/*@UiHandler("buttonCreate")
+	void onButtonCreate(ClickEvent event)  {
+		Window.alert("Create");
+	}*/
+
 
 	private void processSave() {
-		DspDto dsp = new DspDto();  //tepory
-		dsp.setName("Avazu");
+		DspDto dspDto = new DspDto();  //tempory
+		dspDto.setName("Avazu");
 		GWT.log("YEEEE1");
-		getUiHandlers().onSaveClick(dsp);
+		getUiHandlers().onSaveClick(dspDto);
 	}
 
 	@Override
@@ -64,6 +79,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 		GWT.log(String.valueOf(typeConnection));
 		if (typeConnection == TypeConnection.SECRET_ID) {
 			AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) dspDto.getConfigConnectionDtos().get(0);
+			nameText.setText(dspDto.getName());
 			displayConfigWithSecret(avazuConnectionDto);
 		}
 	}
@@ -71,11 +87,8 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 	public void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto) {
 		textSecretId.setText(avazuConnectionDto.getClientId());
 		textSecret.setText(avazuConnectionDto.getClientSecret());
-//		inputGroup.add(textSecretId);
-//		inputGroup.add(textSecret);
-//		inputGroup.add(buttonSave);
+		textGrantType.setText(avazuConnectionDto.getGrantType());
 		GWT.log(avazuConnectionDto.getClientId());
-//		anchorListItem.add(inputGroup);
 	}
 
 

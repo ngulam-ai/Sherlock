@@ -13,7 +13,7 @@ public class AvazuConnectionDto extends ConfigConnectionDto {
 
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
-		grantType = "client_credentials";
+		grantType = "client_credentials"; // default value: client_credentials;
 		TypeConnection typeConnection = TypeConnection.SECRET_ID;
 	}
 
@@ -25,6 +25,8 @@ public class AvazuConnectionDto extends ConfigConnectionDto {
 	}
 
 	public AvazuConnectionDto() {
+		grantType = "client_credentials"; // default value: client_credentials;
+		this.typeConnection = TypeConnection.SECRET_ID;
 	}
 
 	public String getClientSecret() {

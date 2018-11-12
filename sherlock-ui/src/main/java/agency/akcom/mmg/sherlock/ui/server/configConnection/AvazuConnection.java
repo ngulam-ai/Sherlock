@@ -1,5 +1,7 @@
 package agency.akcom.mmg.sherlock.ui.server.configConnection;
 
+import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
+
 public class AvazuConnection extends ConfigConnection{
 	private TypeConnection typeConnection;
 	private String clientId;
@@ -18,6 +20,18 @@ public class AvazuConnection extends ConfigConnection{
 		clientSecret=secret;
 		grantType = "client_credentials"; // default value: client_credentials;
 		typeConnection = TypeConnection.SECRET_ID;
+	}
+
+	public AvazuConnection(TypeConnection typeConnection) {
+		grantType = "client_credentials"; // default value: client_credentials;
+		this.typeConnection = TypeConnection.SECRET_ID;
+	}
+
+	public AvazuConnection(TypeConnection typeConnection, String clientId, String clientSecret, String grantType) {
+		this.typeConnection = typeConnection;
+		this.clientId = clientId;
+		this.clientSecret = clientSecret;
+		this.grantType = grantType;
 	}
 
 	public String getClientId() {

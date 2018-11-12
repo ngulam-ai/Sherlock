@@ -5,30 +5,28 @@ import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
 import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
-import agency.akcom.mmg.sherlock.ui.shared.action.GetDspAction;
-import agency.akcom.mmg.sherlock.ui.shared.action.GetDspResult;
+import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspAction;
+import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
-import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.gwtplatform.dispatch.rpc.server.ExecutionContext;
 import com.gwtplatform.dispatch.shared.ActionException;
 
 import java.util.ArrayList;
 
-
-public class GetDspHandler extends MyAbstractActionHandler<GetDspAction, GetDspResult> {
-    public GetDspHandler() {
-        super(GetDspAction.class);
+public class GetAllDspHandler extends MyAbstractActionHandler<GetAllDspAction, GetAllDspResult> {
+    public GetAllDspHandler() {
+        super(GetAllDspAction.class);
     }
 
     @Override
-    public GetDspResult execute(GetDspAction action, ExecutionContext context) throws ActionException {
-        if(action.getId() == null)
-            return new GetDspResult(null);
+    public GetAllDspResult execute(GetAllDspAction action, ExecutionContext context) throws ActionException {
         DspDao dspDao = new DspDao();
-        Dsp dsp = dspDao.get(action.getId());
+        ArrayList<Dsp> dsps = new ArrayList<Dsp>(dspDao.listAll());
+        ArrayList<DspDto> dspDtos = new ArrayList<>();
         DspDto dspDto = new DspDto();
+        for (Dsp dsp : dsps) {
             ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<>();
             for (ConfigConnection configConnection : dsp.getConfigConnections()) {
                 switch (configConnection.getTypeConnection()) {
@@ -38,7 +36,9 @@ public class GetDspHandler extends MyAbstractActionHandler<GetDspAction, GetDspR
                         configConnectionDtos.add(avazuConnectionDto);
                 }
             }
-            dspDto.setAttributes(dsp.getId(), dsp.getPartner(), dsp.getName(), configConnectionDtos);
-        return new GetDspResult(dspDto);
+            dspDto.setAttributes(dsp.getId(),dsp.getPartner(), dsp.getName(), configConnectionDtos);
+            dspDtos.add(dspDto);
+        }
+        return new GetAllDspResult(dspDtos);
     }
 }
