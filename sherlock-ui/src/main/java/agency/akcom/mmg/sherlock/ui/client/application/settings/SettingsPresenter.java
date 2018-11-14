@@ -3,13 +3,14 @@ package agency.akcom.mmg.sherlock.ui.client.application.settings;
 import agency.akcom.mmg.sherlock.ui.client.application.ApplicationPresenter;
 import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
-import agency.akcom.mmg.sherlock.ui.shared.action.AddDspAction;
-import agency.akcom.mmg.sherlock.ui.shared.action.AddDspResult;
+import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
+import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
+import com.google.gwt.core.client.GWT;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.dispatch.rpc.shared.DispatchAsync;
 import com.gwtplatform.mvp.client.HasUiHandlers;
@@ -33,8 +34,6 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     }
 
     private final DispatchAsync dispatcher;
-
-
     private ArrayList<DspDto> dspDtos;
 
 
@@ -53,7 +52,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     SettingsPresenter(final EventBus eventBus, final MyView view, final MyProxy proxy, final DispatchAsync dispatcher) {
         super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
         this.dispatcher = dispatcher;
-//        getView().setUiHandlers(this);
+        getView().setUiHandlers(this);
     }
 
     @Override
@@ -74,7 +73,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
         dspDtos = new ArrayList<>();
         DspDto dspDto = new DspDto();
         AvazuConnectionDto connection = new AvazuConnectionDto("Client_id", "Client_secret");
-        connection.setTypeConnection(TypeConnection.SECRET_ID);
+        dspDto.setTypeConnection(TypeConnection.SECRET_ID);
         dspDto.setPartner(Partner.AVAZU);
         dspDto.setName("Avazu");
         ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
@@ -92,11 +91,12 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
 
     @Override
     public void onSaveClick(DspDto dspDto) {
-       dispatcher.execute(new AddDspAction("Hui", "Pizda", "Djigurda"), new AsyncCallbackImpl<AddDspResult>() {
-           @Override
-           public void onSuccess(AddDspResult result) {
-
-           }
-       });
+        GWT.log("onSaveClick DSP:"+dspDto.getName());
+        dispatcher.execute(new ChangeDspAction(dspDto), new AsyncCallbackImpl<ChangeDspResult>() {
+            @Override
+            public void onSuccess(ChangeDspResult result) {
+            getView().displayConfig(result.getOutDspDto());
+            }
+        });
     }
 }

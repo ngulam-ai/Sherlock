@@ -1,19 +1,18 @@
 package agency.akcom.mmg.sherlock.ui.shared.dto;
 
-import java.util.ArrayList;
-
-import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
-import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
+
+import java.util.ArrayList;
 
 public class DspDto extends Dto {
 	
 	private Partner partner;
 	private String name;
+	private TypeConnection typeConnection;
 	private ArrayList<ConfigConnectionDto> configConnectionDtos;
 	
-	public void setAttributes(Long id, Partner partner,String name,ArrayList<ConfigConnectionDto> configConnectionDtos) {
+	public void setAttributes(Long id, Partner partner,String name, TypeConnection typeConnection, ArrayList<ConfigConnectionDto> configConnectionDtos) {
 	    this.setId(id);
 		this.partner = partner;
 		this.name = name;
@@ -21,10 +20,7 @@ public class DspDto extends Dto {
 	}
 
 	public void setAttributes(Partner partner, String name, TypeConnection typeConnection) {
-		switch (typeConnection) {
-			case SECRET_ID : configConnectionDtos.add(new AvazuConnectionDto());
-				break;
-		}
+		this.typeConnection = typeConnection;
 		this.partner = partner;
 		this.name = name;
 	}
@@ -58,5 +54,13 @@ public class DspDto extends Dto {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public TypeConnection getTypeConnection() {
+		return typeConnection;
+	}
+
+	public void setTypeConnection(TypeConnection typeConnection) {
+		this.typeConnection = typeConnection;
 	}
 }

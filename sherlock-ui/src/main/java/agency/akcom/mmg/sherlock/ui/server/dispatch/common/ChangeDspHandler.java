@@ -23,7 +23,7 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
 
     @Override
     public ChangeDspResult execute(ChangeDspAction action, ExecutionContext context) throws ActionException {
-        if(action.getDspDto() == null)
+        if (action.getDspDto() == null)
             return new ChangeDspResult(null);
         DspDao dspDao = new DspDao();
 
@@ -31,14 +31,14 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
         ArrayList<ConfigConnection> configConnections = new ArrayList<>();
 
         for (ConfigConnectionDto configConnectionDto : dspDto.getConfigConnectionDtos()) {
-            switch (configConnectionDto.getTypeConnection()) {
+            switch (dspDto.getTypeConnection()) {
                 case SECRET_ID:
                     AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) configConnectionDto;
-                    AvazuConnection avazuConnection = new AvazuConnection(TypeConnection.SECRET_ID,avazuConnectionDto.getClientId(),avazuConnectionDto.getClientSecret(),avazuConnectionDto.getGrantType());
+                    AvazuConnection avazuConnection = new AvazuConnection(avazuConnectionDto.getClientId(), avazuConnectionDto.getClientSecret(), avazuConnectionDto.getGrantType());
                     configConnections.add(avazuConnection);
             }
         }
-        Dsp dsp = new Dsp(dspDto.getId(),dspDto.getPartner(),dspDto.getName(),configConnections);
+        Dsp dsp = new Dsp(dspDto.getId(), dspDto.getPartner(), dspDto.getName(), dspDto.getTypeConnection(), configConnections);
         dspDao.save(dsp);
         return new ChangeDspResult(dspDto);
     }

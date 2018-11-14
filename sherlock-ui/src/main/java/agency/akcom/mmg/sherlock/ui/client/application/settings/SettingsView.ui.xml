@@ -6,7 +6,7 @@
              xmlns:m="urn:import:akcom.agency.semautomation.client.widget"
              xmlns:typeahead="urn:import:org.gwtbootstrap3.extras.typeahead.client.ui">
     <b:Container>
-        <b:Modal title="Compare options" closable="true" fade="true" dataBackdrop="STATIC" dataKeyboard="true" b:id="myModal">
+     <!-- <b:Modal title="Compare options" closable="true" fade="true" dataBackdrop="STATIC" dataKeyboard="true" b:id="myModal">
             <b:ModalBody>
                 <b:FormGroup >
                     <b:Row>
@@ -49,13 +49,13 @@
             <b:ModalFooter>
                 <b:Button type="SUCCESS" ui:field="addButton" text="Create DSP" dataDismiss="MODAL"/>
             </b:ModalFooter>
-        </b:Modal>
+        </b:Modal>-->
 
         <b:Row>
             <b:Column size="XS_12">
                 <b:PageHeader text="Settings" subText="" paddingTop="20"/>
                 <!--<b:Button ui:field="buttonCreate" text="+"/>-->
-                <b:Button dataTarget="#myModal" dataToggle="MODAL" type="PRIMARY" size="LARGE" marginBottom="20">+</b:Button>
+              <!--  <b:Button dataTarget="#myModal" dataToggle="MODAL" type="PRIMARY" size="LARGE" marginBottom="20">+</b:Button>-->
                 <b:Column size="XS_12">
                     <b:Panel>
                         <b:PanelHeader>
@@ -65,7 +65,6 @@
                             <b:Row>
                                 <b:Column size="XS_2">
                                     <b.html:Text ui:field="nameText">
-                                        DSP
                                     </b.html:Text>
                                 </b:Column>
                                 <b:Column size="XS_3">

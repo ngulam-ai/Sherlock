@@ -1,16 +1,14 @@
 package agency.akcom.mmg.sherlock.ui.shared.dto;
 
-import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
+public abstract class ConfigConnectionDto extends Dto{
+	String name;
 
-public class ConfigConnectionDto extends Dto{
-	TypeConnection typeConnection;
-
-	public TypeConnection getTypeConnection() {
-		return typeConnection;
+	public String getName() {
+		return name;
 	}
 
-	public void setTypeConnection(TypeConnection typeConnection) {
-		this.typeConnection = typeConnection;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public ConfigConnectionDto() {

@@ -29,14 +29,14 @@ public class GetAllDspHandler extends MyAbstractActionHandler<GetAllDspAction, G
         for (Dsp dsp : dsps) {
             ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<>();
             for (ConfigConnection configConnection : dsp.getConfigConnections()) {
-                switch (configConnection.getTypeConnection()) {
+                switch (dsp.getTypeConnection()) {
                     case SECRET_ID:
                         AvazuConnection avazuConnection = (AvazuConnection) configConnection;
-                        AvazuConnectionDto avazuConnectionDto = new AvazuConnectionDto(avazuConnection.getTypeConnection(), avazuConnection.getClientId(), avazuConnection.getClientSecret(), avazuConnection.getGrantType());
+                        AvazuConnectionDto avazuConnectionDto = new AvazuConnectionDto(avazuConnection.getClientId(), avazuConnection.getClientSecret(), avazuConnection.getGrantType());
                         configConnectionDtos.add(avazuConnectionDto);
                 }
             }
-            dspDto.setAttributes(dsp.getId(),dsp.getPartner(), dsp.getName(), configConnectionDtos);
+            dspDto.setAttributes(dsp.getId(), dsp.getPartner(), dsp.getName(), dsp.getTypeConnection(), configConnectionDtos);
             dspDtos.add(dspDto);
         }
         return new GetAllDspResult(dspDtos);

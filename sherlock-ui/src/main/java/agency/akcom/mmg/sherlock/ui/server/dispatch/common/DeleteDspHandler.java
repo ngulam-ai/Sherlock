@@ -17,4 +17,5 @@ public class DeleteDspHandler extends MyAbstractActionHandler<DeleteDspAction, D
         new DspDao().delete(action.getId());
         return new DeleteDspResult();
     }
+
 }

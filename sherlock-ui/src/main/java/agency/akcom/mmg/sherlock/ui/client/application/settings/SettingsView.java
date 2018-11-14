@@ -19,46 +19,51 @@ import org.gwtbootstrap3.client.ui.html.Text;
 import javax.inject.Inject;
 
 class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements SettingsPresenter.MyView {
-	interface Binder extends UiBinder<Widget, SettingsView> {
-	}
+    interface Binder extends UiBinder<Widget, SettingsView> {
+    }
 
 	/*@UiField
 	Button buttonCreate;*/
 
-	@UiField
-	Button buttonSave;
+    @UiField
+    Button buttonSave;
 
-	@UiField
-	TextBox textSecretId;
+    @UiField
+    TextBox textSecretId;
 
-	@UiField
-	TextBox textSecret;
+    @UiField
+    TextBox textSecret;
 
-	@UiField
-	TextBox textGrantType;
+    @UiField
+    TextBox textGrantType;
 
-	@UiField
-	Text nameText;
+    @UiField
+    Text nameText;
 
-	@UiHandler("textSecretId")
-	void onSecretIdKeyUp(KeyUpEvent event) {
-		if (event.getNativeKeyCode()== KeyCodes.KEY_ENTER)
-			processSave();
-	}
+    DspDto curentDsp;
 
-	@UiHandler("textSecret")
-	void onSecretKeyUp(KeyUpEvent event) {
-		if (event.getNativeKeyCode()==KeyCodes.KEY_ENTER)
-			processSave();
-	}
+    @UiHandler("textSecretId")
+    void onSecretIdKeyUp(KeyUpEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
+            processSave();
+    }
 
-	@UiHandler("buttonSave")
-	void onButtonSecret(ClickEvent event)  {
-		DspDto dsp = new DspDto();  //tempory
-		dsp.setName("Avazu");
-		GWT.log(event.toDebugString());
-		getUiHandlers().onSaveClick(dsp);
-	}
+    @UiHandler("textSecret")
+    void onSecretKeyUp(KeyUpEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER)
+            processSave();
+    }
+
+    @UiHandler("buttonSave")
+    void onButtonSecret(ClickEvent event) {
+        DspDto dspDto = new DspDto();  //tempory
+        dspDto.setName("Avazu");
+        GWT.log("onButtonSecret");
+        if (getUiHandlers() != null) {
+            GWT.log("getUiHandlers no NULL");
+            getUiHandlers().onSaveClick(dspDto);
+        }
+    }
 
 	/*@UiHandler("buttonCreate")
 	void onButtonCreate(ClickEvent event)  {
@@ -66,37 +71,37 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 	}*/
 
 
-	private void processSave() {
-		DspDto dspDto = new DspDto();  //tempory
-		dspDto.setName("Avazu");
-		GWT.log("YEEEE1");
-		getUiHandlers().onSaveClick(dspDto);
-	}
+    private void processSave() {
+        DspDto dspDto = new DspDto();  //tempory
+        dspDto.setName("Avazu");
+        GWT.log("processSave");
+        getUiHandlers().onSaveClick(dspDto);
+    }
 
-	@Override
-	public void displayConfig(DspDto dspDto) {
-		TypeConnection typeConnection = dspDto.getConfigConnectionDtos().get(0).getTypeConnection();
-		GWT.log(String.valueOf(typeConnection));
-		if (typeConnection == TypeConnection.SECRET_ID) {
-			AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) dspDto.getConfigConnectionDtos().get(0);
-			nameText.setText(dspDto.getName());
-			displayConfigWithSecret(avazuConnectionDto);
-		}
-	}
+    @Override
+    public void displayConfig(DspDto dspDto) {
+        this.curentDsp = dspDto;
+        TypeConnection typeConnection = dspDto.getTypeConnection();
+        GWT.log("displayConfig");
+        if (typeConnection == TypeConnection.SECRET_ID) {
+            AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) dspDto.getConfigConnectionDtos().get(0);
+            nameText.setText(dspDto.getName());
+            displayConfigWithSecret(avazuConnectionDto);
+        }
+    }
 
-	public void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto) {
-		textSecretId.setText(avazuConnectionDto.getClientId());
-		textSecret.setText(avazuConnectionDto.getClientSecret());
-		textGrantType.setText(avazuConnectionDto.getGrantType());
-		GWT.log(avazuConnectionDto.getClientId());
-	}
+    public void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto) {
+        textSecretId.setText(avazuConnectionDto.getClientId());
+        textSecret.setText(avazuConnectionDto.getClientSecret());
+        textGrantType.setText(avazuConnectionDto.getGrantType());
+        GWT.log("displayConfigWithSecret");
+    }
 
 
+    @Inject
+    SettingsView(Binder uiBinder) {
+        initWidget(uiBinder.createAndBindUi(this));
 
-	@Inject
-	SettingsView(Binder uiBinder) {
-		initWidget(uiBinder.createAndBindUi(this));
-
-	}
+    }
 
 }
