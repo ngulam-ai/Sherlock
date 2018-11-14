@@ -30,18 +30,23 @@ import lombok.extern.slf4j.Slf4j;
 public class AvazuApiClientTest {
 
 	private AvazuClient avazuClient;
+	AuthRequest authRequest;
+	AvazuUtils avazuUtils;
 
 	@Before
 	public void setup() {
 		log.info("TEST SETUP");
 		AvazuClientBuilder avazuClientBuilder = new AvazuClientBuilder();
 		avazuClient = avazuClientBuilder.getAvazuClient();
+		authRequest = new AuthRequest();
+		authRequest.setClient_id("100304");
+		authRequest.setClient_secret("02b7da4f561ca3be4db4ddd4aa4571cf");
+		avazuUtils = new AvazuUtils(authRequest);
 	}
 
 	@Test
 	@Ignore
 	public void testReport() throws Exception {
-		AuthRequest authRequest = new AuthRequest();
 		log.info(authRequest.toString());
 
 		Auth auth = avazuClient.getAuth(authRequest);
@@ -62,7 +67,7 @@ public class AvazuApiClientTest {
 
 	}
 
-/*	@Test
+	@Test
 	public void testFullReportSumms() throws Exception {
 		log.info("--------------------------");
 
@@ -71,7 +76,7 @@ public class AvazuApiClientTest {
 		long conversions = 0;
 		double spend = 0f;
 
-		for (ReportDatum datum : AvazuUtils.getFullReportDatum("creative", "2018-08-27", "2018-08-27", null)) {
+		for (ReportDatum datum : avazuUtils.getFullReportDatum("creative", "2018-08-27", "2018-08-27", null)) {
 			//log.info("{}", datum);
 			impressions += datum.getImpressions();
 			clicks += datum.getClicks();
@@ -92,7 +97,6 @@ public class AvazuApiClientTest {
 	@Test
 	@Ignore
 	public void testCampaign() throws Exception {
-		AuthRequest authRequest = new AuthRequest();
 		log.info(authRequest.toString());
 
 		Auth auth = avazuClient.getAuth(authRequest);
@@ -115,7 +119,7 @@ public class AvazuApiClientTest {
 	@Test
 	public void testAvazuUtilsCampaigns() throws Exception {
 
-		List<CampaignDatum> datums = AvazuUtils.getFullCampaignsDatum();
+		List<CampaignDatum> datums = avazuUtils.getFullCampaignsDatum();
 		assertNotNull(datums);
 
 		// for (CampaignDatum datum : datums) {
@@ -123,7 +127,7 @@ public class AvazuApiClientTest {
 		// }
 		log.info("Number of campains " + datums.size());
 
-		Map<String, String> campaignsWithBidTypes = AvazuUtils.getCampaignsWithBidTypes();
+		Map<String, String> campaignsWithBidTypes = avazuUtils.getCampaignsWithBidTypes();
 		// for (Entry<String, String> entry : campaignsWithBidTypes.entrySet()) {
 		// log.info("{}", entry);
 		// }
@@ -133,13 +137,13 @@ public class AvazuApiClientTest {
 	@Ignore
 	public void testAvazuUtilsReport() throws Exception {
 
-		List<ReportDatum> datums = AvazuUtils.getFullReportDatum("creative", "2018-05-31", "2018-05-31", "site");
+		List<ReportDatum> datums = avazuUtils.getFullReportDatum("creative", "2018-05-31", "2018-05-31", "site");
 		assertNotNull(datums);
 
 		// for (Datum datum : datums) {
 		// log.info("{}", datum);
 		// }
 
-	}*/
+	}
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -23,6 +24,9 @@ import com.google.pubsub.v1.TopicName;
 
 import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
 import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
@@ -68,15 +72,27 @@ public class AvazuImportTask extends AbstractTask {
 		ImportLog importLog = new ImportLog(Partner.AVAZU);
 		ImportLogDao importLogDao = new ImportLogDao();
 		importLogDao.save(importLog);
-
+		
 		Publisher publisher = preparePublisher();
+		if (publisher == null) {
+			importLog.setEnd(new Date());
+			importLog.setStatus(ImportStatus.FAILURE);
+			importLogDao.save(importLog);
+			return;
+		}
 
-		if (publisher != null) {
+		String yesterday = getYesterdayFormated();
 
-			String yesterday = getYesterdayFormated();
-			List<ReportDatum> reportDatums = AvazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
+		DspDao dspdao = new DspDao();
+		ArrayList<ConfigConnection> credentialsList = dspdao.getCredentials(Partner.AVAZU);
 
-			Map<String, String> campaignsBidTypes = AvazuUtils.getCampaignsWithBidTypes();
+		for (ConfigConnection config : credentialsList) {
+			AvazuConnection credentials = (AvazuConnection) config;
+			AvazuUtils avazuUtils = new AvazuUtils(credentials);
+
+			List<ReportDatum> reportDatums = avazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
+
+			Map<String, String> campaignsBidTypes = avazuUtils.getCampaignsWithBidTypes();
 
 			for (ReportDatum datum : reportDatums) {
 				log.info(datum.toString());

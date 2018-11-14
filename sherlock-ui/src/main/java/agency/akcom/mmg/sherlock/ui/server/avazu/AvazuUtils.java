@@ -15,18 +15,33 @@ import agency.akcom.mmg.sherlock.ui.server.avazu.model.CampaignsRequest;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.ReportRequest;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AvazuUtils {
 
-	private static final AvazuClientBuilder avazuClientBuilder = new AvazuClientBuilder();
-	private static final AvazuClient avazuClient = avazuClientBuilder.getAvazuClient();
+	private final AvazuClientBuilder avazuClientBuilder;
+	private final AvazuClient avazuClient;
+	AuthRequest authRequest;
+	
+	public AvazuUtils(AvazuConnection credentials){
+		avazuClientBuilder  = new AvazuClientBuilder();
+		avazuClient = avazuClientBuilder.getAvazuClient();
+		authRequest = new AuthRequest();
+		authRequest.setClient_id(credentials.getClientId());
+		authRequest.setClient_secret(credentials.getClientSecret());
+	}
+	
+	public AvazuUtils(AuthRequest authRequest) {
+		avazuClientBuilder  = new AvazuClientBuilder();
+		avazuClient = avazuClientBuilder.getAvazuClient();
+		this.authRequest = authRequest;
+	}
 
-	public static List<ReportDatum> getFullReportDatum(String command, String startdate, String enddate,
+	public List<ReportDatum> getFullReportDatum(String command, String startdate, String enddate,
 			String groupby) {
 
-		AuthRequest authRequest = new AuthRequest();
 		Auth auth = avazuClient.getAuth(authRequest);
 
 		int page = 1;
@@ -52,9 +67,8 @@ public class AvazuUtils {
 		return datums;
 	}
 
-	public static List<CampaignDatum> getFullCampaignsDatum() {
+	public List<CampaignDatum> getFullCampaignsDatum() {
 
-		AuthRequest authRequest = new AuthRequest();
 		Auth auth = avazuClient.getAuth(authRequest);
 
 		// set number of records per page very big to avoid to use paging
@@ -65,7 +79,7 @@ public class AvazuUtils {
 		return campaigns.getData();
 	}
 
-	public static Map<String, String> getCampaignsWithBidTypes() {
+	public Map<String, String> getCampaignsWithBidTypes() {
 		List<CampaignDatum> datums = getFullCampaignsDatum();
 		Map<String, String> campaignsWithBidTypes = new HashMap<>(datums.size());
 		for (CampaignDatum datum : datums) {
