@@ -1,5 +1,8 @@
 package agency.akcom.mmg.sherlock.ui.server.configConnection;
 
+import com.googlecode.objectify.annotation.Subclass;
+
+@Subclass(index=false)
 public class AvazuConnection extends ConfigConnection{
 	private String clientId;
 	private String clientSecret;

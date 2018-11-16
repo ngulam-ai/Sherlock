@@ -4,6 +4,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import agency.akcom.mmg.sherlock.ui.domain.Dsp;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+
 import com.google.inject.Injector;
 import com.googlecode.objectify.ObjectifyFactory;
 
@@ -32,6 +35,8 @@ public class OfyFactory extends ObjectifyFactory {
 		this.register(Customer.class);
 		this.register(ImportLog.class);
 		this.register(Dsp.class);
+		this.register(ConfigConnection.class);
+		this.register(AvazuConnection.class);
 
 		long millis = System.currentTimeMillis() - time;
 		System.out.println("Registration took " + millis + " millis");
