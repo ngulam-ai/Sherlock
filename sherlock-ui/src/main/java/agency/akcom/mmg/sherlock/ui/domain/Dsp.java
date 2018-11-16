@@ -34,8 +34,7 @@ public class Dsp extends DatastoreObject {
         this.configConnections = new ArrayList<>();
     }
 
-    public Dsp(long id, Partner partner, String name, TypeConnection typeConnection, ArrayList<ConfigConnection> configConnections) {
-        this.setId(id);
+    public Dsp( Partner partner, String name, TypeConnection typeConnection, ArrayList<ConfigConnection> configConnections) {
         this.partner = partner;
         this.name = name;
         this.typeConnection = typeConnection;

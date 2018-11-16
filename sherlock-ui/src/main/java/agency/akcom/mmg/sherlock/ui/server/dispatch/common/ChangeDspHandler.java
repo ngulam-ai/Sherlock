@@ -11,6 +11,7 @@ import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
+import com.google.gwt.core.client.GWT;
 import com.gwtplatform.dispatch.rpc.server.ExecutionContext;
 import com.gwtplatform.dispatch.shared.ActionException;
 
@@ -38,7 +39,12 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
                     configConnections.add(avazuConnection);
             }
         }
-        Dsp dsp = new Dsp(dspDto.getId(), dspDto.getPartner(), dspDto.getName(), dspDto.getTypeConnection(), configConnections);
+        GWT.log("ChangeDspResult "+dspDto.getName());
+        Dsp dsp = new Dsp(
+                dspDto.getPartner(),
+                dspDto.getName(),
+                dspDto.getTypeConnection(),
+                configConnections);
         dspDao.save(dsp);
         return new ChangeDspResult(dspDto);
     }

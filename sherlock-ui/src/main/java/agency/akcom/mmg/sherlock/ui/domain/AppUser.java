@@ -1,20 +1,18 @@
 package agency.akcom.mmg.sherlock.ui.domain;
 
+import agency.akcom.mmg.sherlock.ui.shared.domain.DatastoreObject;
 import com.google.appengine.api.users.User;
-import com.google.gwt.user.client.rpc.IsSerializable;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Load;
-
-import agency.akcom.mmg.sherlock.ui.shared.domain.DatastoreObject;
 
 /**
  * An application user, named with a prefix to avoid confusion with GAE User type
  */
 
 @Entity
-public class AppUser implements IsSerializable {
+public class AppUser extends DatastoreObject {
 
 	private static final long serialVersionUID = 1L;
 

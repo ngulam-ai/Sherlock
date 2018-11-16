@@ -10,9 +10,6 @@
             </b:Column>
         </b:Row>
         <b:Panel>
-            <b:PanelHeader>
-                <b:Heading size="H3" text="DSP"/>
-            </b:PanelHeader>
             <b:PanelBody>
             </b:PanelBody>
         </b:Panel>

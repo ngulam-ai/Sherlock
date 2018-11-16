@@ -3,6 +3,7 @@ package agency.akcom.mmg.sherlock.ui.server.dao.objectify;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import agency.akcom.mmg.sherlock.ui.domain.Dsp;
 import com.google.inject.Injector;
 import com.googlecode.objectify.ObjectifyFactory;
 
@@ -30,6 +31,7 @@ public class OfyFactory extends ObjectifyFactory {
 		this.register(AppUser.class);
 		this.register(Customer.class);
 		this.register(ImportLog.class);
+		this.register(Dsp.class);
 
 		long millis = System.currentTimeMillis() - time;
 		System.out.println("Registration took " + millis + " millis");

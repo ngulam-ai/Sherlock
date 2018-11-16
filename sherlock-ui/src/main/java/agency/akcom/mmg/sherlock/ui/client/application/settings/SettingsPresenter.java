@@ -26,8 +26,23 @@ import java.util.ArrayList;
 public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, SettingsPresenter.MyProxy>
         implements SettingsUiHandlers {
 
+    @Override
+    public void onSaveClick(ArrayList<DspDto> dspDtos) {
+        DspDto dspDto = new DspDto();
+        GWT.log("onSaveClick DSP:" + this.dspDtos.get(0).getName());
+        dispatcher.execute(new ChangeDspAction(this.dspDtos.get(0)), new AsyncCallbackImpl<ChangeDspResult>() {
+            @Override
+            public void onSuccess(ChangeDspResult result) {
+                ArrayList<DspDto> dspDtos = new ArrayList<>();
+                dspDtos.add(result.getOutDspDto());
+                GWT.log(result.getOutDspDto().getName());
+                getView().displayConfig(dspDtos);
+            }
+        });
+    }
+
     interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
-        void displayConfig(DspDto dspDto);
+        void displayConfig(ArrayList<DspDto> dspDtos);
 
         void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto);
         //void displayLogs(List<ImportLog> importLogs);
@@ -42,7 +57,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     interface MyProxy extends ProxyPlace<SettingsPresenter> {
     }
 
-    private void displayConfig(DspDto dsp) {
+    private void displayConfig(ArrayList<DspDto> dspDtos) {
     }
 
     private void displayConfigWithSecret(AvazuConnectionDto avazuConnection) {
@@ -58,6 +73,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     @Override
     protected void onReset() {
         super.onReset();
+        getView().displayConfig(dspDtos);
 //		dispatcher.execute(new GetImportLogAction(), new AsyncCallbackImpl<GetImportLogResult>() {
 //			@Override
 //			public void onSuccess(GetImportLogResult result) {
@@ -72,31 +88,21 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
         super.onBind();
         dspDtos = new ArrayList<>();
         DspDto dspDto = new DspDto();
-        AvazuConnectionDto connection = new AvazuConnectionDto("Client_id", "Client_secret");
+        AvazuConnectionDto connection = new AvazuConnectionDto("Client_id2", "Client_secret2");
         dspDto.setTypeConnection(TypeConnection.SECRET_ID);
         dspDto.setPartner(Partner.AVAZU);
-        dspDto.setName("Avazu");
+        dspDto.setName("Avazu2");
         ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
         configConnectionDtos.add(connection);
         dspDto.setConfigConnectionDtos(configConnectionDtos);
         dspDtos.add(dspDto);
+        GWT.log("onBind "+dspDto.getName());
     }
 
 
     @Override
     protected void onReveal() {
         super.onReveal();
-        getView().displayConfig(dspDtos.get(0));
-    }
-
-    @Override
-    public void onSaveClick(DspDto dspDto) {
-        GWT.log("onSaveClick DSP:"+dspDto.getName());
-        dispatcher.execute(new ChangeDspAction(dspDto), new AsyncCallbackImpl<ChangeDspResult>() {
-            @Override
-            public void onSuccess(ChangeDspResult result) {
-            getView().displayConfig(result.getOutDspDto());
-            }
-        });
+        getView().displayConfig(dspDtos);
     }
 }

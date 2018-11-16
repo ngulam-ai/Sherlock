@@ -28,7 +28,7 @@
 		<lombok.version>1.16.12</lombok.version>
 
 		<slf4j.version>1.7.25</slf4j.version>
-
+		<appengine.app.version>1.9.64</appengine.app.version>
 	</properties>
 
 
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-api-1.0-sdk</artifactId>
-			<version>1.9.64</version>
+			<version>${appengine.app.version}</version>
 		</dependency>
 
 		<dependency>
@@ -218,12 +218,12 @@
 			<version>3.0</version>
 		</dependency>
 
-		<dependency>
+		<!--<dependency>
 			<groupId>com.google.gwt.inject</groupId>
 			<artifactId>gin</artifactId>
 			<version>3.0</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>-->
 
 		<!-- dependency> <groupId>com.google.guava</groupId> <artifactId>guava</artifactId> 
 			<version>18.0</version> </dependency> <dependency> <groupId>com.google.guava</groupId> 
@@ -312,7 +312,7 @@
 					
 						<jvmFlags>
 							<jvmFlag>-Xdebug</jvmFlag> 
-							<jvmFlag>-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</jvmFlag>
+							<jvmFlag>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005</jvmFlag>
 						</jvmFlags>
 					</configuration>
 				</plugin>
