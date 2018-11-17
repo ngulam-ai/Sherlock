@@ -224,7 +224,7 @@ public class CredentialManager {
 //		  log.info(file.getName());
 //		}
 		
-		log.info(fileName);
+//		log.info(fileName);
 		
 		File file = new File(fileName);	
 		

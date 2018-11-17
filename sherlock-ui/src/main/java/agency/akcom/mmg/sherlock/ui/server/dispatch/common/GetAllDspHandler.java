@@ -25,8 +25,8 @@ public class GetAllDspHandler extends MyAbstractActionHandler<GetAllDspAction, G
         DspDao dspDao = new DspDao();
         ArrayList<Dsp> dsps = new ArrayList<Dsp>(dspDao.listAll());
         ArrayList<DspDto> dspDtos = new ArrayList<>();
-        DspDto dspDto = new DspDto();
         for (Dsp dsp : dsps) {
+            DspDto dspDto = new DspDto();
             ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<>();
             for (ConfigConnection configConnection : dsp.getConfigConnections()) {
                 switch (dsp.getTypeConnection()) {

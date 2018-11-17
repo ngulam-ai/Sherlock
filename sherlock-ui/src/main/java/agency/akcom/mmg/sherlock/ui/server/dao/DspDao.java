@@ -17,9 +17,9 @@ public class DspDao extends BaseDao<Dsp> {
         super(Dsp.class);
     }
 
-    public Dsp findById(Long id) throws TooManyResultsException {
+   /* public Dsp findById(Long id) throws TooManyResultsException {
         return getByProperty("id",id);
-    }
+    }*/
 
 	public ArrayList<ConfigConnection> getCredentials(Partner partner) {
 		Query<Dsp> credentials = ofy().load().type(Dsp.class);

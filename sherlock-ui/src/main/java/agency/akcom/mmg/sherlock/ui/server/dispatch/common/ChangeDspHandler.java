@@ -10,7 +10,6 @@ import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
-import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.gwt.core.client.GWT;
 import com.gwtplatform.dispatch.rpc.server.ExecutionContext;
 import com.gwtplatform.dispatch.shared.ActionException;
@@ -26,25 +25,31 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
     public ChangeDspResult execute(ChangeDspAction action, ExecutionContext context) throws ActionException {
         if (action.getDspDto() == null)
             return new ChangeDspResult(null);
-        DspDao dspDao = new DspDao();
 
+        DspDao dspDao = new DspDao();
         DspDto dspDto = action.getDspDto();
         ArrayList<ConfigConnection> configConnections = new ArrayList<>();
-
         for (ConfigConnectionDto configConnectionDto : dspDto.getConfigConnectionDtos()) {
-            switch (dspDto.getTypeConnection()) {
-                case SECRET_ID:
+//            switch (dspDto.getTypeConnection().toString()) {
+//                case "SECRET_ID":
                     AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) configConnectionDto;
                     AvazuConnection avazuConnection = new AvazuConnection(avazuConnectionDto.getClientId(), avazuConnectionDto.getClientSecret(), avazuConnectionDto.getGrantType());
                     configConnections.add(avazuConnection);
-            }
+//            }
         }
+        Dsp dsp;
+        try {
+            dsp = dspDao.get(dspDto.getId());
+            dspDao.delete(dsp.getId());
+        } catch (Exception e){                           //com.gwtplatform.dispatch.rpc.shared.ServiceException
+            dsp = new Dsp(
+                    dspDto.getPartner(),
+                    dspDto.getName(),
+                    dspDto.getTypeConnection(),
+                    configConnections);
+        }
+        dsp.setConfigConnections(configConnections);
         GWT.log("ChangeDspResult "+dspDto.getName());
-        Dsp dsp = new Dsp(
-                dspDto.getPartner(),
-                dspDto.getName(),
-                dspDto.getTypeConnection(),
-                configConnections);
         dspDao.save(dsp);
         return new ChangeDspResult(dspDto);
     }

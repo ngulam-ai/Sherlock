@@ -5,6 +5,8 @@ import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
 import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
+import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspAction;
+import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
@@ -26,20 +28,6 @@ import java.util.ArrayList;
 public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, SettingsPresenter.MyProxy>
         implements SettingsUiHandlers {
 
-    @Override
-    public void onSaveClick(ArrayList<DspDto> dspDtos) {
-        DspDto dspDto = new DspDto();
-        GWT.log("onSaveClick DSP:" + this.dspDtos.get(0).getName());
-        dispatcher.execute(new ChangeDspAction(this.dspDtos.get(0)), new AsyncCallbackImpl<ChangeDspResult>() {
-            @Override
-            public void onSuccess(ChangeDspResult result) {
-                ArrayList<DspDto> dspDtos = new ArrayList<>();
-                dspDtos.add(result.getOutDspDto());
-                GWT.log(result.getOutDspDto().getName());
-                getView().displayConfig(dspDtos);
-            }
-        });
-    }
 
     interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
         void displayConfig(ArrayList<DspDto> dspDtos);
@@ -50,6 +38,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
 
     private final DispatchAsync dispatcher;
     private ArrayList<DspDto> dspDtos;
+    private DspDto curentDsp;
 
 
     @ProxyStandard
@@ -86,23 +75,55 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     @Override
     protected void onBind() {
         super.onBind();
-        dspDtos = new ArrayList<>();
-        DspDto dspDto = new DspDto();
-        AvazuConnectionDto connection = new AvazuConnectionDto("Client_id2", "Client_secret2");
-        dspDto.setTypeConnection(TypeConnection.SECRET_ID);
-        dspDto.setPartner(Partner.AVAZU);
-        dspDto.setName("Avazu2");
-        ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
-        configConnectionDtos.add(connection);
-        dspDto.setConfigConnectionDtos(configConnectionDtos);
-        dspDtos.add(dspDto);
-        GWT.log("onBind "+dspDto.getName());
-    }
+        GWT.log("OnBindEnter");
+        dispatcher.execute(new GetAllDspAction(), new AsyncCallbackImpl<GetAllDspResult>() {
+            @Override
+            public void onSuccess(GetAllDspResult result) {
+                dspDtos = result.getDspDtos();
+                if (dspDtos.size()==0){
+                    GWT.log("onFailure");
+                    dspDtos = new ArrayList<>();
+                    DspDto dspDto = new DspDto();
+                    AvazuConnectionDto connection = new AvazuConnectionDto("Client_id", "Client_secret");
+                    connection.setName("AVAZU");
+                    dspDto.setTypeConnection(TypeConnection.SECRET_ID);
+                    dspDto.setPartner(Partner.AVAZU);
+                    dspDto.setName("Avazu");
+                    ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
+                    configConnectionDtos.add(connection);
+                    dspDto.setConfigConnectionDtos(configConnectionDtos);
+                    curentDsp = dspDto;
+                    GWT.log("ADD to dspDtos: " + dspDtos.add(curentDsp));
+                } else {
+                    GWT.log("onSuccess");
+                    curentDsp = dspDtos.get(0);
+                }
 
+            }
+        });
+        GWT.log("OnBind Exit");
+    }
 
     @Override
     protected void onReveal() {
         super.onReveal();
-        getView().displayConfig(dspDtos);
+        GWT.log("onReval");
+        dspDtos.add(curentDsp);
+//        getView().displayConfig(dspDtos);
     }
+
+    @Override
+    public void onSaveClick(ArrayList<DspDto> dspDtos) {
+        GWT.log("onSaveClickPresenter DSP:" + dspDtos.get(0).getName());
+        dispatcher.execute(new ChangeDspAction(dspDtos.get(0)), new AsyncCallbackImpl<ChangeDspResult>() {
+            @Override
+            public void onSuccess(ChangeDspResult result) {
+                ArrayList<DspDto> dspDtos = new ArrayList<>();
+                dspDtos.add(result.getOutDspDto());
+                GWT.log("save" + result.getOutDspDto().getName());
+//                getView().displayConfig(dspDtos);
+            }
+        });
+    }
+
 }

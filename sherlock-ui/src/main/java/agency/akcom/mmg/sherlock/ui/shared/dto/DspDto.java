@@ -16,6 +16,7 @@ public class DspDto extends Dto {
 	    this.setId(id);
 		this.partner = partner;
 		this.name = name;
+		this.typeConnection = typeConnection;
 		this.configConnectionDtos = configConnectionDtos;
 	}
 

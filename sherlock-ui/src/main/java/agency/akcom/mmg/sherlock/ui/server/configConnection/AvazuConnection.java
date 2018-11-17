@@ -1,6 +1,12 @@
 package agency.akcom.mmg.sherlock.ui.server.configConnection;
 
+import com.googlecode.objectify.annotation.Subclass;
+
+import javax.inject.Inject;
+
+@Subclass
 public class AvazuConnection extends ConfigConnection{
+
 	private String clientId;
 	private String clientSecret;
 	private String grantType; 
@@ -15,6 +21,10 @@ public class AvazuConnection extends ConfigConnection{
 		clientId = id;
 		clientSecret=secret;
 		grantType = "client_credentials"; // default value: client_credentials;
+	}
+@Inject
+	public AvazuConnection() {
+		grantType = "client_credentials";
 	}
 
 	public String getClientId() {

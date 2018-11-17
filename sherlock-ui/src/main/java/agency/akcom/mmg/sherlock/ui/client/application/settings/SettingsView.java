@@ -3,7 +3,6 @@ package agency.akcom.mmg.sherlock.ui.client.application.settings;
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
-import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -23,9 +22,6 @@ import java.util.ArrayList;
 class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements SettingsPresenter.MyView {
     interface Binder extends UiBinder<Widget, SettingsView> {
     }
-
-	/*@UiField
-	Button buttonCreate;*/
 
     @UiField
     Button buttonSave;
@@ -59,34 +55,30 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 
     @UiHandler("buttonSave")
     void onButtonSecret(ClickEvent event) {
-        DspDto dspDto = new DspDto();  //tempory
-        dspDto.setName("Avazu");
         GWT.log("onButtonSecret");
+        processSave();
         if (getUiHandlers() != null) {
             GWT.log("getUiHandlers no NULL");
-            getUiHandlers().onSaveClick(dspDtos);
+//            getUiHandlers().onSaveClick(dspDtos);
         }
-    }
 
-	/*@UiHandler("buttonCreate")
-	void onButtonCreate(ClickEvent event)  {
-		Window.alert("Create");
-	}*/
+    }
 
 
     private void processSave() {
         int indexDsp = findIndexDspDto(curentDsp.getPartner());
         if (indexDsp>-1){
-            switch (dspDtos.get(indexDsp).getTypeConnection()){
-                case SECRET_ID: {
+//            switch (dspDtos.get(indexDsp).getTypeConnection()){
+//                case SECRET_ID: {
                     AvazuConnectionDto avazuConnectionDto = new AvazuConnectionDto();
                     avazuConnectionDto.setClientId(textSecretId.getText());
                     avazuConnectionDto.setClientSecret(textSecret.getText());
                     avazuConnectionDto.setGrantType(textGrantType.getText());
+                    dspDtos.get(indexDsp).getConfigConnectionDtos().clear();
                     dspDtos.get(indexDsp).getConfigConnectionDtos().add(avazuConnectionDto);
-                }
-                break;
-            }
+//                }
+//                break;
+//            }
         }
         GWT.log("processSave");
         getUiHandlers().onSaveClick(dspDtos);
@@ -94,16 +86,16 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 
     @Override
     public void displayConfig(ArrayList<DspDto> dspDtos) {
-        this.dspDtos = dspDtos;
-        DspDto dspDto = dspDtos.get(0);
-        this.curentDsp = dspDto;
-        TypeConnection typeConnection = dspDto.getTypeConnection();
         GWT.log("displayConfig");
-        if (typeConnection == TypeConnection.SECRET_ID) {
-            AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) dspDto.getConfigConnectionDtos().get(0);
-            nameText.setText(dspDto.getName());
+        this.dspDtos = dspDtos;
+        this.curentDsp =  dspDtos.get(0);
+//        TypeConnection typeConnection = dspDto.getTypeConnection();
+//        if (typeConnection == TypeConnection.SECRET_ID) {
+            GWT.log("displayConfigIf");
+            AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) curentDsp.getConfigConnectionDtos().get(0);
+            nameText.setText(curentDsp.getName());
             displayConfigWithSecret(avazuConnectionDto);
-        }
+//        }
     }
 
     public void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto) {
@@ -127,5 +119,4 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         }
         return -1;
     }
-
 }
