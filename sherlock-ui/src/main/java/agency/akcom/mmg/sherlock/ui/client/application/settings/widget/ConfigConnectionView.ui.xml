@@ -1,0 +1,42 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:b.html="urn:import:org.gwtbootstrap3.client.ui.html"
+             xmlns:b.gwt="urn:import:org.gwtbootstrap3.client.ui.gwt"
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:bt="urn:import:org.gwtbootstrap3.client.ui.gwt"
+             xmlns:m="urn:import:akcom.agency.semautomation.client.widget"
+             xmlns:typeahead="urn:import:org.gwtbootstrap3.extras.typeahead.client.ui">
+    <b:Container>
+        <b:Panel>
+            <b:PanelHeader>
+                <b:Heading size="H3" text="Name DSP"/>
+            </b:PanelHeader>
+            <b:PanelBody>
+                <b:Row>
+                    <b:Column size="XS_2">
+                        <b.html:Text ui:field="nameText">
+                        </b.html:Text>
+                    </b:Column>
+                    <b:Column size="XS_3">
+                        <b.html:Text>
+                            Secret_ID
+                        </b.html:Text>
+                        <b:TextBox ui:field="textSecretId"/>
+                    </b:Column>
+                    <b:Column size="XS_3">
+                        <b.html:Text>
+                            Secret
+                        </b.html:Text>
+                        <b:TextBox ui:field="textSecret"/>
+                    </b:Column>
+                    <b:Column size="XS_3">
+                        <b.html:Text>
+                            grantType
+                        </b.html:Text>
+                        <b:TextBox ui:field="textGrantType"/>
+                    </b:Column>
+                </b:Row>
+            </b:PanelBody>
+        </b:Panel>
+    </b:Container>
+</ui:UiBinder>

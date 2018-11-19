@@ -6,93 +6,102 @@
              xmlns:m="urn:import:akcom.agency.semautomation.client.widget"
              xmlns:typeahead="urn:import:org.gwtbootstrap3.extras.typeahead.client.ui">
     <b:Container>
-     <!-- <b:Modal title="Compare options" closable="true" fade="true" dataBackdrop="STATIC" dataKeyboard="true" b:id="myModal">
-            <b:ModalBody>
-                <b:FormGroup >
-                    <b:Row>
-                        <b:Column size="MD_12" marginLeft="20">
-                            <b:TextBox visible="false" ui:field="hiddenAccountInput"/>
-                        </b:Column>
+        <!-- <b:Modal title="Compare options" closable="true" fade="true" dataBackdrop="STATIC" dataKeyboard="true" b:id="myModal">
+               <b:ModalBody>
+                   <b:FormGroup >
+                       <b:Row>
+                           <b:Column size="MD_12" marginLeft="20">
+                               <b:TextBox visible="false" ui:field="hiddenAccountInput"/>
+                           </b:Column>
 
-                    </b:Row>
-                    <b.html:Br/>
-                    <b:Row>
-                        <b:Column size="MD_12" marginLeft="20">
-                            <b:Column size="XS_3">
-                                <b.html:Text>
-                                    DSP
-                                </b.html:Text>
-                                <b:TextBox ui:field="textDspName"/>
-                            </b:Column>
-                            <b:Column size="XS_3">
-                                <b.html:Text>
-                                    Partner
-                                </b.html:Text>
-                                <b:TextBox ui:field="textPartner"/>
-                            </b:Column>
-                            <b:Column size="XS_3">
-                                <b.html:Text>
-                                    SecretType
-                                </b.html:Text>
-                                <b:TextBox ui:field="textType"/>
-                            </b:Column>
-                        </b:Column>
-                    </b:Row>
-                    <b:HelpBlock  iconType="EXCLAMATION_TRIANGLE" marginLeft="20" marginTop="10"/>
+                       </b:Row>
+                       <b.html:Br/>
+                       <b:Row>
+                           <b:Column size="MD_12" marginLeft="20">
+                               <b:Column size="XS_3">
+                                   <b.html:Text>
+                                       DSP
+                                   </b.html:Text>
+                                   <b:TextBox ui:field="textDspName"/>
+                               </b:Column>
+                               <b:Column size="XS_3">
+                                   <b.html:Text>
+                                       Partner
+                                   </b.html:Text>
+                                   <b:TextBox ui:field="textPartner"/>
+                               </b:Column>
+                               <b:Column size="XS_3">
+                                   <b.html:Text>
+                                       SecretType
+                                   </b.html:Text>
+                                   <b:TextBox ui:field="textType"/>
+                               </b:Column>
+                           </b:Column>
+                       </b:Row>
+                       <b:HelpBlock  iconType="EXCLAMATION_TRIANGLE" marginLeft="20" marginTop="10"/>
 
-                </b:FormGroup>
+                   </b:FormGroup>
 
-                <b:ProgressBar ui:field="progressBar" type="SUCCESS" visible="false"/>
+                   <b:ProgressBar ui:field="progressBar" type="SUCCESS" visible="false"/>
 
-            </b:ModalBody>
+               </b:ModalBody>
 
-            <b:ModalFooter>
-                <b:Button type="SUCCESS" ui:field="addButton" text="Create DSP" dataDismiss="MODAL"/>
-            </b:ModalFooter>
-        </b:Modal>-->
+               <b:ModalFooter>
+                   <b:Button type="SUCCESS" ui:field="addButton" text="Create DSP" dataDismiss="MODAL"/>
+               </b:ModalFooter>
+           </b:Modal>-->
 
         <b:Row>
             <b:Column size="XS_12">
                 <b:PageHeader text="Settings" subText="" paddingTop="20"/>
                 <!--<b:Button ui:field="buttonCreate" text="+"/>-->
-              <!--  <b:Button dataTarget="#myModal" dataToggle="MODAL" type="PRIMARY" size="LARGE" marginBottom="20">+</b:Button>-->
+                <!--  <b:Button dataTarget="#myModal" dataToggle="MODAL" type="PRIMARY" size="LARGE" marginBottom="20">+</b:Button>-->
                 <b:Column size="XS_12">
-                    <b:Panel>
-                        <b:PanelHeader>
-                            <b:Heading size="H3" text="Name DSP"/>
-                        </b:PanelHeader>
-                        <b:PanelBody>
-                            <b:Row>
-                                <b:Column size="XS_2">
-                                    <b.html:Text ui:field="nameText">
-                                    </b.html:Text>
-                                </b:Column>
-                                <b:Column size="XS_3">
-                                    <b.html:Text>
-                                        Secret_ID
-                                    </b.html:Text>
-                                    <b:TextBox ui:field="textSecretId"/>
-                                </b:Column>
-                                <b:Column size="XS_3">
-                                    <b.html:Text>
-                                        Secret
-                                    </b.html:Text>
-                                    <b:TextBox ui:field="textSecret"/>
-                                </b:Column>
-                                <b:Column size="XS_3">
-                                    <b.html:Text>
-                                        grantType
-                                    </b.html:Text>
-                                    <b:TextBox ui:field="textGrantType"/>
-                                </b:Column>
-                                <b:Column size="XS_3">
-                                    <b:Button ui:field="buttonSave" text="save"/>
-                                </b:Column>
-                            </b:Row>
-                        </b:PanelBody>
-                    </b:Panel>
+                    <b:NavTabs>
+
+                        <b:Panel>
+                            <b:PanelHeader>
+                                <b:Heading size="H3" text="Name DSP"/>
+                            </b:PanelHeader>
+                            <b:PanelBody>
+                                <b:Row>
+                                    <b:Column size="XS_2">
+                                        <b.html:Text ui:field="nameText">
+                                        </b.html:Text>
+                                    </b:Column>
+                                    <b:Column size="XS_3">
+                                        <b.html:Text>
+                                            Secret_ID
+                                        </b.html:Text>
+                                        <b:TextBox ui:field="textSecretId"/>
+                                    </b:Column>
+                                    <b:Column size="XS_3">
+                                        <b.html:Text>
+                                            Secret
+                                        </b.html:Text>
+                                        <b:TextBox ui:field="textSecret"/>
+                                    </b:Column>
+                                    <b:Column size="XS_3">
+                                        <b.html:Text>
+                                            grantType
+                                        </b.html:Text>
+                                        <b:TextBox ui:field="textGrantType"/>
+                                    </b:Column>
+                                    <b:Column size="XS_3">
+                                        <b:Button ui:field="buttonSave" text="save"/>
+                                    </b:Column>
+                                </b:Row>
+                            </b:PanelBody>
+                        </b:Panel>
+                        <b:AnchorListItem>Item 1</b:AnchorListItem>
+                        <b:AnchorListItem>Item 2</b:AnchorListItem>
+                        <b:AnchorListItem>Item 3</b:AnchorListItem>
+                        <b:AnchorListItem>Pulled right</b:AnchorListItem>
+                    </b:NavTabs>
                 </b:Column>
             </b:Column>
         </b:Row>
+
     </b:Container>
+
 </ui:UiBinder>

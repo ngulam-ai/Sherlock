@@ -1,10 +1,7 @@
-package agency.akcom.mmg.sherlock.ui.client.application.settings;
 
-import agency.akcom.mmg.sherlock.ui.client.application.ApplicationPresenter;
+package agency.akcom.mmg.sherlock.ui.client.application.settings.widget;
+
 import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
-import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
-import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
-import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
@@ -13,37 +10,31 @@ import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.gwt.core.client.GWT;
+import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
 import com.gwtplatform.dispatch.rpc.shared.DispatchAsync;
 import com.gwtplatform.mvp.client.HasUiHandlers;
-import com.gwtplatform.mvp.client.Presenter;
+import com.gwtplatform.mvp.client.PresenterWidget;
 import com.gwtplatform.mvp.client.View;
-import com.gwtplatform.mvp.client.annotations.NameToken;
-import com.gwtplatform.mvp.client.annotations.ProxyStandard;
-import com.gwtplatform.mvp.client.proxy.ProxyPlace;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 
-public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, SettingsPresenter.MyProxy>
-        implements SettingsUiHandlers {
-
-
-    interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
+public class ConfigConnectionPresenter extends PresenterWidget<ConfigConnectionPresenter.MyView> implements ConfigConnectionUiHandlers {
+    interface MyView extends View, HasUiHandlers<ConfigConnectionUiHandlers> {
         void displayConfig(ArrayList<DspDto> dspDtos);
-
         void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto);
-        //void displayLogs(List<ImportLog> importLogs);
     }
 
     private final DispatchAsync dispatcher;
     private ArrayList<DspDto> dspDtos;
     private DspDto curentDsp;
+    private AvazuConnectionDto curentAvazuConfigConnection;
 
-
-    @ProxyStandard
-    @NameToken(NameTokens.SETTINGS)
-    interface MyProxy extends ProxyPlace<SettingsPresenter> {
+    @Inject
+    ConfigConnectionPresenter(final EventBus eventBus, final MyView view, final DispatchAsync dispatcher) {
+        super(eventBus, view);
+        this.dispatcher = dispatcher;
+//        getView().setUiHandlers(this);
     }
 
     private void displayConfig(ArrayList<DspDto> dspDtos) {
@@ -52,29 +43,8 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     private void displayConfigWithSecret(AvazuConnectionDto avazuConnection) {
     }
 
-    @Inject
-    SettingsPresenter(final EventBus eventBus, final MyView view, final MyProxy proxy, final DispatchAsync dispatcher) {
-        super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
-        this.dispatcher = dispatcher;
-        getView().setUiHandlers(this);
-    }
-
-    @Override
-    protected void onReset() {
-        super.onReset();
-        getView().displayConfig(dspDtos);
-//		dispatcher.execute(new GetImportLogAction(), new AsyncCallbackImpl<GetImportLogResult>() {
-//			@Override
-//			public void onSuccess(GetImportLogResult result) {
-//				getView().displayLogs(result.getLogs());
-//
-//			}
-//		});
-    }
-
     @Override
     protected void onBind() {
-        super.onBind();
         GWT.log("OnBindEnter");
         dispatcher.execute(new GetAllDspAction(), new AsyncCallbackImpl<GetAllDspResult>() {
             @Override
@@ -111,19 +81,4 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
         dspDtos.add(curentDsp);
         getView().displayConfig(dspDtos);
     }
-
-    @Override
-    public void onSaveClick(ArrayList<DspDto> dspDtos) {
-        GWT.log("onSaveClickPresenter DSP:" + dspDtos.get(0).getName());
-        dispatcher.execute(new ChangeDspAction(dspDtos.get(0)), new AsyncCallbackImpl<ChangeDspResult>() {
-            @Override
-            public void onSuccess(ChangeDspResult result) {
-                ArrayList<DspDto> dspDtos = new ArrayList<>();
-                dspDtos.add(result.getOutDspDto());
-                GWT.log("save" + result.getOutDspDto().getName());
-//                getView().displayConfig(dspDtos);
-            }
-        });
-    }
-
 }
