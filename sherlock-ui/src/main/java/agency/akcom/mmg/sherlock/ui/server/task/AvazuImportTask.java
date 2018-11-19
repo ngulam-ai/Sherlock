@@ -73,6 +73,19 @@ public class AvazuImportTask extends AbstractTask {
 		ImportLogDao importLogDao = new ImportLogDao();
 		importLogDao.save(importLog);
 		
+		//Getting credentials for Avazu
+		DspDao dspdao = new DspDao();
+		ArrayList<ConfigConnection> credentialsList;
+		try {
+			credentialsList = dspdao.getCredentials(Partner.AVAZU);
+		} catch (NoSuchFieldException e1) {
+			log.warn("Not found credentials for Avazu");
+			importLog.setEnd(new Date());
+			importLog.setStatus(ImportStatus.SUCCESS);
+			importLogDao.save(importLog);
+			return;
+		}
+
 		Publisher publisher = preparePublisher();
 		if (publisher == null) {
 			importLog.setEnd(new Date());
@@ -83,9 +96,7 @@ public class AvazuImportTask extends AbstractTask {
 
 		String yesterday = getYesterdayFormated();
 
-		DspDao dspdao = new DspDao();
-		ArrayList<ConfigConnection> credentialsList = dspdao.getCredentials(Partner.AVAZU);
-
+		//Report data from API for each credential
 		for (ConfigConnection config : credentialsList) {
 			AvazuConnection credentials = (AvazuConnection) config;
 			AvazuUtils avazuUtils = new AvazuUtils(credentials);
