@@ -15,7 +15,7 @@ import agency.akcom.mmg.sherlock.ui.server.avazu.model.CampaignsRequest;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.ReportRequest;
-import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,7 +25,7 @@ public class AvazuUtils {
 	private final AvazuClient avazuClient;
 	AuthRequest authRequest;
 	
-	public AvazuUtils(AvazuConnection credentials){
+	public AvazuUtils(SecretIdConnection credentials){
 		avazuClientBuilder  = new AvazuClientBuilder();
 		avazuClient = avazuClientBuilder.getAvazuClient();
 		authRequest = new AuthRequest();

@@ -1,13 +1,13 @@
 package agency.akcom.mmg.sherlock.ui.server.dispatch.common;
 
 import agency.akcom.mmg.sherlock.ui.domain.Dsp;
-import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
 import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspResult;
-import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import com.gwtplatform.dispatch.rpc.server.ExecutionContext;
@@ -31,9 +31,9 @@ public class GetAllDspHandler extends MyAbstractActionHandler<GetAllDspAction, G
             for (ConfigConnection configConnection : dsp.getConfigConnections()) {
                 switch (dsp.getTypeConnection()) {
                     case SECRET_ID:
-                        AvazuConnection avazuConnection = (AvazuConnection) configConnection;
-                        AvazuConnectionDto avazuConnectionDto = new AvazuConnectionDto(avazuConnection.getClientId(), avazuConnection.getClientSecret(), avazuConnection.getGrantType());
-                        configConnectionDtos.add(avazuConnectionDto);
+                        SecretIdConnection secretIdConnection = (SecretIdConnection) configConnection;
+                        SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto(secretIdConnection.getClientId(), secretIdConnection.getClientSecret(), secretIdConnection.getGrantType());
+                        configConnectionDtos.add(secretIdConnectionDto);
                 }
             }
             dspDto.setAttributes(dsp.getId(), dsp.getPartner(), dsp.getName(), dsp.getTypeConnection(), configConnectionDtos);

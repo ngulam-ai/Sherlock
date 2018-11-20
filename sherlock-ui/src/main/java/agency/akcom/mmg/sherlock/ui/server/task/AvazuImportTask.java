@@ -24,7 +24,7 @@ import com.google.pubsub.v1.TopicName;
 
 import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
-import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
 import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
@@ -98,7 +98,7 @@ public class AvazuImportTask extends AbstractTask {
 
 		//Report data from API for each credential
 		for (ConfigConnection config : credentialsList) {
-			AvazuConnection credentials = (AvazuConnection) config;
+			SecretIdConnection credentials = (SecretIdConnection) config;
 			AvazuUtils avazuUtils = new AvazuUtils(credentials);
 
 			List<ReportDatum> reportDatums = avazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");

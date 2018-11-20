@@ -1,13 +1,13 @@
 package agency.akcom.mmg.sherlock.ui.server.dispatch.common;
 
 import agency.akcom.mmg.sherlock.ui.domain.Dsp;
-import agency.akcom.mmg.sherlock.ui.server.configConnection.AvazuConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
 import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
 import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
-import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import com.google.gwt.core.client.GWT;
@@ -32,9 +32,9 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
         for (ConfigConnectionDto configConnectionDto : dspDto.getConfigConnectionDtos()) {
 //            switch (dspDto.getTypeConnection().toString()) {
 //                case "SECRET_ID":
-                    AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) configConnectionDto;
-                    AvazuConnection avazuConnection = new AvazuConnection(avazuConnectionDto.getClientId(), avazuConnectionDto.getClientSecret(), avazuConnectionDto.getGrantType());
-                    configConnections.add(avazuConnection);
+                    SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) configConnectionDto;
+                    SecretIdConnection secretIdConnection = new SecretIdConnection(secretIdConnectionDto.getClientId(), secretIdConnectionDto.getClientSecret(), secretIdConnectionDto.getGrantType());
+                    configConnections.add(secretIdConnection);
 //            }
         }
         Dsp dsp;

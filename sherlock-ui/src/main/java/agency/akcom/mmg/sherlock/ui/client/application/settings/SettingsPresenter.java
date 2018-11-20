@@ -7,7 +7,7 @@ import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspResult;
-import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
@@ -32,7 +32,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
         void displayConfig(ArrayList<DspDto> dspDtos);
 
-        void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto);
+        void displayConfigWithSecret(SecretIdConnectionDto secretIdConnectionDto);
         //void displayLogs(List<ImportLog> importLogs);
     }
 
@@ -49,7 +49,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     private void displayConfig(ArrayList<DspDto> dspDtos) {
     }
 
-    private void displayConfigWithSecret(AvazuConnectionDto avazuConnection) {
+    private void displayConfigWithSecret(SecretIdConnectionDto avazuConnection) {
     }
 
     @Inject
@@ -84,7 +84,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                     GWT.log("onFailure");
                     dspDtos = new ArrayList<>();
                     DspDto dspDto = new DspDto();
-                    AvazuConnectionDto connection = new AvazuConnectionDto("Client_id", "Client_secret");
+                    SecretIdConnectionDto connection = new SecretIdConnectionDto("Client_id", "Client_secret");
                     connection.setName("AVAZU");
                     dspDto.setTypeConnection(TypeConnection.SECRET_ID);
                     dspDto.setPartner(Partner.AVAZU);

@@ -8,9 +8,6 @@
              xmlns:typeahead="urn:import:org.gwtbootstrap3.extras.typeahead.client.ui">
     <b:Container>
         <b:Panel>
-            <b:PanelHeader>
-                <b:Heading size="H3" text="Name DSP"/>
-            </b:PanelHeader>
             <b:PanelBody>
                 <b:Row>
                     <b:Column size="XS_2">

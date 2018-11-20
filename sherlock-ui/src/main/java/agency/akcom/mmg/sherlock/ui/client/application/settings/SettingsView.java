@@ -1,6 +1,6 @@
 package agency.akcom.mmg.sherlock.ui.client.application.settings;
 
-import agency.akcom.mmg.sherlock.ui.shared.dto.AvazuConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import com.google.gwt.core.client.GWT;
@@ -70,12 +70,12 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         if (indexDsp>-1){
 //            switch (dspDtos.get(indexDsp).getTypeConnection()){
 //                case SECRET_ID: {
-                    AvazuConnectionDto avazuConnectionDto = new AvazuConnectionDto();
-                    avazuConnectionDto.setClientId(textSecretId.getText());
-                    avazuConnectionDto.setClientSecret(textSecret.getText());
-                    avazuConnectionDto.setGrantType(textGrantType.getText());
+                    SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto();
+                    secretIdConnectionDto.setClientId(textSecretId.getText());
+                    secretIdConnectionDto.setClientSecret(textSecret.getText());
+                    secretIdConnectionDto.setGrantType(textGrantType.getText());
                     dspDtos.get(indexDsp).getConfigConnectionDtos().clear();
-                    dspDtos.get(indexDsp).getConfigConnectionDtos().add(avazuConnectionDto);
+                    dspDtos.get(indexDsp).getConfigConnectionDtos().add(secretIdConnectionDto);
 //                }
 //                break;
 //            }
@@ -92,16 +92,16 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
 //        TypeConnection typeConnection = dspDto.getTypeConnection();
 //        if (typeConnection == TypeConnection.SECRET_ID) {
             GWT.log("displayConfigIf");
-            AvazuConnectionDto avazuConnectionDto = (AvazuConnectionDto) curentDsp.getConfigConnectionDtos().get(0);
+            SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) curentDsp.getConfigConnectionDtos().get(0);
             nameText.setText(curentDsp.getName());
-            displayConfigWithSecret(avazuConnectionDto);
+            displayConfigWithSecret(secretIdConnectionDto);
 //        }
     }
 
-    public void displayConfigWithSecret(AvazuConnectionDto avazuConnectionDto) {
-        textSecretId.setText(avazuConnectionDto.getClientId());
-        textSecret.setText(avazuConnectionDto.getClientSecret());
-        textGrantType.setText(avazuConnectionDto.getGrantType());
+    public void displayConfigWithSecret(SecretIdConnectionDto secretIdConnectionDto) {
+        textSecretId.setText(secretIdConnectionDto.getClientId());
+        textSecret.setText(secretIdConnectionDto.getClientSecret());
+        textGrantType.setText(secretIdConnectionDto.getGrantType());
         GWT.log("displayConfigWithSecret");
     }
 

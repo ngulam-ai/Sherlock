@@ -1,26 +1,26 @@
 package agency.akcom.mmg.sherlock.ui.shared.dto;
 
-public class AvazuConnectionDto extends ConfigConnectionDto {
+public class SecretIdConnectionDto extends ConfigConnectionDto {
 
 	private String clientId;
 	private String clientSecret;
 	private String grantType;
 
 
-	public AvazuConnectionDto(String clientId, String clientSecret) {
+	public SecretIdConnectionDto(String clientId, String clientSecret) {
 
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		grantType = "client_credentials"; // default value: client_credentials;
 	}
 
-	public AvazuConnectionDto(String clientId, String clientSecret, String grantType) {
+	public SecretIdConnectionDto(String clientId, String clientSecret, String grantType) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		this.grantType = grantType;
 	}
 
-	public AvazuConnectionDto() {
+	public SecretIdConnectionDto() {
 		grantType = "client_credentials"; // default value: client_credentials;
 	}
 

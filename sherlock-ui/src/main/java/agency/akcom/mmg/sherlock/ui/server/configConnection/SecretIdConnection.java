@@ -5,25 +5,25 @@ import com.googlecode.objectify.annotation.Subclass;
 import javax.inject.Inject;
 
 @Subclass(index=false)
-public class AvazuConnection extends ConfigConnection{
+public class SecretIdConnection extends ConfigConnection{
 	private String clientId;
 	private String clientSecret;
 	private String grantType; 
 	
-	public AvazuConnection(String id, String secret, String grantType) {
+	public SecretIdConnection(String id, String secret, String grantType) {
 		clientId = id;
 		clientSecret=secret;
 		this.grantType = grantType;
 	}
 	
-	public AvazuConnection(String id, String secret) {
+	public SecretIdConnection(String id, String secret) {
 		clientId = id;
 		clientSecret=secret;
 		grantType = "client_credentials"; // default value: client_credentials;
 	}
 
 	@Inject
-	public AvazuConnection() {
+	public SecretIdConnection() {
 		grantType = "client_credentials";
 	}
 
