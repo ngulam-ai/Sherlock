@@ -2,16 +2,19 @@ package agency.akcom.mmg.sherlock.collect.dao;
 
 import static agency.akcom.mmg.sherlock.collect.dao.objectify.OfyService.ofy;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.cmd.Query;
 
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
 import agency.akcom.mmg.sherlock.collect.domain.IDField;
+import agency.akcom.mmg.sherlock.collect.domain.Scope;
 
 public class AudUserDao extends BaseDao<AudUser> {
 
@@ -24,7 +27,7 @@ public class AudUserDao extends BaseDao<AudUser> {
 		Set<AudUser> userSet = new HashSet();
 
 		// 1: get all IDs
-		List<String> nameIDsFields = getListFieldNameID(tmpUser);
+		List<String> nameIDsFields = getFieldNamesSpace(tmpUser.getClass(), IDField.class);
 
 		// 2: Use this for finding in datastore
 		//https://stackoverflow.com/questions/5393571/making-or-queries-in-google-app-engine-data-model  about that you can not query with "OR"
@@ -40,18 +43,33 @@ public class AudUserDao extends BaseDao<AudUser> {
 		return userSet;
 	}
 
+//	/**
+//	 * @return List names with annotation "IDField"
+//	 */
+//	public static List<String> getListFieldNameID(AudUser tmpUser) {
+//		Field[] fields = tmpUser.getClass().getDeclaredFields();
+//		List<String> nameIDsFields = new ArrayList<String>();
+//		for (int i = 0; i < fields.length; i++) {
+//			if (fields[i].isAnnotationPresent(IDField.class)) {
+//				nameIDsFields.add(fields[i].getName());
+//			}
+//		}
+//		return nameIDsFields;
+//	}
+	
 	/**
-	 * @return List names with annotation "IDField"
+	 * @param clazz - field from this class, annotationClass - annotation class.
+	 * @return List names of "clazz" with annotation "annotationClass"
 	 */
-	public static List<String> getListFieldNameID(AudUser tmpUser) {
-		Field[] fields = tmpUser.getClass().getDeclaredFields();
-		List<String> nameIDsFields = new ArrayList<String>();
+	public static List<String> getFieldNamesSpace(Class<?> clazz, Class<? extends Annotation> annotationClass) {
+		Field[] fields = clazz.getDeclaredFields();
+		List<String> nameFields = new ArrayList<String>();
 		for (int i = 0; i < fields.length; i++) {
-			if (fields[i].isAnnotationPresent(IDField.class)) {
-				nameIDsFields.add(fields[i].getName());
+			if (fields[i].isAnnotationPresent(annotationClass)) {
+				nameFields.add(fields[i].getName());
 			}
 		}
-		return nameIDsFields;
+		return nameFields;
 	}
 
 	public static Object getFieldValue(Object audUser, String nameField) {
@@ -73,4 +91,25 @@ public class AudUserDao extends BaseDao<AudUser> {
 		}
 		return value;
 	}
+	
+	public static Ref getRef(Object audUser, String nameField) {
+		Ref value = null;
+		Field field = null;
+		try {
+			field = audUser.getClass().getDeclaredField(nameField);
+		} catch (NoSuchFieldException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		field.setAccessible(true);
+		try {
+			value = (Ref) field.get(audUser);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return value;
+	}
+
 }

@@ -1,6 +1,7 @@
 package agency.akcom.mmg.sherlock.collect;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -21,8 +22,12 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.googlecode.objectify.ObjectifyService;
 
+import agency.akcom.mmg.sherlock.collect.audience.AudUserChild;
+import agency.akcom.mmg.sherlock.collect.audience.Demography;
+import agency.akcom.mmg.sherlock.collect.audience.Geography;
+import agency.akcom.mmg.sherlock.collect.dao.AudUserDao;
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
-@Ignore
+//@Ignore
 public class MergeAudUsersByIDsFieldsTest {
 	
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -42,6 +47,9 @@ public class MergeAudUsersByIDsFieldsTest {
 		COLLECT_SERVLET.init();
 		closeable = ObjectifyService.begin();
 		ObjectifyService.register(AudUser.class);
+		ObjectifyService.register(AudUserChild.class);
+		ObjectifyService.register(Geography.class);
+		ObjectifyService.register(Demography.class);
 
 	}
 
@@ -76,6 +84,12 @@ public class MergeAudUsersByIDsFieldsTest {
 		}
 		return count;
 	}
+	
+	public List<AudUser> getAudUserList(){
+		AudUserDao dao = new AudUserDao();
+		List<AudUser> list = dao.listAll();
+		return list;
+	}
 
 	@Test
 	public void test() throws Exception {
@@ -83,7 +97,7 @@ public class MergeAudUsersByIDsFieldsTest {
 		AudienceService.processUIds(USER_1);
 		Iterator<Entity> entityList = getEntityList();
 		Entity ent = entityList.next();
-		Assert.assertEquals("uid1", getFieldValue(ent, "uid"));
+		Assert.assertEquals("92762f5b-7837-338f-b72f-396e7061be33", getFieldValue(ent, "uid"));
 		Assert.assertEquals("107", getFieldValue(ent, "mparticleuserid"));
 
 		/* put second different AudUser to database and check ID fields */
@@ -92,10 +106,10 @@ public class MergeAudUsersByIDsFieldsTest {
 		Assert.assertEquals("total audUsers in DS", 2, getTotalAudUsers(entityList));
 		entityList = getEntityList();
 		ent = entityList.next();
-		Assert.assertEquals("uid1", getFieldValue(ent, "uid"));
+		Assert.assertEquals("92762f5b-7837-338f-b72f-396e7061be33", getFieldValue(ent, "uid"));
 		Assert.assertEquals("107", getFieldValue(ent, "mparticleuserid"));
 		ent = entityList.next();
-		Assert.assertEquals("uid2", getFieldValue(ent, "uid"));
+		Assert.assertEquals("fab26046-bf5a-38b1-a17c-cd7c42fefb62", getFieldValue(ent, "uid"));
 		Assert.assertEquals("108", getFieldValue(ent, "customerid"));
 
 		/*
@@ -103,11 +117,10 @@ public class MergeAudUsersByIDsFieldsTest {
 		 */
 		AudienceService.processUIds(USER_3);
 		entityList = getEntityList();
-		entityList = getEntityList();
 		Assert.assertEquals("total audUsers in DS", 1, getTotalAudUsers(entityList));
 		entityList = getEntityList();
 		ent = entityList.next();
-		Assert.assertEquals("uid1", getFieldValue(ent, "uid"));
+		Assert.assertEquals("92762f5b-7837-338f-b72f-396e7061be33", getFieldValue(ent, "uid"));
 		Assert.assertEquals("107", getFieldValue(ent, "mparticleuserid"));
 		Assert.assertEquals("108", getFieldValue(ent, "customerid"));
 
@@ -117,7 +130,7 @@ public class MergeAudUsersByIDsFieldsTest {
 		Assert.assertEquals("total audUsers in DS", 1, getTotalAudUsers(entityList));
 		entityList = getEntityList();
 		ent = entityList.next();
-		Assert.assertEquals("uid1", getFieldValue(ent, "uid"));
+		Assert.assertEquals("92762f5b-7837-338f-b72f-396e7061be33", getFieldValue(ent, "uid"));
 		Assert.assertEquals("107", getFieldValue(ent, "mparticleuserid"));
 		Assert.assertEquals("108", getFieldValue(ent, "customerid"));
 		Assert.assertEquals("109", getFieldValue(ent, "facebookid"));
@@ -125,15 +138,16 @@ public class MergeAudUsersByIDsFieldsTest {
 		/* put AudUser has conflict ID */
 		AudienceService.processUIds(USER_5);
 		entityList = getEntityList();
+		List<AudUser> list = getAudUserList();
 		Assert.assertEquals("total audUsers in DS", 2, getTotalAudUsers(entityList));
 		entityList = getEntityList();
 		ent = entityList.next();
-		Assert.assertEquals("uid1", getFieldValue(ent, "uid"));
+		Assert.assertEquals("92762f5b-7837-338f-b72f-396e7061be33", getFieldValue(ent, "uid"));
 		Assert.assertEquals("107", getFieldValue(ent, "mparticleuserid"));
 		Assert.assertEquals("108", getFieldValue(ent, "customerid"));
 		Assert.assertEquals("109", getFieldValue(ent, "facebookid"));
 		ent = entityList.next();
-		Assert.assertEquals("uid1", getFieldValue(ent, "uid"));
+		Assert.assertEquals("92762f5b-7837-338f-b72f-396e7061be33", getFieldValue(ent, "uid"));
 		Assert.assertEquals("for cd107 field", "another", getFieldValue(ent, "mparticleuserid"));
 		Assert.assertEquals("109", getFieldValue(ent, "facebookid"));
 

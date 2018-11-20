@@ -6,6 +6,9 @@ import javax.inject.Singleton;
 import com.google.inject.Injector;
 import com.googlecode.objectify.ObjectifyFactory;
 
+import agency.akcom.mmg.sherlock.collect.audience.AudUserChild;
+import agency.akcom.mmg.sherlock.collect.audience.Demography;
+import agency.akcom.mmg.sherlock.collect.audience.Geography;
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
 import agency.akcom.mmg.sherlock.collect.domain.BackupAudUser;
 
@@ -28,6 +31,9 @@ public class OfyFactory extends ObjectifyFactory {
 
 		this.register(AudUser.class);
 		this.register(BackupAudUser.class);
+		this.register(AudUserChild.class);
+		this.register(Geography.class);
+		this.register(Demography.class);
 
 		long millis = System.currentTimeMillis() - time;
 		System.out.println("Registration took " + millis + " millis");

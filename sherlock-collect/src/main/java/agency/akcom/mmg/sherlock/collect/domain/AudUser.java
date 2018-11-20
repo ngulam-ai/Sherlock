@@ -2,7 +2,9 @@ package agency.akcom.mmg.sherlock.collect.domain;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -11,9 +13,18 @@ import javax.inject.Inject;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Load;
 
+import agency.akcom.mmg.sherlock.collect.AudienceService;
+import agency.akcom.mmg.sherlock.collect.audience.AudUserChild;
+import agency.akcom.mmg.sherlock.collect.audience.AudienceProcessing;
+import agency.akcom.mmg.sherlock.collect.audience.Demography;
+import agency.akcom.mmg.sherlock.collect.audience.Geography;
+import agency.akcom.mmg.sherlock.collect.dao.AudUserChildDao;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,6 +34,36 @@ import lombok.extern.slf4j.Slf4j;
 public class AudUser extends DatastoreObject implements Serializable {
 //	http://localhost:8080/collect?uid=1&cd11=2&cd30=testCity&cd69=testRegion&cd33=testCountry&ua=testOS&__bv=testosVersion&__dc=testDeviceType&__ul=testLang&pa=add
 
+	/**
+	 * Criterias
+OK•	Source: Could be any of the UTM parameters: Source, Medium, DSP, bid type, campaign name, creative, keyword, 
+OK•	Event: could be AdView, AdClick, Conversion, LPView, etc
+•	Membership duration
+ok•	Recency
+ok•	Campaign Activity: Create an audience based on the number of clicks, conversions,
+and impressions (which are based on first-party remarketing lists or lead to conversions).
+o	Audience Definition: 
+	Campaign dimensions: Campaign name
+	Campaign Metrics: AdViews, AdClicks, Conversions or any other event is below, above, equal to a certain value
+ok•	Audience frequency cap: Create an audience excluding users based on the number of impressions they were served (across media, channels, and identity spaces).
+ok•	Interest and Affinity
+OK•	Behaviour
+OK•	Geography
+OK•	Demography
+OK•	Point of interest
+•	Apps on Device
+•	App Usage
+OK•	Device 
+?•	Suppress 
+
+	 */
+	
+	@JsonField(name = "uid")
+	private String adserver_uid;
+	
+	@JsonField(name = "last_uid")
+	private String last_uid;
+	
 	// =====ID=====
 	@IDField
 	@Index
@@ -112,24 +153,6 @@ public class AudUser extends DatastoreObject implements Serializable {
 	@JsonField(name = "cd118")
 	@Index
 	private String windowsphoneAID;
-	
-	//TODO review this fields =====
-//	@JsonField(name = "ios_ifa")
-//	@Index
-//	private String iOSifaTune;
-//
-//	@JsonField(name = "google_aid")
-//	@Index
-//	private String android;
-//
-//	@JsonField(name = "platform_aid")
-//	@Index
-//	private String amazonfire;
-//
-//	@JsonField(name = "windows_aid")
-//	@Index
-//	private String windowsphone;
-	//=============================
 
 	@IDField
 	@JsonField(name = "cd8")
@@ -170,28 +193,17 @@ public class AudUser extends DatastoreObject implements Serializable {
 	@Index
 	private Long frequency;
 	
-	@Index
-	private Date doModified;
+	@Scope
+	@Load
+	Ref<Geography> geography;
+	@Scope
+	@Load 
+	Ref<Demography> demography;
 	
 	private String engagementType;
 	
+	@Index
 	private Date latestHitTime;
-
-	private Geography geography;
-
-	private Demography demography;
-
-	private Behavior behavior;
-
-	private Category category;
-
-	private Device device;
-
-	private CRM crm;
-	
-	@JsonField(name = "uid")
-	private String uid_adserver;
-	
 
 	// -• Uid
 	// -• GA_ClientID
@@ -289,18 +301,35 @@ public class AudUser extends DatastoreObject implements Serializable {
 
 	public AudUser(JSONObject reqJson) {
 		createUid(reqJson);
-		setFieldsWithAnnotation(this, reqJson);
-		geography = new Geography(reqJson);
-		demography = new Demography(reqJson);
-		behavior = new Behavior(reqJson);
-		category = new Category(reqJson);
-		device = new Device(reqJson);
-		setEngagementType(reqJson);
-		crm = new CRM(reqJson);
-		latestHitTime = getHitTime(reqJson);
-
+		AudienceProcessing.setFieldsWithAnnotation(this, reqJson);
+		latestHitTime = AudienceProcessing.getHitTime(reqJson);
 		increaseFrequency();
+		
+		try {
+			AudienceService.createScope(this, reqJson);
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		geography = new Geography(reqJson);
+//		demography = new Demography(reqJson);
+//		behavior = new Behavior(reqJson);
+//		category = new Category(reqJson);
+//		device = new Device(reqJson);
+//		setEngagementType(reqJson);
+//		crm = new CRM(reqJson);
+//		latestHitTime = getHitTime(reqJson);
 	}
+	
+	//Creating additional entity for this class
+	public void createFullAudUser(JSONObject reqJson) {
+		Geography geo = new Geography(reqJson);
+		this.geography = Ref.create(null);
+	}
+
+	
 
 	public Long increaseFrequency() {
 		frequency = (frequency == null) ? 1 : frequency + 1;
@@ -312,7 +341,7 @@ public class AudUser extends DatastoreObject implements Serializable {
 	}
 	
 	public void createUid(JSONObject reqJson) {
-		String uid = getJsonValue(new String[] { "uid" }, reqJson);
+		String uid = AudienceProcessing.getJsonValue(new String[] { "uid" }, reqJson);
 
 		if (uid == null || uid.isEmpty()) {
 			uid = UUID.randomUUID().toString();
@@ -322,113 +351,6 @@ public class AudUser extends DatastoreObject implements Serializable {
 			} catch (IllegalArgumentException e) {
 				this.uid = UUID.nameUUIDFromBytes(uid.getBytes()).toString(); // If uid is provided wrong, like "Africa;Saldanha;unknown;Android...etc"
 			}
-		}
-	}
-
-	//Set fields in class with "JsonField" annotation
-	private static void setFieldsWithAnnotation(Object clazz, JSONObject reqJson) {
-		Field[] fieldsArr = clazz.getClass().getDeclaredFields();
-		for (int i = 0; i < fieldsArr.length; i++) {
-			boolean annotation = checkExistenceAnnotation(fieldsArr[i]);
-			if (annotation) {
-				String[] jsonFieldName = fieldsArr[i].getAnnotation(JsonField.class).name().split(",");
-				String jsonValue = getJsonValue(jsonFieldName, reqJson);
-				fieldsArr[i].setAccessible(true);
-				try {
-					fieldsArr[i].set(clazz, jsonValue);
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-		}
-	}
-
-	// Checking JsonField annotation is exist in field
-	private static boolean checkExistenceAnnotation(Field f) {
-		Annotation[] annotations = f.getDeclaredAnnotations();
-		for (int i = 0; i < annotations.length; i++) {
-			if (annotations[i] instanceof JsonField) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private static String getJsonValue(String[] jsonFieldName, JSONObject reqJson) {
-		String value = null;
-		for (int i = 0; i < jsonFieldName.length; i++) {
-			try {
-				value = reqJson.getString(jsonFieldName[i].trim());
-				if (!value.isEmpty()) {
-					return value;
-				}
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-			}
-		}
-		return value;
-	}
-
-	public static class Geography implements Serializable  {
-
-		@JsonField(name = "cd121")
-		String continent;
-
-		@JsonField(name = "cd33")
-		String country;
-
-		@JsonField(name = "cd57")
-		String carrier;
-
-		@JsonField(name = "cd69")
-		String region;
-
-		@JsonField(name = "cd122")
-		String state;
-
-		@JsonField(name = "cd30")
-		String city;
-
-		@Inject
-		public Geography(JSONObject reqJson) {
-			setFieldsWithAnnotation(this, reqJson);
-		}
-	}
-
-	private static class Demography implements Serializable {
-		
-		@JsonField(name = "cd43")
-		String gender;
-		
-		@JsonField(name = "cd84")
-		String age;
-		
-		@JsonField(name = "cd51")
-		String language;
-		
-		@JsonField(name = "cd85")
-		String education_majority_ZIP;
-		
-		@JsonField(name = "cd86")
-		String ethnicity_majority_ZIP;
-		
-		@JsonField(name = "cd87")
-		String income_average_ZIP;
-		
-		@JsonField(name = "cd88")
-		String unemployment_average_ZIP;
-		
-		@JsonField(name = "cd89")
-		String crimes_average_ZIP;
-
-		@Inject
-		Demography(JSONObject reqJson) {
-			setFieldsWithAnnotation(this, reqJson);
 		}
 	}
 
@@ -458,37 +380,37 @@ public class AudUser extends DatastoreObject implements Serializable {
 		}
 	}
 
-	private static class Device implements Serializable {
-		// TODO review this, I set field from device.* from hits data
-		@JsonField(name = "ua")
-		String os;
-		@JsonField(name = "__bv")
-		String osVersion;
-		@JsonField(name = "__dc")
-		String deviceType;
-		@JsonField(name = "ul, __ul")
-		String language;
-		// TODO set this field
-		String manufacturer;
-		@JsonField(name = "__dm")
-		String model;
+//	private static class Device implements Serializable {
+//		// TODO review this, I set field from device.* from hits data
+//		@JsonField(name = "ua")
+//		String os;
+//		@JsonField(name = "__bv")
+//		String osVersion;
+//		@JsonField(name = "__dc")
+//		String deviceType;
+//		@JsonField(name = "ul, __ul")
+//		String language;
+//		// TODO set this field
+//		String manufacturer;
+//		@JsonField(name = "__dm")
+//		String model;
+//
+//		@Inject
+//		Device(JSONObject reqJson) {
+//			setFieldsWithAnnotation(this, reqJson);
+//		}
+//	}
 
-		@Inject
-		Device(JSONObject reqJson) {
-			setFieldsWithAnnotation(this, reqJson);
-		}
-	}
-
-	private static class CRM implements Serializable {
-		@JsonField(name = "cd123")
-		String ispostpaid;
-		String subscribedto;
-
-		@Inject
-		CRM(JSONObject reqJson) {
-			setFieldsWithAnnotation(this, reqJson);
-		}
-	}
+//	private static class CRM implements Serializable {
+//		@JsonField(name = "cd123")
+//		String ispostpaid;
+//		String subscribedto;
+//
+//		@Inject
+//		CRM(JSONObject reqJson) {
+//			setFieldsWithAnnotation(this, reqJson);
+//		}
+//	}
 
 	private void setEngagementType(JSONObject reqJson) {
 		// define by eCommerceAction.action_type
@@ -526,10 +448,6 @@ public class AudUser extends DatastoreObject implements Serializable {
 		}
 	}
 	
-	private Date getHitTime(JSONObject reqJson) {
-		Date date = new Date();
-		date.setTime(reqJson.getLong("time"));
-		return date;
-	}
+	
 
 }
