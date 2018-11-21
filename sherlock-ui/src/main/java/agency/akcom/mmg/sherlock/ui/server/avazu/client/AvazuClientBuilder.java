@@ -39,7 +39,7 @@ public class AvazuClientBuilder {
 	private static Response logThenDecode(Response response, Type t) {
 		try {
 			String responseString = Util.toString(response.body().asReader());
-			log.info(responseString);
+//			log.info(responseString);
 
 			return response.toBuilder().body(responseString.getBytes()).build();
 

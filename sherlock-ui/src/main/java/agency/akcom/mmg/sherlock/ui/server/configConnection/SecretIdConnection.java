@@ -10,7 +10,8 @@ public class SecretIdConnection extends ConfigConnection{
 	private String clientSecret;
 	private String grantType; 
 	
-	public SecretIdConnection(String id, String secret, String grantType) {
+	public SecretIdConnection(String name, String id, String secret, String grantType) {
+		this.name = name;
 		clientId = id;
 		clientSecret=secret;
 		this.grantType = grantType;

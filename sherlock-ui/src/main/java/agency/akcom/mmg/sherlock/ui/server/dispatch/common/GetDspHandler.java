@@ -33,7 +33,7 @@ public class GetDspHandler extends MyAbstractActionHandler<GetDspAction, GetDspR
             switch (dsp.getTypeConnection()) {
                 case SECRET_ID:
                     SecretIdConnection secretIdConnection = (SecretIdConnection) configConnection;
-                    SecretIdConnectionDto avazuConnectionDto = new SecretIdConnectionDto(secretIdConnection.getClientId(), secretIdConnection.getClientSecret(), secretIdConnection.getGrantType());
+                    SecretIdConnectionDto avazuConnectionDto = new SecretIdConnectionDto(secretIdConnection.getName(), secretIdConnection.getClientId(), secretIdConnection.getClientSecret(), secretIdConnection.getGrantType());
                     configConnectionDtos.add(avazuConnectionDto);
             }
         }

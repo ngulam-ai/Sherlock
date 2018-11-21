@@ -28,12 +28,9 @@ import java.util.ArrayList;
 public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, SettingsPresenter.MyProxy>
         implements SettingsUiHandlers {
 
-
     interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
         void displayConfig(ArrayList<DspDto> dspDtos);
-
         void displayConfigWithSecret(SecretIdConnectionDto secretIdConnectionDto);
-        //void displayLogs(List<ImportLog> importLogs);
     }
 
     private final DispatchAsync dispatcher;
@@ -46,12 +43,6 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     interface MyProxy extends ProxyPlace<SettingsPresenter> {
     }
 
-    private void displayConfig(ArrayList<DspDto> dspDtos) {
-    }
-
-    private void displayConfigWithSecret(SecretIdConnectionDto avazuConnection) {
-    }
-
     @Inject
     SettingsPresenter(final EventBus eventBus, final MyView view, final MyProxy proxy, final DispatchAsync dispatcher) {
         super(eventBus, view, proxy, ApplicationPresenter.SLOT_MAIN_CONTENT);
@@ -62,7 +53,8 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     @Override
     protected void onReset() {
         super.onReset();
-        getView().displayConfig(dspDtos);
+        GWT.log("onReset");
+//        getView().displayConfig(dspDtos);
 //		dispatcher.execute(new GetImportLogAction(), new AsyncCallbackImpl<GetImportLogResult>() {
 //			@Override
 //			public void onSuccess(GetImportLogResult result) {
@@ -121,7 +113,6 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                 ArrayList<DspDto> dspDtos = new ArrayList<>();
                 dspDtos.add(result.getOutDspDto());
                 GWT.log("save" + result.getOutDspDto().getName());
-//                getView().displayConfig(dspDtos);
             }
         });
     }

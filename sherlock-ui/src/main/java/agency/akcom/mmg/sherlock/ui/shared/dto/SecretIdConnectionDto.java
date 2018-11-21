@@ -14,7 +14,8 @@ public class SecretIdConnectionDto extends ConfigConnectionDto {
 		grantType = "client_credentials"; // default value: client_credentials;
 	}
 
-	public SecretIdConnectionDto(String clientId, String clientSecret, String grantType) {
+	public SecretIdConnectionDto(String name, String clientId, String clientSecret, String grantType) {
+		this.name = name;
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		this.grantType = grantType;

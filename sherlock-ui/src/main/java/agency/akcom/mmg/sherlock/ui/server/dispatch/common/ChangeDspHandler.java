@@ -32,16 +32,21 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
         for (ConfigConnectionDto configConnectionDto : dspDto.getConfigConnectionDtos()) {
 //            switch (dspDto.getTypeConnection().toString()) {
 //                case "SECRET_ID":
-                    SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) configConnectionDto;
-                    SecretIdConnection secretIdConnection = new SecretIdConnection(secretIdConnectionDto.getClientId(), secretIdConnectionDto.getClientSecret(), secretIdConnectionDto.getGrantType());
-                    configConnections.add(secretIdConnection);
+            SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) configConnectionDto;
+            SecretIdConnection secretIdConnection =
+                    new SecretIdConnection(
+                            secretIdConnectionDto.getName(),
+                            secretIdConnectionDto.getClientId(),
+                            secretIdConnectionDto.getClientSecret(),
+                            secretIdConnectionDto.getGrantType());
+            configConnections.add(secretIdConnection);
 //            }
         }
         Dsp dsp;
         try {
             dsp = dspDao.get(dspDto.getId());
             dspDao.delete(dsp.getId());
-        } catch (Exception e){                           //com.gwtplatform.dispatch.rpc.shared.ServiceException
+        } catch (Exception e) {                           //com.gwtplatform.dispatch.rpc.shared.ServiceException
             dsp = new Dsp(
                     dspDto.getPartner(),
                     dspDto.getName(),
@@ -49,7 +54,7 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
                     configConnections);
         }
         dsp.setConfigConnections(configConnections);
-        GWT.log("ChangeDspResult "+dspDto.getName());
+        GWT.log("ChangeDspResult " + dspDto.getName());
         dspDao.save(dsp);
         return new ChangeDspResult(dspDto);
     }
