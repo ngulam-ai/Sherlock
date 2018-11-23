@@ -7,6 +7,7 @@ import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspResult;
+import agency.akcom.mmg.sherlock.ui.shared.dto.TokenConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
@@ -30,12 +31,13 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
 
     interface MyView extends View, HasUiHandlers<SettingsUiHandlers> {
         void displayConfig(ArrayList<DspDto> dspDtos);
+
         void displayConfigWithSecret(SecretIdConnectionDto secretIdConnectionDto);
     }
 
     private final DispatchAsync dispatcher;
     private ArrayList<DspDto> dspDtos;
-    private DspDto curentDsp;
+//    private DspDto curentDsp;
 
 
     @ProxyStandard
@@ -62,6 +64,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
 //
 //			}
 //		});
+        getView().displayConfig(dspDtos);
     }
 
     @Override
@@ -72,8 +75,8 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
             @Override
             public void onSuccess(GetAllDspResult result) {
                 dspDtos = result.getDspDtos();
-                if (dspDtos.size()==0){
-                    GWT.log("onFailure");
+                if (dspDtos.size() == 0) {
+                    GWT.log("create AVAZU");
                     dspDtos = new ArrayList<>();
                     DspDto dspDto = new DspDto();
                     SecretIdConnectionDto connection = new SecretIdConnectionDto("Client_id", "Client_secret");
@@ -84,12 +87,28 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                     ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
                     configConnectionDtos.add(connection);
                     dspDto.setConfigConnectionDtos(configConnectionDtos);
-                    curentDsp = dspDto;
-                    GWT.log("ADD to dspDtos: " + dspDtos.add(curentDsp));
+//                    curentDsp = dspDto;
+                    boolean response = dspDtos.add(dspDto);
+                    GWT.log("ADD AVAZU to dspDtos: " + response);
                 } else {
                     GWT.log("onSuccess");
-                    curentDsp = dspDtos.get(0);
+//                    curentDsp = dspDtos.get(0);
                 }
+               /* if (dspDtos.size() == 1) {
+                    GWT.log("create POCKETMATH");
+                    DspDto dspDto = new DspDto();
+                    TokenConnectionDto connection = new TokenConnectionDto();
+                    connection.setName("POCKETMATH_SECRET");
+                    dspDto.setTypeConnection(TypeConnection.TOKEN);
+                    dspDto.setPartner(Partner.POCKETMATH);
+                    dspDto.setName("POCKETMATH");
+                    ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
+                    configConnectionDtos.add(connection);
+                    dspDto.setConfigConnectionDtos(configConnectionDtos);
+//                    curentDsp = dspDto;
+                    boolean response = dspDtos.add(dspDto);
+                    GWT.log("ADD POCKETMATH to dspDtos: " + response);
+                }*/
 
             }
         });
@@ -100,8 +119,8 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     protected void onReveal() {
         super.onReveal();
         GWT.log("onReval");
-        dspDtos.add(curentDsp);
-        getView().displayConfig(dspDtos);
+//        dspDtos.add(curentDsp);
+
     }
 
     @Override

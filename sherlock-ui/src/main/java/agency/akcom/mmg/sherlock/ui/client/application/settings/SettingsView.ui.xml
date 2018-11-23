@@ -11,17 +11,46 @@
             <b:Column size="XS_12">
                 <b:PageHeader text="Settings" subText="" paddingTop="20"/>
                 <b:Column size="XS_12">
-                    <b:NavTabs>
-                        <b:Panel ui:field="panel">
-                        </b:Panel>
-                        <!--<b:AnchorListItem>Item 1</b:AnchorListItem>
-                        <b:AnchorListItem>Item 2</b:AnchorListItem>
-                        <b:AnchorLi
-                        </b:Column>stItem>Item 3</b:AnchorListItem>
-                        <b:AnchorListItem>Pulled right</b:AnchorListItem>-->
+                    <b:NavTabs ui:field="navTabs">
+                        <b:AnchorListItem ui:field="anchorList">Item 1</b:AnchorListItem>
+                        <b:AnchorListItem ui:field="test2">Item 2</b:AnchorListItem>
+                        <b:AnchorListItem>Pulled right</b:AnchorListItem>
+                        <!--<b:Panel ui:field="panel">
+                        </b:Panel>-->
                     </b:NavTabs>
+                    <b:TabContent ui:field="tabContent">
+
+                    </b:TabContent>
                 </b:Column>
             </b:Column>
         </b:Row>
+
+        <b:PanelBody>
+            <b:NavTabs>
+                <b:TabListItem active="true" dataTarget="#tab1" text="Tab 1" icon="CAR"/>
+                <b:TabListItem dataTarget="#tab2" text="Tab 2" icon="TRAIN" iconPosition="RIGHT"/>
+                <b:TabListItem enabled="false" dataTarget="#tab3" text="Tab 3" icon="SPINNER" iconPulse="true"/>
+            </b:NavTabs>
+            <b:TabContent>
+                <b:TabPane active="true" b:id="tab1">
+                    <b:Heading size="H5" text="Tab 1"/>
+                    <b.html:Paragraph>
+                        You must have active="true" on the first tab pane, or set it programmatically.
+                    </b.html:Paragraph>
+                </b:TabPane>
+                <b:TabPane b:id="tab2">
+                    <b:Heading size="H5" text="Tab 2"/>
+                    <b.html:Paragraph>
+                        You must have active="true" on the first tab pane, or set it programmatically.
+                    </b.html:Paragraph>
+                </b:TabPane>
+                <b:TabPane b:id="tab3">
+                    <b:Heading size="H5" text="Tab 3"/>
+                    <b.html:Paragraph>
+                        You must have active="true" on the first tab pane, or set it programmatically.
+                    </b.html:Paragraph>
+                </b:TabPane>
+            </b:TabContent>
+        </b:PanelBody>
     </b:Container>
 </ui:UiBinder>

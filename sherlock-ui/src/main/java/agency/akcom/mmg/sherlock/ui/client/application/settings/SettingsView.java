@@ -22,11 +22,17 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
     interface Binder extends UiBinder<Widget, SettingsView> {
     }
 
-//    Button buttonSave = new Button("Save");
+    //    Button buttonSave = new Button("Save");
     Button buttonAdd = new Button("Add connections");
 
+//    @UiField
+    Panel panel = new Panel();
+
     @UiField
-    Panel panel;
+    AnchorListItem anchorList;
+
+    @UiField
+            AnchorListItem test2;
 
     DspDto curentDsp;
     ArrayList<DspDto> dspDtos;
@@ -82,9 +88,12 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         }
 
         panel.add(buttonAdd);
+        anchorList.add(panel);
+        Label label = new Label("dssd");
+//        AnchorListItem anchorListItem = new AnchorListItem("test");
+        test2.add(label);
+
 //        panel.add(buttonSave);
-
-
     }
 
     public void displayConfigWithSecret(SecretIdConnectionDto secretIdConnectionDto) {
