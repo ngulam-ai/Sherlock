@@ -3,6 +3,7 @@ package agency.akcom.mmg.sherlock.ui.server.dispatch.common;
 import agency.akcom.mmg.sherlock.ui.domain.Dsp;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.TokenConnection;
 import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
 import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
@@ -10,6 +11,7 @@ import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.TokenConnectionDto;
 import com.google.gwt.core.client.GWT;
 import com.gwtplatform.dispatch.rpc.server.ExecutionContext;
 import com.gwtplatform.dispatch.shared.ActionException;
@@ -30,17 +32,28 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
         DspDto dspDto = action.getDspDto();
         ArrayList<ConfigConnection> configConnections = new ArrayList<>();
         for (ConfigConnectionDto configConnectionDto : dspDto.getConfigConnectionDtos()) {
-//            switch (dspDto.getTypeConnection().toString()) {
-//                case "SECRET_ID":
-            SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) configConnectionDto;
-            SecretIdConnection secretIdConnection =
-                    new SecretIdConnection(
-                            secretIdConnectionDto.getName(),
-                            secretIdConnectionDto.getClientId(),
-                            secretIdConnectionDto.getClientSecret(),
-                            secretIdConnectionDto.getGrantType());
-            configConnections.add(secretIdConnection);
-//            }
+            switch (dspDto.getTypeConnection()) {
+                case SECRET_ID: {
+                    SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) configConnectionDto;
+                    SecretIdConnection secretIdConnection =
+                            new SecretIdConnection(
+                                    secretIdConnectionDto.getName(),
+                                    secretIdConnectionDto.getClientId(),
+                                    secretIdConnectionDto.getClientSecret(),
+                                    secretIdConnectionDto.getGrantType());
+                    configConnections.add(secretIdConnection);
+                    break;
+                }
+                case TOKEN:{
+                    TokenConnectionDto tokenConnectionDto = (TokenConnectionDto) configConnectionDto;
+                    TokenConnection tokenConnection =
+                            new TokenConnection(
+                                    tokenConnectionDto.getName(),
+                                    tokenConnectionDto.getToken());
+                    configConnections.add(tokenConnection);
+                    break;
+                }
+            }
         }
         Dsp dsp;
         try {
@@ -59,3 +72,4 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
         return new ChangeDspResult(dspDto);
     }
 }
+

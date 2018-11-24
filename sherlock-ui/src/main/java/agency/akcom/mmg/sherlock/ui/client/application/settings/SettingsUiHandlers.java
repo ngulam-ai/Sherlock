@@ -6,5 +6,5 @@ import com.gwtplatform.mvp.client.UiHandlers;
 import java.util.ArrayList;
 
 public interface SettingsUiHandlers extends UiHandlers {
-    void onSaveClick(ArrayList<DspDto> dspDtos);
+    void onSaveClick(DspDto dspDto);
 }

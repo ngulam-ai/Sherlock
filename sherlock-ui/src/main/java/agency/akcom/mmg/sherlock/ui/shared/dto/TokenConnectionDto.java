@@ -10,4 +10,13 @@ public class TokenConnectionDto extends ConfigConnectionDto{
     public void setToken(String token) {
         this.token = token;
     }
+
+    public TokenConnectionDto(String name, String token) {
+        this.name = name;
+        this.token = token;
+    }
+
+    public TokenConnectionDto() {
+    }
+
 }

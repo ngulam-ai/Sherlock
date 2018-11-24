@@ -9,6 +9,9 @@ public class TokenConnection extends ConfigConnection {
     String token;
 
     @Inject
+    public TokenConnection() {
+    }
+
     public String getToken() {
         return token;
     }
@@ -17,7 +20,8 @@ public class TokenConnection extends ConfigConnection {
         this.token = token;
     }
 
-    public TokenConnection(String token) {
+    public TokenConnection(String name, String token) {
+        this.name = name;
         this.token = token;
     }
 }
