@@ -1,20 +1,20 @@
 cron:
 - description: "daily import Avazy data"
   url: /cron?task=avazu_daily_import
-  schedule: every day 07:00
+  schedule: every day 03:00
   target: ui
   
 - description: "daily import PocketMath data"
   url: /cron?task=pocketmath_daily_import
-  schedule: every day 07:00
+  schedule: every day 03:00
   target: ui
 
 - description: "daily cost increments calculation"
   url: /cron?task=costs_daily_df_pipeline
-  schedule: every day 08:00
+  schedule: every day 04:00
   target: ui
   
 - description: "daily costs update"
   url: /cron?task=session_costs_update
-  schedule: every day 09:00
+  schedule: every day 05:00
   target: ui
