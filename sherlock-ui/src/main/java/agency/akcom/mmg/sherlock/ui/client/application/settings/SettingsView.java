@@ -30,6 +30,8 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
     @UiField
     TabContent tabContent;
 
+    int active = 0;
+
     ArrayList<DspDto> dspDtos;
 
    /* @UiHandler("textSecretId")
@@ -49,7 +51,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         this.dspDtos = dspDtos;
         navTabs.clear();
         tabContent.clear();
-        for (int i=0;i<dspDtos.size();i++) {
+        for (int i = 0; i < dspDtos.size(); i++) {
             displayConfigDsp(i);
         }
     }
@@ -71,28 +73,32 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         tabPane.setId(name);
 
         TypeConnection typeConnection = curentDspDto.getTypeConnection();
-        switch (typeConnection){
-            case SECRET_ID:{
-               tabPane.add(getRowConfigSecretIdHeader());
-               for (ConfigConnectionDto configConnectionDto : curentDspDto.getConfigConnectionDtos()) {
-                   tabPane.add(getRowConfigSecretId((SecretIdConnectionDto) configConnectionDto));
-               }
-               break;
-           }
-            case TOKEN:{
+        switch (typeConnection) {
+            case SECRET_ID: {
+                tabPane.add(getRowConfigSecretIdHeader());
+                for (ConfigConnectionDto configConnectionDto : curentDspDto.getConfigConnectionDtos()) {
+                    tabPane.add(getRowConfigSecretId((SecretIdConnectionDto) configConnectionDto));
+                }
+                break;
+            }
+            case TOKEN: {
                 tabPane.add(getRowConfigTokenHeader());
-                for (ConfigConnectionDto configConnectionDto : curentDspDto.getConfigConnectionDtos()){
+                for (ConfigConnectionDto configConnectionDto : curentDspDto.getConfigConnectionDtos()) {
                     tabPane.add(getRowConfigToken((TokenConnectionDto) configConnectionDto));
                 }
                 break;
             }
         }
         tabPane.add(getAddButton(indexDsp));
+        if (indexDsp == active) {
+            tabPane.setActive(true);
+            tabListItem.setActive(true);
+        }
         tabContent.add(tabPane);
 
     }
 
-    public Row getRowConfigToken(TokenConnectionDto tokenConnectionDto){
+    public Row getRowConfigToken(TokenConnectionDto tokenConnectionDto) {
         GWT.log("getRowConfigToken");
 
         Row row = new Row();
@@ -116,18 +122,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         row.add(colum("XS_1", delete));
 
         delete.addClickHandler(event -> {
-            int indexCC = -1;
-            int indexDsp = -1;
-            for (int i = 0; i < dspDtos.size(); i++) {
-                int index = dspDtos.get(i).getConfigConnectionDtos().indexOf(tokenConnectionDto);
-                if (index > -1) {
-                    indexDsp = i;
-                    indexCC = index;
-                }
-            }
-
-            dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
-            getUiHandlers().onSaveClick(dspDtos.get(indexDsp)); //4
+            delete(tokenConnectionDto);
         });
 
         save.addClickHandler(event -> {
@@ -139,6 +134,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
                 if (index > -1) {
                     indexDsp = i;
                     indexCC = index;
+                    active = indexDsp;
 
                 }
             }
@@ -179,25 +175,14 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         textBoxGrantType.setVisible(false);
 
         row.add(colum("XS_2", textBoxName));
-        row.add(colum("XS_2", textBoxSecretId));
-        row.add(colum("XS_3", textBoxSecret));
-        row.add(colum("XS_3", textBoxGrantType));
+        row.add(colum("XS_3", textBoxSecretId));
+        row.add(colum("XS_5", textBoxSecret));
+//        row.add(colum("XS_3", textBoxGrantType));
         row.add(colum("XS_1", save));
         row.add(colum("XS_1", delete));
 
         delete.addClickHandler(event -> {
-            int indexCC = -1;
-            int indexDsp = -1;
-            for (int i = 0; i < dspDtos.size(); i++) {
-                int index = dspDtos.get(i).getConfigConnectionDtos().indexOf(secretIdConnectionDto);
-                if (index > -1) {
-                    indexDsp = i;
-                    indexCC = index;
-                }
-            }
-
-            dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
-            getUiHandlers().onSaveClick(dspDtos.get(indexDsp)); //2
+            delete(secretIdConnectionDto);
         });
         save.addClickHandler(event -> {
             int indexCC = -1;
@@ -207,7 +192,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
                 if (index > -1) {
                     indexDsp = i;
                     indexCC = index;
-
                 }
             }
 
@@ -227,9 +211,9 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
     public Row getRowConfigSecretIdHeader() {
         Row row = new Row();
         row.add(colum("XS_2", "Name"));
-        row.add(colum("XS_2", "Secret Id"));
-        row.add(colum("XS_3", "Secret"));
-        row.add(colum("XS_3", "Grant Type"));
+        row.add(colum("XS_3", "Secret Id"));
+        row.add(colum("XS_5", "Secret"));
+//        row.add(colum("XS_3", "Grant Type"));
         return row;
     }
 
@@ -266,23 +250,25 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         displayConfig(dspDtos);
     }
 
-    public Button getAddButton(int indexDsp){
+    public Button getAddButton(int indexDsp) {
         DspDto curentDspDto = dspDtos.get(indexDsp);
         Button button = new Button("Add connections");
         button.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 GWT.log("ButtonAddOnClick");
-                GWT.log("index: "+indexDsp);
-                switch (curentDspDto.getTypeConnection()){
-                    case SECRET_ID:{
+                GWT.log("index: " + indexDsp);
+                switch (curentDspDto.getTypeConnection()) {
+                    case SECRET_ID: {
                         SecretIdConnectionDto newSecretIdConnectionDto = new SecretIdConnectionDto("ClientId", "Secret");
                         dspDtos.get(indexDsp).getConfigConnectionDtos().add(newSecretIdConnectionDto);
+                        active = indexDsp;
                         break;
                     }
-                    case TOKEN:{
+                    case TOKEN: {
                         TokenConnectionDto newTokenConnectionDto = new TokenConnectionDto();
                         dspDtos.get(indexDsp).getConfigConnectionDtos().add(newTokenConnectionDto);
+                        active = indexDsp;
                         break;
                     }
                 }
@@ -290,6 +276,29 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             }
         });
         return button;
+    }
+
+    public void delete(ConfigConnectionDto curentConnection){
+        int indexCC = -1;
+        int indexDsp = -1;
+        for (int i = 0; i < dspDtos.size(); i++) {
+            GWT.log("i: "+i);
+            GWT.log("curentConnection.name: "+curentConnection.getName());
+            int index = dspDtos.get(i).getConfigConnectionDtos().indexOf(curentConnection);
+            GWT.log("index: "+index);
+            if (index > -1) {
+                indexDsp = i;
+                indexCC = index;
+                active = indexDsp;
+            }
+        }
+
+        GWT.log("indexDsp: "+indexDsp);
+        GWT.log("indexCC : "+indexCC);
+
+        dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
+        getUiHandlers().onSaveClick(dspDtos.get(indexDsp)); //2
+        refresh();
     }
 
     @Inject

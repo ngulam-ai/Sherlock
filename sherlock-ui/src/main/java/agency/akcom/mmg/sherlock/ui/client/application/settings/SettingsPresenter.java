@@ -77,7 +77,6 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                     configConnectionDtos.add(connection);
                     dspDto.setConfigConnectionDtos(configConnectionDtos);
                     boolean response = dspDtos.add(dspDto);
-                    GWT.log("ADD AVAZU to dspDtos: " + response);
                 }
                 if (dspDtos.size() == 1) {
                     GWT.log("create POCKETMATH");
@@ -92,10 +91,10 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                     configConnectionDtos.add(connection);
                     dspDto.setConfigConnectionDtos(configConnectionDtos);
                     boolean response = dspDtos.add(dspDto);
-                    GWT.log("ADD POCKETMATH to dspDtos: " + response);
                 }
             }
         });
+//        getView().displayConfig(dspDtos);
         GWT.log("OnBind Exit");
     }
 

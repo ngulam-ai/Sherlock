@@ -1,5 +1,7 @@
 package agency.akcom.mmg.sherlock.ui.shared.dto;
 
+import java.util.Objects;
+
 public class SecretIdConnectionDto extends ConfigConnectionDto {
 
 	private String clientId;
@@ -47,5 +49,20 @@ public class SecretIdConnectionDto extends ConfigConnectionDto {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SecretIdConnectionDto that = (SecretIdConnectionDto) o;
+		return Objects.equals(clientId, that.clientId) &&
+				Objects.equals(clientSecret, that.clientSecret) &&
+				Objects.equals(grantType, that.grantType);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(clientId, clientSecret, grantType);
 	}
 }
