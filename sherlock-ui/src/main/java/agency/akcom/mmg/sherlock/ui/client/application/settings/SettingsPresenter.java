@@ -53,67 +53,77 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     protected void onReset() {
         super.onReset();
         GWT.log("onReset");
-        getView().displayConfig(dspDtos);
     }
 
     @Override
     protected void onBind() {
         super.onBind();
+
         GWT.log("OnBindEnter");
         dispatcher.execute(new GetAllDspAction(), new AsyncCallbackImpl<GetAllDspResult>() {
             @Override
             public void onSuccess(GetAllDspResult result) {
-                dspDtos = result.getDspDtos();
-                if (dspDtos.size() == 0) {
-                    GWT.log("create AVAZU");
-                    dspDtos = new ArrayList<>();
-                    DspDto dspDto = new DspDto();
-                    SecretIdConnectionDto connection = new SecretIdConnectionDto("Client_id", "Client_secret");
-                    connection.setName("AVAZU");
-                    dspDto.setTypeConnection(TypeConnection.SECRET_ID);
-                    dspDto.setPartner(Partner.AVAZU);
-                    dspDto.setName("Avazu");
-                    ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
-                    configConnectionDtos.add(connection);
-                    dspDto.setConfigConnectionDtos(configConnectionDtos);
-                    boolean response = dspDtos.add(dspDto);
-                }
-                if (dspDtos.size() == 1) {
-                    GWT.log("create POCKETMATH");
-                    DspDto dspDto = new DspDto();
-                    TokenConnectionDto connection = new TokenConnectionDto();
-                    connection.setName("POCKETMATH_NAME");
-                    connection.setToken("POCKETMATH_TOKEN");
-                    dspDto.setTypeConnection(TypeConnection.TOKEN);
-                    dspDto.setPartner(Partner.POCKETMATH);
-                    dspDto.setName("POCKETMATH");
-                    ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
-                    configConnectionDtos.add(connection);
-                    dspDto.setConfigConnectionDtos(configConnectionDtos);
-                    boolean response = dspDtos.add(dspDto);
+                GWT.log("onSuccess onBind");
+                if (result.getDspDtos() != null && result.getDspDtos().size() > 0) {
+                    dspDtos = result.getDspDtos();
+                    getView().displayConfig(dspDtos);
                 }
             }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+                GWT.log("onFailure");
+            }
         });
-//        getView().displayConfig(dspDtos);
+
+        if (dspDtos == null) {
+            GWT.log("create AVAZU");
+            dspDtos = new ArrayList<>();
+
+            DspDto dspDto = new DspDto();
+            SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto("Client_id", "Client_secret");
+            secretIdConnectionDto.setName("AVAZU");
+            dspDto.setTypeConnection(TypeConnection.SECRET_ID);
+            dspDto.setPartner(Partner.AVAZU);
+            dspDto.setName("Avazu");
+            ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
+            configConnectionDtos.add(secretIdConnectionDto);
+            dspDto.setConfigConnectionDtos(configConnectionDtos);
+            dspDtos.add(dspDto);
+
+            GWT.log("create POCKETMATH");
+            DspDto dspDtoPocketMath = new DspDto();
+            TokenConnectionDto tokenConnectionDto = new TokenConnectionDto();
+            tokenConnectionDto.setName("POCKETMATH_NAME");
+            tokenConnectionDto.setToken("POCKETMATH_TOKEN");
+            dspDtoPocketMath.setTypeConnection(TypeConnection.TOKEN);
+            dspDtoPocketMath.setPartner(Partner.POCKETMATH);
+            dspDtoPocketMath.setName("POCKETMATH");
+            ArrayList<ConfigConnectionDto> configConnectionDtosPocketMath = new ArrayList<ConfigConnectionDto>();
+            configConnectionDtosPocketMath.add(tokenConnectionDto);
+            dspDtoPocketMath.setConfigConnectionDtos(configConnectionDtosPocketMath);
+            dspDtos.add(dspDtoPocketMath);
+        }
         GWT.log("OnBind Exit");
+        getView().displayConfig(dspDtos);
     }
 
     @Override
     protected void onReveal() {
         super.onReveal();
         GWT.log("onReval");
+        getView().displayConfig(dspDtos);
     }
 
     @Override
     public void onSaveClick(DspDto dspDto) {
-        GWT.log("onSaveClickPresenter DSP:" + dspDto.getName());
         dispatcher.execute(new ChangeDspAction(dspDto), new AsyncCallbackImpl<ChangeDspResult>() {
             @Override
             public void onSuccess(ChangeDspResult result) {
                 int indexDsp = dspDtos.indexOf(dspDto);
                 dspDtos.remove(indexDsp);
                 dspDtos.add(indexDsp, result.getOutDspDto());
-                GWT.log("save" + result.getOutDspDto().getName());
             }
         });
     }

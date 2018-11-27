@@ -40,11 +40,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             processSave();
     }*/
 
-    private void processSave() {
-        GWT.log("processSave");
-//        getUiHandlers().onSaveClick(dspDtos);
-    }
-
     @Override
     public void displayConfig(ArrayList<DspDto> dspDtos) {
         GWT.log("displayConfig");
@@ -72,6 +67,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         TabPane tabPane = new TabPane();
         tabPane.setId(name);
 
+        GWT.log("Enter switch");
         TypeConnection typeConnection = curentDspDto.getTypeConnection();
         switch (typeConnection) {
             case SECRET_ID: {
@@ -84,9 +80,12 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             case TOKEN: {
                 tabPane.add(getRowConfigTokenHeader());
                 for (ConfigConnectionDto configConnectionDto : curentDspDto.getConfigConnectionDtos()) {
-                    tabPane.add(getRowConfigToken((TokenConnectionDto) configConnectionDto));
+                    TokenConnectionDto tokenConnectionDto = (TokenConnectionDto) configConnectionDto;
+                    tabPane.add(getRowConfigToken(tokenConnectionDto));
                 }
                 break;
+
+
             }
         }
         tabPane.add(getAddButton(indexDsp));
@@ -257,7 +256,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             @Override
             public void onClick(ClickEvent event) {
                 GWT.log("ButtonAddOnClick");
-                GWT.log("index: " + indexDsp);
                 switch (curentDspDto.getTypeConnection()) {
                     case SECRET_ID: {
                         SecretIdConnectionDto newSecretIdConnectionDto = new SecretIdConnectionDto("ClientId", "Secret");
@@ -282,10 +280,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         int indexCC = -1;
         int indexDsp = -1;
         for (int i = 0; i < dspDtos.size(); i++) {
-            GWT.log("i: "+i);
-            GWT.log("curentConnection.name: "+curentConnection.getName());
             int index = dspDtos.get(i).getConfigConnectionDtos().indexOf(curentConnection);
-            GWT.log("index: "+index);
             if (index > -1) {
                 indexDsp = i;
                 indexCC = index;
@@ -293,8 +288,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             }
         }
 
-        GWT.log("indexDsp: "+indexDsp);
-        GWT.log("indexCC : "+indexCC);
 
         dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
         getUiHandlers().onSaveClick(dspDtos.get(indexDsp)); //2
