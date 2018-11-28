@@ -288,7 +288,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             }
         }
 
-
         dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
         getUiHandlers().onSaveClick(dspDtos.get(indexDsp)); //2
         refresh();

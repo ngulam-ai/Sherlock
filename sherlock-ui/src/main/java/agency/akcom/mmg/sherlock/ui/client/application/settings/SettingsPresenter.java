@@ -69,42 +69,14 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                     getView().displayConfig(dspDtos);
                 }
             }
-
             @Override
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
-                GWT.log("onFailure");
+                GWT.log("onFailure onBind");
             }
         });
 
-        if (dspDtos == null) {
-            GWT.log("create AVAZU");
-            dspDtos = new ArrayList<>();
-
-            DspDto dspDto = new DspDto();
-            SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto("Client_id", "Client_secret");
-            secretIdConnectionDto.setName("AVAZU");
-            dspDto.setTypeConnection(TypeConnection.SECRET_ID);
-            dspDto.setPartner(Partner.AVAZU);
-            dspDto.setName("Avazu");
-            ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
-            configConnectionDtos.add(secretIdConnectionDto);
-            dspDto.setConfigConnectionDtos(configConnectionDtos);
-            dspDtos.add(dspDto);
-
-            GWT.log("create POCKETMATH");
-            DspDto dspDtoPocketMath = new DspDto();
-            TokenConnectionDto tokenConnectionDto = new TokenConnectionDto();
-            tokenConnectionDto.setName("POCKETMATH_NAME");
-            tokenConnectionDto.setToken("POCKETMATH_TOKEN");
-            dspDtoPocketMath.setTypeConnection(TypeConnection.TOKEN);
-            dspDtoPocketMath.setPartner(Partner.POCKETMATH);
-            dspDtoPocketMath.setName("POCKETMATH");
-            ArrayList<ConfigConnectionDto> configConnectionDtosPocketMath = new ArrayList<ConfigConnectionDto>();
-            configConnectionDtosPocketMath.add(tokenConnectionDto);
-            dspDtoPocketMath.setConfigConnectionDtos(configConnectionDtosPocketMath);
-            dspDtos.add(dspDtoPocketMath);
-        }
+        checkAndAddDefaultDsp();
         GWT.log("OnBind Exit");
         getView().displayConfig(dspDtos);
     }
@@ -113,6 +85,7 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     protected void onReveal() {
         super.onReveal();
         GWT.log("onReval");
+        checkAndAddDefaultDsp();
         getView().displayConfig(dspDtos);
     }
 
@@ -126,6 +99,52 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                 dspDtos.add(indexDsp, result.getOutDspDto());
             }
         });
+    }
+
+    private void checkAndAddDefaultDsp() {
+        if (dspDtos == null) {
+            dspDtos = new ArrayList<>();
+            dspDtos.add(getDefaultAvazu());
+            dspDtos.add(getDefaultPocketmath());
+        } else {
+            if (dspDtos.size() == 1) {
+                if (dspDtos.get(0).getPartner() == Partner.AVAZU) {
+                    dspDtos.add(getDefaultPocketmath());
+                } else {
+                    dspDtos.add(getDefaultAvazu());
+                }
+            }
+        }
+
+    }
+
+    private DspDto getDefaultAvazu() {
+        GWT.log("create AVAZU");
+        DspDto result = new DspDto();
+        SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto("Client_id", "Client_secret");
+        secretIdConnectionDto.setName("AVAZU");
+        result.setTypeConnection(TypeConnection.SECRET_ID);
+        result.setPartner(Partner.AVAZU);
+        result.setName("Avazu");
+        ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
+        configConnectionDtos.add(secretIdConnectionDto);
+        result.setConfigConnectionDtos(configConnectionDtos);
+        return result;
+    }
+
+    private DspDto getDefaultPocketmath() {
+        GWT.log("create POCKETMATH");
+        DspDto result = new DspDto();
+        TokenConnectionDto tokenConnectionDto = new TokenConnectionDto();
+        tokenConnectionDto.setName("POCKETMATH_NAME");
+        tokenConnectionDto.setToken("POCKETMATH_TOKEN");
+        result.setTypeConnection(TypeConnection.TOKEN);
+        result.setPartner(Partner.POCKETMATH);
+        result.setName("POCKETMATH");
+        ArrayList<ConfigConnectionDto> configConnectionDtosPocketMath = new ArrayList<ConfigConnectionDto>();
+        configConnectionDtosPocketMath.add(tokenConnectionDto);
+        result.setConfigConnectionDtos(configConnectionDtosPocketMath);
+        return result;
     }
 
 }

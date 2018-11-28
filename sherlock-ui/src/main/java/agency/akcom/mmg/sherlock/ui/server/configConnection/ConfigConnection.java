@@ -16,6 +16,14 @@ public abstract class ConfigConnection {
 		this.name = name;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public ConfigConnection(String name) {
 		this.name = name;
 	}
