@@ -33,10 +33,23 @@ public class AvazuUtils {
 		authRequest.setClient_secret(credentials.getClientSecret());
 	}
 	
+	//For test
 	public AvazuUtils(AuthRequest authRequest) {
 		avazuClientBuilder  = new AvazuClientBuilder();
 		avazuClient = avazuClientBuilder.getAvazuClient();
 		this.authRequest = authRequest;
+	}
+	
+	/**
+	 * @return "true" if credentials are valid, false - credentials invalid
+	 */
+	public boolean checkingValidCredentials() {
+		Auth auth = avazuClient.getAuth(authRequest);
+		if(auth.getAccess_token() != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public List<ReportDatum> getFullReportDatum(String command, String startdate, String enddate,

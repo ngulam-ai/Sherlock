@@ -78,7 +78,7 @@ public class AvazuImportTask extends AbstractTask {
 		ArrayList<ConfigConnection> credentialsList;
 		try {
 			credentialsList = dspdao.getCredentials(Partner.AVAZU);
-		} catch (NoSuchFieldException e1) {
+		} catch (NoSuchFieldException ex) {
 			log.warn("Not found credentials for Avazu");
 			importLog.setEnd(new Date());
 			importLog.setStatus(ImportStatus.SUCCESS);
@@ -88,6 +88,7 @@ public class AvazuImportTask extends AbstractTask {
 
 		Publisher publisher = preparePublisher();
 		if (publisher == null) {
+			log.error("Avazu Publisher was not prepared");
 			importLog.setEnd(new Date());
 			importLog.setStatus(ImportStatus.FAILURE);
 			importLogDao.save(importLog);
@@ -100,7 +101,11 @@ public class AvazuImportTask extends AbstractTask {
 		for (ConfigConnection config : credentialsList) {
 			SecretIdConnection credentials = (SecretIdConnection) config;
 			AvazuUtils avazuUtils = new AvazuUtils(credentials);
-
+			if(avazuUtils.checkingValidCredentials() == false) {
+				log.warn("Invalid credentials: ClientSecret{" + credentials.getClientSecret() + "}, ClientId{" + credentials.getClientId());
+				continue;
+			}
+			
 			List<ReportDatum> reportDatums = avazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
 
 			Map<String, String> campaignsBidTypes = avazuUtils.getCampaignsWithBidTypes();
