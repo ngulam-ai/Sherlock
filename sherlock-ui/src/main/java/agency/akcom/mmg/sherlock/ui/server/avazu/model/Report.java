@@ -32,10 +32,10 @@ public class Report {
 		// Note that the field "date" only for campaign and creative dimension reports
 		private String day;
 
-		private int impressions; // Total amount of impressions
-		private int clicks; // Total amount of clicks
-		private int conversions; // Total amount of conversions
-		private float spend; // Total amount of money spent, in US Dollars
+		private long impressions; // Total amount of impressions
+		private long clicks; // Total amount of clicks
+		private long conversions; // Total amount of conversions
+		private double spend; // Total amount of money spent, in US Dollars
 		private String creative_name; // Creative name
 		private String campaign_name; // Campaign name
 		private String geo_name; // Country name

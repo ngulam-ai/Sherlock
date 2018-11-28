@@ -16,7 +16,8 @@
 					</b:NavbarHeader>
 					<b:NavbarCollapse b:id="navbar-collapse">
 						<b:NavbarNav pull="RIGHT">
-							
+							<b:AnchorListItem text="Settings"
+								targetHistoryToken="{nameTokens.getSettings}" />
 							<b:AnchorListItem text="Import log"
 								targetHistoryToken="{nameTokens.getLog}" />
 							<b:AnchorListItem text="Users"

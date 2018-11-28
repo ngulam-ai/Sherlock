@@ -3,9 +3,9 @@ package agency.akcom.mmg.sherlock.ui.shared.enums;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.io.Serializable;
 
-public enum Partner implements Serializable, IsSerializable  {
-	POCKETMATH,
-	AVAZU;
+public enum TypeConnection implements Serializable, IsSerializable {
+    TOKEN,
+    SECRET_ID;
 
-	Partner() {}
+    TypeConnection() {}
 }

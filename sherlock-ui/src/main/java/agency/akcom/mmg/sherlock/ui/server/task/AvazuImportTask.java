@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -23,6 +24,9 @@ import com.google.pubsub.v1.TopicName;
 
 import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
 import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
 import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
@@ -45,15 +49,43 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 		ImportLog importLog = new ImportLog(Partner.AVAZU);
 		ImportLogDao importLogDao = new ImportLogDao();
 		importLogDao.save(importLog);
+		
+		//Getting credentials for Avazu
+		DspDao dspdao = new DspDao();
+		ArrayList<ConfigConnection> credentialsList;
+		try {
+			credentialsList = dspdao.getCredentials(Partner.AVAZU);
+		} catch (NoSuchFieldException ex) {
+			log.warn("Not found credentials for Avazu");
+			importLog.setEnd(new Date());
+			importLog.setStatus(ImportStatus.SUCCESS);
+			importLogDao.save(importLog);
+			return;
+		}
 
 		Publisher publisher = preparePublisher();
+		if (publisher == null) {
+			log.error("Avazu Publisher was not prepared");
+			importLog.setEnd(new Date());
+			importLog.setStatus(ImportStatus.FAILURE);
+			importLogDao.save(importLog);
+			return;
+		}
 
-		if (publisher != null) {
+		String yesterday = getYesterdayFormated();
 
-			String yesterday = getYesterdayFormated();
-			List<ReportDatum> reportDatums = AvazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
+		//Report data from API for each credential
+		for (ConfigConnection config : credentialsList) {
+			SecretIdConnection credentials = (SecretIdConnection) config;
+			AvazuUtils avazuUtils = new AvazuUtils(credentials);
+			if(avazuUtils.checkingValidCredentials() == false) {
+				log.warn("Invalid credentials: ClientSecret{" + credentials.getClientSecret() + "}, ClientId{" + credentials.getClientId());
+				continue;
+			}
+			
+			List<ReportDatum> reportDatums = avazuUtils.getFullReportDatum("creative", yesterday, yesterday, "site");
 
-			Map<String, String> campaignsBidTypes = AvazuUtils.getCampaignsWithBidTypes();
+			Map<String, String> campaignsBidTypes = avazuUtils.getCampaignsWithBidTypes();
 
 			for (ReportDatum datum : reportDatums) {
 				log.info(datum.toString());
