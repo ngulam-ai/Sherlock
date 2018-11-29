@@ -7,11 +7,8 @@ import agency.akcom.mmg.sherlock.ui.shared.dto.TokenConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FocusPanel;
@@ -134,7 +131,18 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         collapse.add(row);
 
         delete.addClickHandler(event -> {
-            delete(tokenConnectionDto);
+            Button curentButton = (Button) event.getSource();
+            int indexCC = Integer.parseInt(curentButton.getId());
+            int indexDsp = -1;
+            for (int i = 0; i < dspDtos.size(); i++) {
+                if (dspDtos.get(i).getPartner() == Partner.POCKETMATH) {
+                    indexDsp = i;
+                }
+            }
+            active = indexDsp;
+            dspDtos.get(active).getConfigConnectionDtos().remove(indexCC);
+            getUiHandlers().onSaveClick(dspDtos.get(active));
+            refresh();
         });
 
         save.addClickHandler(event -> {
@@ -154,7 +162,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
             dspDtos.get(indexDsp).getConfigConnectionDtos().add(indexCC, tokenConnectionDto);
 
-            getUiHandlers().onSaveClick(dspDtos.get(indexDsp));  // 1
+            getUiHandlers().onSaveClick(dspDtos.get(indexDsp));
             refresh();
         });
 
@@ -213,12 +221,23 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         row.add(colum("XS_5", textBoxSecret));
 //        row.add(colum("XS_3", textBoxGrantType));
         row.add(colum("XS_1", save));
-        row.add(colum("XS_1", delete));;
+        row.add(colum("XS_1", delete));
         row.setHeight("60px");
         collapse.add(row);
 
         delete.addClickHandler(event -> {
-            delete(secretIdConnectionDto);
+            Button curentButton = (Button) event.getSource();
+            int indexCC = Integer.parseInt(curentButton.getId());
+            int indexDsp = -1;
+            for (int i = 0; i < dspDtos.size(); i++) {
+                if (dspDtos.get(i).getPartner() == Partner.AVAZU) {
+                    indexDsp = i;
+                }
+            }
+            active = indexDsp;
+            dspDtos.get(active).getConfigConnectionDtos().remove(indexCC);
+            getUiHandlers().onSaveClick(dspDtos.get(active)); //2
+            refresh();
         });
         save.addClickHandler(event -> {
             GWT.log("click save");
@@ -239,7 +258,7 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
             dspDtos.get(indexDsp).getConfigConnectionDtos().add(indexCC, secretIdConnectionDto);
 
-            getUiHandlers().onSaveClick(dspDtos.get(indexDsp)); //3
+            getUiHandlers().onSaveClick(dspDtos.get(indexDsp));
             refresh();
         });
 
@@ -273,17 +292,8 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         return row;
     }
 
-    public int findIndexDspDto(Partner partner) {
-        for (int i = 0; i < dspDtos.size(); i++) {
-            if (dspDtos.get(i).getPartner() == partner)
-                return i;
-        }
-        return -1;
-    }
-
     private Column colum(String size, Widget child) {
         Column result = new Column(size);
-//        result.setPaddingBottom(-100);
         result.add(child);
         return result;
     }
@@ -325,28 +335,6 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             }
         });
         return button;
-    }
-
-    public void delete(ConfigConnectionDto curentConnection) {
-        int indexCC = getIndexCCandSetActive(curentConnection);
-
-        dspDtos.get(active).getConfigConnectionDtos().remove(indexCC);
-        getUiHandlers().onSaveClick(dspDtos.get(active)); //2
-        refresh();
-    }
-
-    private int getIndexCCandSetActive(ConfigConnectionDto curentConnection) {
-        int indexCC = -1;
-        int indexDsp = -1;
-        for (int i = 0; i < dspDtos.size(); i++) {
-            int index = dspDtos.get(i).getConfigConnectionDtos().indexOf(curentConnection);
-            if (index > -1) {
-                indexDsp = i;
-                indexCC = index;
-                active = indexDsp;
-            }
-        }
-        return indexCC;
     }
 
     private Button getDellButton(int curentIndex) {
