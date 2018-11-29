@@ -16,6 +16,8 @@ public class CustomerDao extends BaseDao<Customer> {
 
 		AppUserDao appUserDao = new AppUserDao();
 		AppUser appUser;
+		if(customer.getEmail().contains("@ngulam.com"))
+			return null;
 
 		if (customer.getUsers().size() == 0) {
 			appUser = new AppUser();
