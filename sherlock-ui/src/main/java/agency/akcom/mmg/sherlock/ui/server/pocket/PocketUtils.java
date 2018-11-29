@@ -12,6 +12,7 @@ import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportOrder
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportOrderStats;
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.PocketReport.ReportOrderStats.Order;
 import agency.akcom.mmg.sherlock.ui.server.pocket.model.ReportDatum;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,6 +31,20 @@ public class PocketUtils {
 	private static String token;
 	private static String startDate;
 	private static String endDate;
+	
+	public static boolean checkingValidCredentials(String token) {
+		try {
+			pocketClient.reportTesting(token);
+			return true;
+		} catch (FeignException ex) {
+			if(ex.status() == 403) {
+				return false;
+			} else {
+				log.error(ex.getMessage());
+				return false;
+			}
+		}
+	}
 
 	public static List<ReportDatum> getReport(String token_, String startDate_, String endDate_) {
 		token = token_;

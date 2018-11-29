@@ -22,6 +22,9 @@ import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 
+import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.TokenConnection;
+import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
 import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions;
 import agency.akcom.mmg.sherlock.ui.server.pocket.PocketUtils;
@@ -41,35 +44,56 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 		ImportLog importLog = new ImportLog(Partner.POCKETMATH);
 		ImportLogDao importLogDao = new ImportLogDao();
 		importLogDao.save(importLog);
-		// TODO GetTokenDao
-		String[] tokens = { "f569c162f3c4c9142d8813355928b272aec227b4801cfe0273b7e6120a4886ac" };
+		
+		DspDao dspdao = new DspDao();
+		ArrayList<ConfigConnection> credentialsList;
+		try {
+			credentialsList = dspdao.getCredentials(Partner.POCKETMATH);
+		} catch (NoSuchFieldException ex) {
+			log.warn("Not found credentials for PocketMath");
+			importLog.setEnd(new Date());
+			importLog.setStatus(ImportStatus.SUCCESS);
+			importLogDao.save(importLog);
+			return;
+		}
 
 		Publisher publisher = preparePublisher();
+		if (publisher == null) {
+			log.error("PocketMath Publisher was not prepared");
+			importLog.setEnd(new Date());
+			importLog.setStatus(ImportStatus.FAILURE);
+			importLogDao.save(importLog);
+			return;
+		}
 
-		if (publisher != null) {
-			String startDate = getFromDate();
-			String endDate = getToDate();
-			String yesterday = getYesterday(startDate);
-
-			List<ReportDatum> reportDatum = new ArrayList<>();
-
-			//for multiply tokens
-			for (String token : tokens) {
-				reportDatum.addAll(PocketUtils.getReport(token, startDate, endDate));
+		String startDate = getFromDate();
+		String endDate = getToDate();
+		String yesterday = getYesterday(startDate);
+		
+		for (ConfigConnection config : credentialsList) {
+			TokenConnection tokenConnection = (TokenConnection) config;
+			log.info("import for name:" + tokenConnection.getName());
+			String token = tokenConnection.getToken();
+			
+			if(PocketUtils.checkingValidCredentials(token) == false) {
+				log.warn("POCKETMATH. Invalid credentials: Token{" + token + "}");
+				continue;
 			}
-
+			
+			List<ReportDatum> reportDatum = PocketUtils.getReport(token, startDate, endDate);
+			
 			for (ReportDatum rep : reportDatum) {
-				for(ReportPublisher report : rep.getReportPublisher()) {
+				for (ReportPublisher report : rep.getReportPublisher()) {
 					postToPubSub(publisher, report, yesterday);
 				}
 			}
-
-			// When finished with the publisher, shutdown to free up resources.
-			try {
-				publisher.shutdown();
-			} catch (Exception e) {
-				log.error(e.toString());
-			}
+		}
+		
+		// When finished with the publisher, shutdown to free up resources.
+		try {
+			publisher.shutdown();
+		} catch (Exception e) {
+			log.error(e.toString());
 		}
 
 		importLog.setEnd(new Date());

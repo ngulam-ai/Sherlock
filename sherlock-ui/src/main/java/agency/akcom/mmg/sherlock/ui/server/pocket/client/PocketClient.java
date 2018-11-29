@@ -27,5 +27,9 @@ public interface PocketClient {
 	@Headers("Authorization: Token token={token}")
 	List<ReportPublisher> reportPublisher(@Param("token") String token, @Param("id") String order_id,
 			@Param("start_date") String startDate, @Param("end_date") String endDate, @Param("page") int page);
-
+	
+	//For checking token valid
+	@RequestLine("GET /v3/stats/orders")
+	@Headers("Authorization: Token token={token}")
+	ReportOrderStats reportTesting(@Param("token") String token);
 }

@@ -79,7 +79,7 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 			SecretIdConnection credentials = (SecretIdConnection) config;
 			AvazuUtils avazuUtils = new AvazuUtils(credentials);
 			if(avazuUtils.checkingValidCredentials() == false) {
-				log.warn("Invalid credentials: ClientSecret{" + credentials.getClientSecret() + "}, ClientId{" + credentials.getClientId());
+				log.warn("AVAZU. Invalid credentials: ClientSecret{" + credentials.getClientSecret() + "}, ClientId{" + credentials.getClientId());
 				continue;
 			}
 			
