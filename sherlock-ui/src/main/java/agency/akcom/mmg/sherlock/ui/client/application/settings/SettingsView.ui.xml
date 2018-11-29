@@ -8,7 +8,6 @@
              xmlns:typeahead="urn:import:org.gwtbootstrap3.extras.typeahead.client.ui">
     <b:Container>
         <b:PageHeader text="Settings" subText="" paddingTop="20"/>
-        <!--<b:Column size="XS_12">-->
         <b:PanelBody>
             <b:NavTabs ui:field="navTabs">
             </b:NavTabs>
