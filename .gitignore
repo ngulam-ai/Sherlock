@@ -14,3 +14,5 @@ war/
 sherlock-ui/bin/pom.xml
 sherlock-collect/.gitignore
 sherlock-ui/bin/.gitignore
+.idea/
+*.iml

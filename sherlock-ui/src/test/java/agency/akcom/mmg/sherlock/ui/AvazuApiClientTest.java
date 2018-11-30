@@ -1,10 +1,10 @@
 package agency.akcom.mmg.sherlock.ui;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -30,25 +30,30 @@ import lombok.extern.slf4j.Slf4j;
 public class AvazuApiClientTest {
 
 	private AvazuClient avazuClient;
+	AuthRequest authRequest;
+	AvazuUtils avazuUtils;
 
 	@Before
 	public void setup() {
 		log.info("TEST SETUP");
 		AvazuClientBuilder avazuClientBuilder = new AvazuClientBuilder();
 		avazuClient = avazuClientBuilder.getAvazuClient();
+		authRequest = new AuthRequest();
+		authRequest.setClient_id("100304");
+		authRequest.setClient_secret("02b7da4f561ca3be4db4ddd4aa4571cf");
+		avazuUtils = new AvazuUtils(authRequest);
 	}
 
 	@Test
 	@Ignore
 	public void testReport() throws Exception {
-		AuthRequest authRequest = new AuthRequest();
 		log.info(authRequest.toString());
 
 		Auth auth = avazuClient.getAuth(authRequest);
 		assertNotNull(auth);
 		log.info(auth.toString());
 
-		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "creative", "2018-05-30", "2018-05-30",
+		ReportRequest reportRequest = new ReportRequest(auth.getAccess_token(), "creative", "2018-08-29", "2018-08-29",
 				"site", 1);
 		log.info(reportRequest.toString());
 
@@ -63,9 +68,35 @@ public class AvazuApiClientTest {
 	}
 
 	@Test
+	public void testFullReportSumms() throws Exception {
+		log.info("--------------------------");
+
+		long impressions = 0;
+		long clicks = 0;
+		long conversions = 0;
+		double spend = 0f;
+
+		for (ReportDatum datum : avazuUtils.getFullReportDatum("creative", "2018-08-27", "2018-08-27", null)) {
+			//log.info("{}", datum);
+			impressions += datum.getImpressions();
+			clicks += datum.getClicks();
+			conversions += datum.getConversions();
+			spend += datum.getSpend();
+		}
+		log.info("impressions: " + impressions);
+		log.info("clicks: " + clicks);
+		log.info("conversions: " + conversions);
+		log.info("spend: " + spend);
+
+		assertEquals(56436, impressions);
+		assertEquals(19768, clicks);
+		assertEquals(0, conversions);
+		assertEquals(24.33f, spend, 0.01f);
+	}
+
+	@Test
 	@Ignore
 	public void testCampaign() throws Exception {
-		AuthRequest authRequest = new AuthRequest();
 		log.info(authRequest.toString());
 
 		Auth auth = avazuClient.getAuth(authRequest);
@@ -88,25 +119,25 @@ public class AvazuApiClientTest {
 	@Test
 	public void testAvazuUtilsCampaigns() throws Exception {
 
-		List<CampaignDatum> datums = AvazuUtils.getFullCampaignsDatum();
+		List<CampaignDatum> datums = avazuUtils.getFullCampaignsDatum();
 		assertNotNull(datums);
 
-		//for (CampaignDatum datum : datums) {
-		//	log.info("{}", datum);
-		//}
+		// for (CampaignDatum datum : datums) {
+		// log.info("{}", datum);
+		// }
 		log.info("Number of campains " + datums.size());
 
-		Map<String, String> campaignsWithBidTypes = AvazuUtils.getCampaignsWithBidTypes();
-		//for (Entry<String, String> entry : campaignsWithBidTypes.entrySet()) {
-		//	log.info("{}", entry);			
-		//}
+		Map<String, String> campaignsWithBidTypes = avazuUtils.getCampaignsWithBidTypes();
+		// for (Entry<String, String> entry : campaignsWithBidTypes.entrySet()) {
+		// log.info("{}", entry);
+		// }
 	}
 
 	@Test
 	@Ignore
 	public void testAvazuUtilsReport() throws Exception {
 
-		List<ReportDatum> datums = AvazuUtils.getFullReportDatum("creative", "2018-05-31", "2018-05-31", "site");
+		List<ReportDatum> datums = avazuUtils.getFullReportDatum("creative", "2018-05-31", "2018-05-31", "site");
 		assertNotNull(datums);
 
 		// for (Datum datum : datums) {

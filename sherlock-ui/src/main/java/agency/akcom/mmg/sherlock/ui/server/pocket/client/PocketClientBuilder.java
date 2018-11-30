@@ -43,10 +43,10 @@ public class PocketClientBuilder {
 
 	public Response logThenDecode(Response response, Type type) {
 		try {
-			String responseString = Util.toString(response.body().asReader());
-			log.info(responseString);
 			headers = response.headers();
 			status = response.status();
+			String responseString = Util.toString(response.body().asReader());
+            log.info(responseString);
 			return response.toBuilder().body(responseString.getBytes()).build();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
