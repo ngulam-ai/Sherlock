@@ -25,7 +25,7 @@
 											<b.html:Paragraph emphasis="WARNING">
 												Hello
 												<b.html:Text ui:field="nameText" />
-												, You are not approved now. You have wait for approving
+												, You are not approved yet. You have to wait for approving
 												and try
 												again.
 											</b.html:Paragraph>
