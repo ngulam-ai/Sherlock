@@ -4,6 +4,7 @@ import com.gwtplatform.mvp.client.gin.AbstractPresenterModule;
 
 import agency.akcom.mmg.sherlock.ui.client.application.home.HomeModule;
 import agency.akcom.mmg.sherlock.ui.client.application.log.LogModule;
+import agency.akcom.mmg.sherlock.ui.client.application.settings.SettingsModule;
 import agency.akcom.mmg.sherlock.ui.client.application.users.UsersModule;
 
 public class ApplicationModule extends AbstractPresenterModule {
@@ -12,6 +13,7 @@ public class ApplicationModule extends AbstractPresenterModule {
 		install(new HomeModule());
 		install(new UsersModule());
 		install(new LogModule());
+		install(new SettingsModule());
 
 		bindPresenter(ApplicationPresenter.class, ApplicationPresenter.MyView.class, ApplicationView.class,
 				ApplicationPresenter.MyProxy.class);

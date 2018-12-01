@@ -39,7 +39,7 @@ public class IsLoggedInGatekeeper implements Gatekeeper {
 	@Override
 	public boolean canReveal() {
 		// TODO for now just use isAdmin() to check is user approved. Later add more attributes and logic.
-		return (userDto != null) && userDto.isLoggedIn() && userDto.isAdmin();
+		return (userDto != null) && userDto.isLoggedIn()&& userDto.isAdmin(); // && userDto.isAdmin();
 		
 	}
 

@@ -11,3 +11,8 @@ sherlock-collect2/target/
 sherlock-ui/target/
 war/
 /.apt_generated/
+sherlock-ui/bin/pom.xml
+sherlock-collect/.gitignore
+sherlock-ui/bin/.gitignore
+.idea/
+*.iml
