@@ -9,6 +9,7 @@ import com.google.cloud.bigquery.JobId;
 import com.google.cloud.bigquery.JobInfo;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 
+import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions.Settings;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,7 +28,7 @@ public class SessionCostsOneDayUpdateTask extends AbstractTask {
 			return;
 		}
 
-		BigQuery bigquery = BigQueryOptions.newBuilder().setProjectId("sherlock-184721").build().getService();
+		BigQuery bigquery = BigQueryOptions.newBuilder().setProjectId(Settings.getProjectId()).build().getService();
 
 		String query = String.format(SessionCostsUpdateTask.QUERY_TEMPLATE, dateString);
 

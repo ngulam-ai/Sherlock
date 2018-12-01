@@ -26,13 +26,14 @@ import com.google.api.services.dataflow.model.Job;
 import com.google.appengine.api.appidentity.AppIdentityService;
 import com.google.appengine.api.appidentity.AppIdentityServiceFactory;
 
+import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions.Settings;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CostsDataflowTemplateRunTask extends AbstractTask {
 
-	private static final String PROJECT = "sherlock-184721";
-	private static final String BUCKET = "gs://sherlock-dataflow-template";
+	private static final String PROJECT = Settings.getProjectId();
+	private static final String BUCKET = "gs://dmpmm-dataflow-template";
 	private static final String MY_TEMPLATE_PATH = "/templates/costIncrementsTemplate";
 	private static final String MY_TEMPLATE_FULL_PATH = BUCKET + MY_TEMPLATE_PATH;
 	private static final String JOB_NAME_PREFIX = "cost-increments-";

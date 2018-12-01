@@ -11,17 +11,20 @@ import com.google.cloud.bigquery.JobId;
 import com.google.cloud.bigquery.JobInfo;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 
+import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions.Settings;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SessionCostsUpdateTask extends AbstractTask {
 
-	static final String QUERY_TEMPLATE = "UPDATE `sherlock-184721.MMG_Streaming.sessions_%1$s` AS s "
+	static String PROJECT_ID = Settings.getProjectId();
+	
+	static final String QUERY_TEMPLATE = "UPDATE `" + PROJECT_ID + ".MMG_Streaming.sessions_%1$s` AS s "
 			+ "SET trafficSource.adCost = IFNULL(trafficSource.adCost, 0) + c.adCostIncrement, "
 			+ "trafficSource.attributedAdCost = IFNULL(trafficSource.attributedAdCost, 0) + c.attributedAdCostIncrement "
 			+ "FROM ("
 			+ "  SELECT sum(adCostIncrement) AS adCostIncrement, sum(attributedAdCostIncrement) AS attributedAdCostIncrement, sessionId, clientId "
-			+ "  FROM `sherlock-184721.MMG_Streaming.daily_cost_increments_%1$s`" 
+			+ "  FROM `" + PROJECT_ID + ".MMG_Streaming.daily_cost_increments_%1$s`" 
 			+ "  GROUP BY sessionId, clientId "
 			+ ") AS c "
 			+ "WHERE ((s.sessionId is NULL and c.sessionId is NULL) OR (s.sessionId = c.sessionId)) AND ((s.clientId is NULL and c.clientId is NULL) OR (s.clientId = c.clientId))";
@@ -42,7 +45,7 @@ public class SessionCostsUpdateTask extends AbstractTask {
 		// client library will look for credentials in the environment, such as the
 		// GOOGLE_APPLICATION_CREDENTIALS environment variable.
 		//
-		BigQuery bigquery = BigQueryOptions.newBuilder().setProjectId("sherlock-184721").build().getService();
+		BigQuery bigquery = BigQueryOptions.newBuilder().setProjectId(PROJECT_ID).build().getService();
 
 		String query = String.format(QUERY_TEMPLATE, dateString);
 

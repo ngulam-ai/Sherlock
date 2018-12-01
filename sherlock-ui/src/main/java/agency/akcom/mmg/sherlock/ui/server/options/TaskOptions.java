@@ -5,8 +5,8 @@ import lombok.Getter;
 public interface TaskOptions {
 	
 	public class Settings {
-		private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
-		private static final String PROJECT_ID = "sherlock-184721";
+		private static final String TOPIC_ID = "real-time-ga-hit-data";
+		private static final String PROJECT_ID = "dmpmm-200620";
 		
 		public static String getTopicId() {
 			return TOPIC_ID;
