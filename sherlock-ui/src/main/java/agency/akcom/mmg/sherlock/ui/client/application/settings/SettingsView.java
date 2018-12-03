@@ -266,13 +266,14 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
                 GWT.log("ButtonAddOnClick");
                 switch (curentDspDto.getTypeConnection()) {
                     case SECRET_ID: {
-                        SecretIdConnectionDto newSecretIdConnectionDto = new SecretIdConnectionDto("ClientId", "Secret");
+                        SecretIdConnectionDto newSecretIdConnectionDto = new SecretIdConnectionDto("Client_id", "Client_secret");
+                        newSecretIdConnectionDto.setName("Name");
                         dspDtos.get(indexDsp).getConfigConnectionDtos().add(newSecretIdConnectionDto);
                         active = indexDsp;
                         break;
                     }
                     case TOKEN: {
-                        TokenConnectionDto newTokenConnectionDto = new TokenConnectionDto();
+                        TokenConnectionDto newTokenConnectionDto = new TokenConnectionDto("Name","Token");
                         dspDtos.get(indexDsp).getConfigConnectionDtos().add(newTokenConnectionDto);
                         active = indexDsp;
                         break;

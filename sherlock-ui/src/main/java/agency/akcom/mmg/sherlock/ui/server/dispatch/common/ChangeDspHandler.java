@@ -31,27 +31,29 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
         DspDao dspDao = new DspDao();
         DspDto dspDto = action.getDspDto();
         ArrayList<ConfigConnection> configConnections = new ArrayList<>();
-        for (ConfigConnectionDto configConnectionDto : dspDto.getConfigConnectionDtos()) {
-            switch (dspDto.getTypeConnection()) {
-                case SECRET_ID: {
-                    SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) configConnectionDto;
-                    SecretIdConnection secretIdConnection =
-                            new SecretIdConnection(
-                                    secretIdConnectionDto.getName(),
-                                    secretIdConnectionDto.getClientId(),
-                                    secretIdConnectionDto.getClientSecret(),
-                                    secretIdConnectionDto.getGrantType());
-                    configConnections.add(secretIdConnection);
-                    break;
-                }
-                case TOKEN: {
-                    TokenConnectionDto tokenConnectionDto = (TokenConnectionDto) configConnectionDto;
-                    TokenConnection tokenConnection =
-                            new TokenConnection(
-                                    tokenConnectionDto.getName(),
-                                    tokenConnectionDto.getToken());
-                    configConnections.add(tokenConnection);
-                    break;
+        if (dspDto.getConfigConnectionDtos().size() > 0) {
+            for (ConfigConnectionDto configConnectionDto : dspDto.getConfigConnectionDtos()) {
+                switch (dspDto.getTypeConnection()) {
+                    case SECRET_ID: {
+                        SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) configConnectionDto;
+                        SecretIdConnection secretIdConnection =
+                                new SecretIdConnection(
+                                        secretIdConnectionDto.getName(),
+                                        secretIdConnectionDto.getClientId(),
+                                        secretIdConnectionDto.getClientSecret(),
+                                        secretIdConnectionDto.getGrantType());
+                        configConnections.add(secretIdConnection);
+                        break;
+                    }
+                    case TOKEN: {
+                        TokenConnectionDto tokenConnectionDto = (TokenConnectionDto) configConnectionDto;
+                        TokenConnection tokenConnection =
+                                new TokenConnection(
+                                        tokenConnectionDto.getName(),
+                                        tokenConnectionDto.getToken());
+                        configConnections.add(tokenConnection);
+                        break;
+                    }
                 }
             }
         }
@@ -80,30 +82,32 @@ public class ChangeDspHandler extends MyAbstractActionHandler<ChangeDspAction, C
 
     private ArrayList<ConfigConnectionDto> copyConnectionToDto(ArrayList<ConfigConnection> configConnections, TypeConnection typeConnection) {
         ArrayList<ConfigConnectionDto> result = new ArrayList<ConfigConnectionDto>();
-        for (ConfigConnection curentConnection : configConnections) {
-            switch (typeConnection) {
-                case SECRET_ID: {
-                    SecretIdConnection curentSecretIdConnection = (SecretIdConnection) curentConnection;
-                    SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto();
+        if (configConnections != null && configConnections.size() > 0) {
+            for (ConfigConnection curentConnection : configConnections) {
+                switch (typeConnection) {
+                    case SECRET_ID: {
+                        SecretIdConnection curentSecretIdConnection = (SecretIdConnection) curentConnection;
+                        SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto();
 
-                    secretIdConnectionDto.setId(curentSecretIdConnection.getId());
-                    secretIdConnectionDto.setName(curentSecretIdConnection.getName());
-                    secretIdConnectionDto.setClientId(curentSecretIdConnection.getClientId());
-                    secretIdConnectionDto.setClientSecret(curentSecretIdConnection.getClientSecret());
-                    secretIdConnectionDto.setGrantType(curentSecretIdConnection.getGrantType());
-                    result.add(secretIdConnectionDto);
-                    break;
-                }
-                case TOKEN: {
-                    TokenConnection curentTokenConnection = (TokenConnection) curentConnection;
-                    TokenConnectionDto tokenConnectionDto = new TokenConnectionDto();
+                        secretIdConnectionDto.setId(curentSecretIdConnection.getId());
+                        secretIdConnectionDto.setName(curentSecretIdConnection.getName());
+                        secretIdConnectionDto.setClientId(curentSecretIdConnection.getClientId());
+                        secretIdConnectionDto.setClientSecret(curentSecretIdConnection.getClientSecret());
+                        secretIdConnectionDto.setGrantType(curentSecretIdConnection.getGrantType());
+                        result.add(secretIdConnectionDto);
+                        break;
+                    }
+                    case TOKEN: {
+                        TokenConnection curentTokenConnection = (TokenConnection) curentConnection;
+                        TokenConnectionDto tokenConnectionDto = new TokenConnectionDto();
 
-                    tokenConnectionDto.setId(curentTokenConnection.getId());
-                    tokenConnectionDto.setName(curentTokenConnection.getName());
-                    tokenConnectionDto.setToken(curentTokenConnection.getToken());
+                        tokenConnectionDto.setId(curentTokenConnection.getId());
+                        tokenConnectionDto.setName(curentTokenConnection.getName());
+                        tokenConnectionDto.setToken(curentTokenConnection.getToken());
 
-                    result.add(tokenConnectionDto);
-                    break;
+                        result.add(tokenConnectionDto);
+                        break;
+                    }
                 }
             }
         }

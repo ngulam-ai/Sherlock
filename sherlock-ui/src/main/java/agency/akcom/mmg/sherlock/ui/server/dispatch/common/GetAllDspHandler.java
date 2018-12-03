@@ -30,18 +30,20 @@ public class GetAllDspHandler extends MyAbstractActionHandler<GetAllDspAction, G
         for (Dsp dsp : dsps) {
             DspDto dspDto = new DspDto();
             ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<>();
-            for (ConfigConnection configConnection : dsp.getConfigConnections()) {
-                switch (dsp.getTypeConnection()) {
-                    case SECRET_ID:
-                        SecretIdConnection secretIdConnection = (SecretIdConnection) configConnection;
-                        SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto(secretIdConnection.getName(), secretIdConnection.getClientId(), secretIdConnection.getClientSecret(), secretIdConnection.getGrantType());
-                        configConnectionDtos.add(secretIdConnectionDto);
-                        break;
-                    case TOKEN:
-                        TokenConnection tokenConnection = (TokenConnection) configConnection;
-                        TokenConnectionDto tokenConnectionDto = new TokenConnectionDto(tokenConnection.getName(),tokenConnection.getToken());
-                        configConnectionDtos.add(tokenConnectionDto);
-                        break;
+            if (dsp.getConfigConnections() != null && dsp.getConfigConnections().size() > 0) {
+                for (ConfigConnection configConnection : dsp.getConfigConnections()) {
+                    switch (dsp.getTypeConnection()) {
+                        case SECRET_ID:
+                            SecretIdConnection secretIdConnection = (SecretIdConnection) configConnection;
+                            SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto(secretIdConnection.getName(), secretIdConnection.getClientId(), secretIdConnection.getClientSecret(), secretIdConnection.getGrantType());
+                            configConnectionDtos.add(secretIdConnectionDto);
+                            break;
+                        case TOKEN:
+                            TokenConnection tokenConnection = (TokenConnection) configConnection;
+                            TokenConnectionDto tokenConnectionDto = new TokenConnectionDto(tokenConnection.getName(), tokenConnection.getToken());
+                            configConnectionDtos.add(tokenConnectionDto);
+                            break;
+                    }
                 }
             }
             dspDto.setAttributes(dsp.getId(), dsp.getPartner(), dsp.getName(), dsp.getTypeConnection(), configConnectionDtos);
