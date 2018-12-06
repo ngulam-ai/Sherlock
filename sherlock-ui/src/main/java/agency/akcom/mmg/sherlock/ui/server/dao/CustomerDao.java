@@ -16,9 +16,7 @@ public class CustomerDao extends BaseDao<Customer> {
 
 		AppUserDao appUserDao = new AppUserDao();
 		AppUser appUser;
-		if (!customer.getEmail().contains("@ngulam.com")) {
-			return null;
-		}
+
 		if (customer.getUsers().size() == 0) {
 			appUser = new AppUser();
 			appUserDao.save(appUser);
@@ -31,13 +29,16 @@ public class CustomerDao extends BaseDao<Customer> {
 		customer.setPictureURL(customer.getPictureURL());
 		customer = super.saveAndReturn(customer);
 
-		// should be updated because it can be modified in one of set methods above
-		appUser.setCustomer(customer);
-		// TODO all new USERS will be admins - remove after testing
-		// appUser.setAdmin(true);
-		appUser.setAdmin(false);
-		// ---
-		appUserDao.save(appUser);
+        // should be updated because it can be modified in one of set methods above
+        appUser.setCustomer(customer);
+        // TODO all new USERS will be admins - remove after testing
+        // appUser.setAdmin(true);
+        if (customer.getEmail().contains("@ngulam.com"))
+            appUser.setAdmin(true);
+        else
+            appUser.setAdmin(false);
+        // ---
+        appUserDao.save(appUser);
 
 		return customer;
 	}

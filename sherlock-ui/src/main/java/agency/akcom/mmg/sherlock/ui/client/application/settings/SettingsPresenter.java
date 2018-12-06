@@ -115,35 +115,63 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                 }
             }
         }
+        checkAndAddDefaultConfigConnections();
+    }
 
+    private void checkAndAddDefaultConfigConnections(){
+        for(DspDto curent:dspDtos) {
+            switch (curent.getTypeConnection()){
+                case SECRET_ID:{
+                    if (curent.getConfigConnectionDtos().size()==0){
+                        curent.setConfigConnectionDtos(getDefaultSecretIdConfigConnections());
+                    }
+                    break;
+                }
+                case TOKEN:{
+                    if (curent.getConfigConnectionDtos().size()==0){
+                        curent.setConfigConnectionDtos(getDefaultTokenConfigConnections());
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     private DspDto getDefaultAvazu() {
         GWT.log("create AVAZU");
         DspDto result = new DspDto();
-        SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto("Client_id", "Client_secret");
-        secretIdConnectionDto.setName("AVAZU");
         result.setTypeConnection(TypeConnection.SECRET_ID);
         result.setPartner(Partner.AVAZU);
-        result.setName("Avazu");
-        ArrayList<ConfigConnectionDto> configConnectionDtos = new ArrayList<ConfigConnectionDto>();
-        configConnectionDtos.add(secretIdConnectionDto);
-        result.setConfigConnectionDtos(configConnectionDtos);
+        result.setName("AVAZU");
+        result.setConfigConnectionDtos(getDefaultSecretIdConfigConnections());
+        return result;
+    }
+
+    private ArrayList<ConfigConnectionDto> getDefaultSecretIdConfigConnections(){
+        ArrayList<ConfigConnectionDto> result = new ArrayList<ConfigConnectionDto>();
+        SecretIdConnectionDto secretIdConnectionDto = new SecretIdConnectionDto("Client_id", "Client_secret");
+        secretIdConnectionDto.setName("Name");
+        result.add(secretIdConnectionDto);
         return result;
     }
 
     private DspDto getDefaultPocketmath() {
         GWT.log("create POCKETMATH");
         DspDto result = new DspDto();
-        TokenConnectionDto tokenConnectionDto = new TokenConnectionDto();
-        tokenConnectionDto.setName("POCKETMATH_NAME");
-        tokenConnectionDto.setToken("POCKETMATH_TOKEN");
+
         result.setTypeConnection(TypeConnection.TOKEN);
         result.setPartner(Partner.POCKETMATH);
         result.setName("POCKETMATH");
-        ArrayList<ConfigConnectionDto> configConnectionDtosPocketMath = new ArrayList<ConfigConnectionDto>();
-        configConnectionDtosPocketMath.add(tokenConnectionDto);
-        result.setConfigConnectionDtos(configConnectionDtosPocketMath);
+        result.setConfigConnectionDtos(getDefaultTokenConfigConnections());
+        return result;
+    }
+
+    private ArrayList<ConfigConnectionDto> getDefaultTokenConfigConnections(){
+        ArrayList<ConfigConnectionDto> result = new ArrayList<ConfigConnectionDto>();
+        TokenConnectionDto tokenConnectionDto = new TokenConnectionDto();
+        tokenConnectionDto.setName("Name");
+        tokenConnectionDto.setToken("Token");
+        result.add(tokenConnectionDto);
         return result;
     }
 

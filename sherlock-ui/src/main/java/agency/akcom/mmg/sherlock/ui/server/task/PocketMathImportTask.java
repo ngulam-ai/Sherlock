@@ -42,27 +42,27 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 	public void run() {
 		log.info("PocketMath import runing");
 		ImportLog importLog = new ImportLog(Partner.POCKETMATH);
-		ImportLogDao importLogDao = new ImportLogDao();
-		importLogDao.save(importLog);
 		
 		DspDao dspdao = new DspDao();
 		ArrayList<ConfigConnection> credentialsList;
 		try {
 			credentialsList = dspdao.getCredentials(Partner.POCKETMATH);
+			// If got empty list
+			if (credentialsList == null) {
+				log.warn("Not credentials for PocketMath");
+				saveImportLog(importLog, true);
+				return;
+			}
 		} catch (NoSuchFieldException ex) {
 			log.warn("Not found credentials for PocketMath");
-			importLog.setEnd(new Date());
-			importLog.setStatus(ImportStatus.SUCCESS);
-			importLogDao.save(importLog);
+			saveImportLog(importLog, true);
 			return;
 		}
 
 		Publisher publisher = preparePublisher();
 		if (publisher == null) {
 			log.error("PocketMath Publisher was not prepared");
-			importLog.setEnd(new Date());
-			importLog.setStatus(ImportStatus.FAILURE);
-			importLogDao.save(importLog);
+			saveImportLog(importLog, false);
 			return;
 		}
 
@@ -95,10 +95,7 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 		} catch (Exception e) {
 			log.error(e.toString());
 		}
-
-		importLog.setEnd(new Date());
-		importLog.setStatus(ImportStatus.SUCCESS);
-		importLogDao.save(importLog);
+		saveImportLog(importLog, true);
 	}
 
 	@Override
