@@ -47,28 +47,28 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 	public void run() {
 		log.info("AvazuImportTask runing");
 		ImportLog importLog = new ImportLog(Partner.AVAZU);
-		ImportLogDao importLogDao = new ImportLogDao();
-		importLogDao.save(importLog);
 		
 		//Getting credentials for Avazu
 		DspDao dspdao = new DspDao();
 		ArrayList<ConfigConnection> credentialsList;
 		try {
 			credentialsList = dspdao.getCredentials(Partner.AVAZU);
+			// If got empty list
+			if (credentialsList == null) {
+				log.warn("Not credentials for Avazu");
+				saveImportLog(importLog, true);
+				return;
+			}
 		} catch (NoSuchFieldException ex) {
 			log.warn("Not found credentials for Avazu");
-			importLog.setEnd(new Date());
-			importLog.setStatus(ImportStatus.SUCCESS);
-			importLogDao.save(importLog);
+			saveImportLog(importLog, true);
 			return;
 		}
 
 		Publisher publisher = preparePublisher();
 		if (publisher == null) {
 			log.error("Avazu Publisher was not prepared");
-			importLog.setEnd(new Date());
-			importLog.setStatus(ImportStatus.FAILURE);
-			importLogDao.save(importLog);
+			saveImportLog(importLog, false);
 			return;
 		}
 
@@ -99,12 +99,9 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 				log.error(e.toString());
 			}
 		}
-
-		importLog.setEnd(new Date());
-		importLog.setStatus(ImportStatus.SUCCESS);
-		importLogDao.save(importLog);
+		saveImportLog(importLog, true);
 	}
-
+	
 	private static Publisher preparePublisher() {
 		TopicName topicName = TopicName.of(Settings.getProjectId(), Settings.getTopicId());
 		Publisher publisher = null;
