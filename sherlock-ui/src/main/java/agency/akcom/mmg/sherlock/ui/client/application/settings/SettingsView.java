@@ -92,25 +92,24 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
             tabListItem.setActive(true);
         }
         tabContent.add(tabPane);
-
     }
 
     public Row getRowConfigToken(TokenConnectionDto tokenConnectionDto, int curentIndex) {
         GWT.log("getRowConfigToken");
 
+        Row result = new Row();
         Row row = new Row();
-
+        Row rowAlert = new Row();
+        Alert alert = new Alert();
         TextBox textBoxName = new TextBox();
         TextBox textBoxToken = new TextBox();
-
         Button delete = getDellButton(curentIndex);
         Button save = getSaveButton(curentIndex);
-
         FocusPanel focusPanel = new FocusPanel();
+        Collapse collapse = new Collapse();
+
         Text textName = new Text(tokenConnectionDto.getName());
         Text token = new Text(tokenConnectionDto.getToken());
-        Alert alert = new Alert();
-        Row rowAlert = new Row();
 
         alert.setType(AlertType.SUCCESS);
         alert.add(colum("XS_2", textName));
@@ -122,61 +121,36 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         textBoxName.setText(tokenConnectionDto.getName());
         textBoxToken.setText(tokenConnectionDto.getToken());
 
-        Collapse collapse = new Collapse();
         row.add(colum("XS_2", textBoxName));
         row.add(colum("XS_8", textBoxToken));
         row.add(colum("XS_1", save));
         row.add(colum("XS_1", delete));
         row.setHeight("60px");
         collapse.add(row);
+        collapse.setToggle(false);
+
+        result.add(rowAlert);
+        result.add(collapse);
 
         delete.addClickHandler(event -> {
             Button curentButton = (Button) event.getSource();
             int indexCC = Integer.parseInt(curentButton.getId());
-            int indexDsp = -1;
-            for (int i = 0; i < dspDtos.size(); i++) {
-                if (dspDtos.get(i).getPartner() == Partner.POCKETMATH) {
-                    indexDsp = i;
-                }
-            }
-            active = indexDsp;
-            dspDtos.get(active).getConfigConnectionDtos().remove(indexCC);
-            getUiHandlers().onSaveClick(dspDtos.get(active));
-            refresh();
+            setActive(Partner.POCKETMATH);
+            delete(indexCC);
         });
 
         save.addClickHandler(event -> {
             GWT.log(" save.addClickHandler");
             Button curentButton = (Button) event.getSource();
             int indexCC = Integer.parseInt(curentButton.getId());
-            int indexDsp = -1;
-            for (int i = 0; i < dspDtos.size(); i++) {
-                if (dspDtos.get(i).getPartner() == Partner.POCKETMATH) {
-                    indexDsp = i;
-                }
-            }
-            active = indexDsp;
+            setActive(Partner.POCKETMATH);
+
             tokenConnectionDto.setName(textBoxName.getText());
             tokenConnectionDto.setToken(textBoxToken.getText());
-
-            dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
-            dspDtos.get(indexDsp).getConfigConnectionDtos().add(indexCC, tokenConnectionDto);
-
-            getUiHandlers().onSaveClick(dspDtos.get(indexDsp));
-            refresh();
+            save(tokenConnectionDto,indexCC);
         });
 
-        focusPanel.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                collapse.toggle();
-            }
-        });
-
-        Row result = new Row();
-        result.add(rowAlert);
-        collapse.setToggle(false);
-        result.add(collapse);
+        focusPanel.addClickHandler(event -> collapse.toggle());
 
         return result;
     }
@@ -184,28 +158,21 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
     public Row getRowConfigSecretId(SecretIdConnectionDto secretIdConnectionDto, int curentIndex) {
         GWT.log("getRowConfigSecretId");
 
+        Row result = new Row();
         Row row = new Row();
-
+        Row rowAlert = new Row();
         Alert alert = new Alert();
         TextBox textBoxName = new TextBox();
         TextBox textBoxSecretId = new TextBox();
         TextBox textBoxSecret = new TextBox();
-        TextBox textBoxGrantType = new TextBox();
-
         Button delete = getDellButton(curentIndex);
         Button save = getSaveButton(curentIndex);
-
-        textBoxName.setText(secretIdConnectionDto.getName());
-        textBoxSecretId.setText(secretIdConnectionDto.getClientId());
-        textBoxSecret.setText(secretIdConnectionDto.getClientSecret());
-        textBoxGrantType.setText(secretIdConnectionDto.getGrantType());
-        textBoxGrantType.setVisible(false);
+        FocusPanel focusPanel = new FocusPanel();
+        Collapse collapse = new Collapse();
 
         Text textName = new Text(secretIdConnectionDto.getName());
         Text textId = new Text(secretIdConnectionDto.getClientId());
         Text textSecret = new Text(secretIdConnectionDto.getClientSecret());
-        FocusPanel focusPanel = new FocusPanel();
-        Row rowAlert = new Row();
 
         alert.setType(AlertType.SUCCESS);
         alert.add(colum("XS_2", textName));
@@ -215,64 +182,44 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         focusPanel.add(alert);
         rowAlert.add(focusPanel);
 
-        Collapse collapse = new Collapse();
+        textBoxName.setText(secretIdConnectionDto.getName());
+        textBoxSecretId.setText(secretIdConnectionDto.getClientId());
+        textBoxSecret.setText(secretIdConnectionDto.getClientSecret());
+
         row.add(colum("XS_2", textBoxName));
         row.add(colum("XS_3", textBoxSecretId));
         row.add(colum("XS_5", textBoxSecret));
-//        row.add(colum("XS_3", textBoxGrantType));
         row.add(colum("XS_1", save));
         row.add(colum("XS_1", delete));
         row.setHeight("60px");
         collapse.add(row);
+        collapse.setToggle(false);
+
+        result.add(rowAlert);
+        result.add(collapse);
 
         delete.addClickHandler(event -> {
             Button curentButton = (Button) event.getSource();
             int indexCC = Integer.parseInt(curentButton.getId());
-            int indexDsp = -1;
-            for (int i = 0; i < dspDtos.size(); i++) {
-                if (dspDtos.get(i).getPartner() == Partner.AVAZU) {
-                    indexDsp = i;
-                }
-            }
-            active = indexDsp;
-            dspDtos.get(active).getConfigConnectionDtos().remove(indexCC);
-            getUiHandlers().onSaveClick(dspDtos.get(active)); //2
-            refresh();
+            setActive(Partner.AVAZU);
+            delete(indexCC);
         });
+
         save.addClickHandler(event -> {
             GWT.log("click save");
             Button curentButton = (Button) event.getSource();
             int indexCC = Integer.parseInt(curentButton.getId());
-            int indexDsp = -1;
-            for (int i = 0; i < dspDtos.size(); i++) {
-                if (dspDtos.get(i).getPartner() == Partner.AVAZU) {
-                    indexDsp = i;
-                }
-            }
-            active = indexDsp;
+            setActive(Partner.AVAZU);
+
             secretIdConnectionDto.setName(textBoxName.getText());
             secretIdConnectionDto.setClientId(textBoxSecretId.getText());
             secretIdConnectionDto.setClientSecret(textBoxSecret.getText());
-            secretIdConnectionDto.setGrantType(textBoxGrantType.getText());
 
-            dspDtos.get(indexDsp).getConfigConnectionDtos().remove(indexCC);
-            dspDtos.get(indexDsp).getConfigConnectionDtos().add(indexCC, secretIdConnectionDto);
-
-            getUiHandlers().onSaveClick(dspDtos.get(indexDsp));
-            refresh();
+            save(secretIdConnectionDto,indexCC);
         });
 
-        focusPanel.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                collapse.toggle();
-            }
-        });
+        focusPanel.addClickHandler(event -> collapse.toggle());
 
-        Row result = new Row();
-        result.add(rowAlert);
-        collapse.setToggle(false);
-        result.add(collapse);
         return result;
     }
 
@@ -319,13 +266,14 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
                 GWT.log("ButtonAddOnClick");
                 switch (curentDspDto.getTypeConnection()) {
                     case SECRET_ID: {
-                        SecretIdConnectionDto newSecretIdConnectionDto = new SecretIdConnectionDto("ClientId", "Secret");
+                        SecretIdConnectionDto newSecretIdConnectionDto = new SecretIdConnectionDto("Client_id", "Client_secret");
+                        newSecretIdConnectionDto.setName("Name");
                         dspDtos.get(indexDsp).getConfigConnectionDtos().add(newSecretIdConnectionDto);
                         active = indexDsp;
                         break;
                     }
                     case TOKEN: {
-                        TokenConnectionDto newTokenConnectionDto = new TokenConnectionDto();
+                        TokenConnectionDto newTokenConnectionDto = new TokenConnectionDto("Name","Token");
                         dspDtos.get(indexDsp).getConfigConnectionDtos().add(newTokenConnectionDto);
                         active = indexDsp;
                         break;
@@ -351,6 +299,29 @@ class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> implements Set
         save.setColor("GREEN");
         save.setId("" + curentIndex);
         return save;
+    }
+
+    private void delete(int indexCC){
+        dspDtos.get(active).getConfigConnectionDtos().remove(indexCC);
+        getUiHandlers().onSaveClick(dspDtos.get(active));
+        refresh();
+    }
+
+    private void save(ConfigConnectionDto configConnectionDto,int indexCC){
+        dspDtos.get(active).getConfigConnectionDtos().remove(indexCC);
+        dspDtos.get(active).getConfigConnectionDtos().add(indexCC, configConnectionDto);
+        getUiHandlers().onSaveClick(dspDtos.get(active));
+        refresh();
+    }
+
+    private void setActive(Partner partner){
+        int indexDsp = -1;
+        for (int i = 0; i < dspDtos.size(); i++) {
+            if (dspDtos.get(i).getPartner() == partner) {
+                indexDsp = i;
+            }
+        }
+        active = indexDsp;
     }
 
     @Inject
