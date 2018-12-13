@@ -18,14 +18,16 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
+import com.google.apphosting.api.search.DocumentPb.FieldValue.Geo;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.Ref;
 
-import agency.akcom.mmg.sherlock.collect.audience.AudUserChild;
+import agency.akcom.mmg.sherlock.collect.audience.AudUserAttribute;
 import agency.akcom.mmg.sherlock.collect.audience.AudienceProcessing;
 import agency.akcom.mmg.sherlock.collect.audience.Demography;
 import agency.akcom.mmg.sherlock.collect.audience.Geography;
-import agency.akcom.mmg.sherlock.collect.dao.AudUserChildDao;
+import agency.akcom.mmg.sherlock.collect.dao.AudUserAttributeDao;
 import agency.akcom.mmg.sherlock.collect.dao.AudUserDao;
 import agency.akcom.mmg.sherlock.collect.dao.BackupAudUserDao;
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
@@ -36,7 +38,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AudienceService {
 	public static final List<String> AUDUSER_UID_FIELD_NAMES = AudUserDao.getFieldNamesSpace(AudUser.class, IDField.class);
-	public static final List<Class<? extends AudUserChild>> names = Arrays.asList(Geography.class, Demography.class);
+	public static final List<Class<? extends AudUserAttribute>> names = Arrays.asList(Geography.class, Demography.class);
+	
+	public static void setAudUserUid(JSONObject reqJson) {
+		AudUserDao dao = new AudUserDao();
+		AudUser tmpUser = new AudUser(reqJson);
+		Set<AudUser> users = dao.setAllMatched(tmpUser);
+		users.add(tmpUser);
+		String uid = getLatestUid(users);
+		tmpUser.setUid(uid);
+		// replace uid in any case before sending to BQ
+		reqJson.put("adserver_uid", tmpUser.getAdserver_uid());
+		reqJson.put("uid", tmpUser.getUid());
+	}
 	
 	public static void processUIds(JSONObject reqJson) throws Exception { //TODO to write normal throws
 		//1. Create AudUser with UIDs
@@ -49,6 +63,7 @@ public class AudienceService {
 		//2.1.2.2 Just save as is -> continue;
 		
 		AudUserDao dao = new AudUserDao();
+		BackupAudUserDao backupAudUserDao = new BackupAudUserDao();
 		AudUser tmpUser = new AudUser(reqJson);
 		Set<AudUser> users = dao.setAllMatched(tmpUser);
 		String uid = null;
@@ -57,9 +72,8 @@ public class AudienceService {
 		if (users.isEmpty()) {
 			log.info("No matched user records found - create new user record. uid: " + tmpUser.getUid());
 			// Just store new record
-			tmpUser.setDoModified(new Date());
-			tmpUser = dao.saveAndReturn(tmpUser);
-
+			createAttribute(tmpUser, reqJson);
+			dao.save(tmpUser);
 		} else {
 			uid = getLatestUid(users);
 			tmpUser.setUid(uid);
@@ -67,18 +81,22 @@ public class AudienceService {
 			Iterator<AudUser> iterator = users.iterator();
 			while (iterator.hasNext()) {
 				AudUser comparedUser = iterator.next();
-
+				
 				boolean conflictID = checkConflictID(tmpUser, comparedUser);
 
 				if (conflictID) {
 					if (mustSaveAudUser) {
+						createAttribute(tmpUser, reqJson);
 						dao.save(tmpUser);
 					}
 					tmpUser = comparedUser;
 					continue;
 				}
 
-				mustSaveAudUser = false;
+				//TODO review backup
+				AudUser backup = (AudUser) getCopy(comparedUser);
+				backupAudUserDao.saveBackup(backup);
+				
 				comparedUser.setLast_uid(comparedUser.getUid());
 				comparedUser.setUid(uid);
 
@@ -88,45 +106,57 @@ public class AudienceService {
 				if (tmpUserDate.after(comparedUserDate)) {
 					if (tmpUser.getId() != null) {
 						dao.delete(tmpUser);
+						mergeScope(tmpUser, comparedUser);
+					} else {
+						mergeScopeFromJson(reqJson, comparedUser);
 					}
 					mergeUID(tmpUser, comparedUser);
-					mergeScope(tmpUser, comparedUser);
+					
 					comparedUser.setFrequency(comparedUser.getFrequency() + tmpUser.getFrequency());
+					comparedUser.setLatestHitTime(tmpUser.getLatestHitTime());
 					tmpUser = comparedUser;
 				} else {
 					mergeUID(comparedUser, tmpUser);
+					if (mustSaveAudUser) {
+						createAttribute(tmpUser, reqJson);
+					}
 					mergeScope(comparedUser, tmpUser);
 					tmpUser.setFrequency(comparedUser.getFrequency() + tmpUser.getFrequency());
 					dao.delete(comparedUser);
 				}
+				mustSaveAudUser = false;
 				dao.save(tmpUser);
 			}
 		}
-		
-		// replace uid in any case before sending to BQ
-		reqJson.put("uid", tmpUser.getUid());
 	}
 	
 	// Creating children, saving they and setting child ref to tmpUser
-	public static void createScope(AudUser tmpUser, JSONObject reqJson) throws NoSuchMethodException, SecurityException,
+	public static void createAttribute(AudUser tmpUser, JSONObject reqJson) throws NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		AudUserAttributeDao attributeDao = new AudUserAttributeDao();
 		Date hitTime = AudienceProcessing.getHitTime(reqJson);
+		List<AudUserAttribute> audUserAttributeSet = new ArrayList<AudUserAttribute>(names.size());
 
-		for (Class<? extends AudUserChild> child : AudienceService.names) {
-			Class<? extends AudUserChild> clazz = child;
-			Constructor<? extends AudUserChild> constructor = clazz.getConstructor(JSONObject.class);
+		for (Class<? extends AudUserAttribute> child : AudienceService.names) {
+			Constructor<? extends AudUserAttribute> constructor = child.getConstructor(JSONObject.class);
 
-			AudUserChild instance = constructor.newInstance(reqJson);
+			AudUserAttribute instance = constructor.newInstance(reqJson);
 			instance.setParentUid(tmpUser.getUid());
 			instance.setHitTime(hitTime);
 
-			AudUserChildDao childDao = new AudUserChildDao();
-			Key<AudUserChild> key = childDao.saveAndReturnKey(instance);
-
-			String nameField = instance.getClass().getSimpleName().toLowerCase();
-			// setting ref in instance
-			AudienceService.setFieldValue(tmpUser, Ref.create(key), nameField);
+			audUserAttributeSet.add(instance);
+			
+			Key<?> key = attributeDao.saveAndReturnKey(instance);
+			String fieldName = instance.getClass().getSimpleName().toLowerCase();
+			// setting ref in AudUser for attribute
+			setFieldValue(tmpUser, Ref.create(key), fieldName);
 		}
+//		attributeDao.saveAndReturn(audUserAttributeSet);
+	}
+	
+	private static Key<?> createKey(Class<?> clazz) {
+		ObjectifyFactory f = new ObjectifyFactory();
+		return f.allocateId(clazz);
 	}
 
 	private static Date getLatestTime(AudUser audUser) {
@@ -137,14 +167,14 @@ public class AudienceService {
 		return d;
 	}
 
-	private static AudUser getCopy(AudUser comparedUser) throws Exception {
+	private static Object getCopy(Object clazz) throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream ous = new ObjectOutputStream(baos);
-		ous.writeObject(comparedUser);
+		ous.writeObject(clazz);
 		ous.close();
 		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 		ObjectInputStream ois = new ObjectInputStream(bais);
-		return (AudUser) ois.readObject();
+		return ois.readObject();
 	}
 
 	public static boolean checkConflictID(AudUser tmpUser, AudUser checkingUser) {
@@ -164,27 +194,84 @@ public class AudienceService {
 		return false;
 	}
 
-	public static void mergeScope(AudUser from, AudUser to) throws NoSuchFieldException, SecurityException {
-		for (Class<? extends AudUserChild> scope : names) {
+	public static void mergeScope(AudUser from, AudUser to) throws Exception {
+		AudUserAttributeDao attributeDao = new AudUserAttributeDao();
+
+		for (Class<? extends AudUserAttribute> scope : names) {
 			Ref refFrom = AudUserDao.getRef(from, scope.getSimpleName().toLowerCase());
-			AudUserChild childFrom = (AudUserChild) refFrom.get();
+			AudUserAttribute childFrom = (AudUserAttribute) refFrom.get();
 
 			Ref refTo = AudUserDao.getRef(to, scope.getSimpleName().toLowerCase());
-			AudUserChild childTo = (AudUserChild) refTo.get();
+			AudUserAttribute childTo = (AudUserAttribute) refTo.get();
 
 			List<String> fieldNames = AudUserDao.getFieldNamesSpace(scope, JsonField.class); // TODO review for more
 																								// speed;
 
+			fieldNames.remove("hitDate");
+			
 			for (String fieldName : fieldNames) {
 				Object fromFieldsValue = AudUserDao.getFieldValue(childFrom, fieldName);
 				if (fromFieldsValue != null) {
 					setFieldValue(childTo, fromFieldsValue, fieldName);
+				} else {
+					Object toFieldsValue = AudUserDao.getFieldValue(childTo, fieldName);
+					if(toFieldsValue != null) {
+						setFieldValue(childTo, toFieldsValue, fieldName);
+					}
 				}
 			}
+			
+			//Just create new keys for Users and save in batch
+			AudUserAttribute newChild = (AudUserAttribute) getCopy(childTo);
+			newChild.setId(null);
+			Key<AudUserAttribute> key = attributeDao.saveAndReturnKey(newChild);
+			
+			String nameField = childTo.getClass().getSimpleName().toLowerCase();
+			// setting ref in instance
+			setFieldValue(to, Ref.create(key), nameField);
+		}
+	}
+	
+	public static void mergeScopeFromJson (JSONObject reqJson, AudUser to) throws Exception {
+		AudUserAttributeDao attributeDao = new AudUserAttributeDao();
+		Date hitTime = AudienceProcessing.getHitTime(reqJson);
+		
+		for (Class<? extends AudUserAttribute> scope : names) {
+			//creating Scope
+			Class<? extends AudUserAttribute> clazz = scope;
+			Constructor<? extends AudUserAttribute> constructor = clazz.getConstructor(JSONObject.class);
 
-			AudUserChildDao childDao = new AudUserChildDao();
-			Key<AudUserChild> key = childDao.saveAndReturnKey(childTo);
+			AudUserAttribute childFrom = constructor.newInstance(reqJson);
+			childFrom.setParentUid(to.getUid());
+			childFrom.setHitTime(hitTime);
+			
+			//getting scope from AudUser
+			Ref refTo = AudUserDao.getRef(to, scope.getSimpleName().toLowerCase());
+			AudUserAttribute childTo = (AudUserAttribute) refTo.get();
 
+			List<String> fieldNames = AudUserDao.getFieldNamesSpace(scope, JsonField.class); // TODO review for more
+																								// speed;
+			
+			fieldNames.remove("hitDate");
+			// mergering scope
+			for (String fieldName : fieldNames) {
+				Object fromFieldsValue = AudUserDao.getFieldValue(childFrom, fieldName);
+				if (fromFieldsValue != null) {
+					setFieldValue(childTo, fromFieldsValue, fieldName);
+				} else {
+					Object toFieldsValue = AudUserDao.getFieldValue(childTo, fieldName);
+					if(toFieldsValue != null) {
+						setFieldValue(childTo, toFieldsValue, fieldName);
+					}
+				}
+			}
+			
+			AudUserAttribute newChild = (AudUserAttribute) getCopy(childTo);
+			newChild.setHitTime(hitTime);
+			newChild.setId(null);
+			//TODO maybe batch save? 
+			Key<AudUserAttribute> key = attributeDao.saveAndReturnKey(newChild);
+			
 			String nameField = childTo.getClass().getSimpleName().toLowerCase();
 			// setting ref in instance
 			setFieldValue(to, Ref.create(key), nameField);
@@ -316,11 +403,11 @@ public class AudienceService {
 		Iterator<AudUser> iterator = users.iterator();
 		AudUser user = iterator.next();
 		String uid = user.getUid();
-		Date date = user.getDoCreated();
+		Date date = user.getLatestHitTime();
 		while (iterator.hasNext()) {
 			user = iterator.next();
-			if (date.after(user.getDoCreated())) {
-				date = user.getDoCreated();
+			if (date.after(user.getLatestHitTime())) {
+				date = user.getLatestHitTime();
 				uid = user.getUid();
 			}
 		}

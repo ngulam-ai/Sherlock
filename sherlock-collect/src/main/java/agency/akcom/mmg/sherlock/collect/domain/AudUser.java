@@ -16,15 +16,16 @@ import org.json.JSONObject;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Ref;
 import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Load;
 
 import agency.akcom.mmg.sherlock.collect.AudienceService;
-import agency.akcom.mmg.sherlock.collect.audience.AudUserChild;
+import agency.akcom.mmg.sherlock.collect.audience.AudUserAttribute;
 import agency.akcom.mmg.sherlock.collect.audience.AudienceProcessing;
 import agency.akcom.mmg.sherlock.collect.audience.Demography;
 import agency.akcom.mmg.sherlock.collect.audience.Geography;
-import agency.akcom.mmg.sherlock.collect.dao.AudUserChildDao;
+import agency.akcom.mmg.sherlock.collect.dao.AudUserAttributeDao;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,7 +59,6 @@ OK•	Device
 
 	 */
 	
-	@JsonField(name = "uid")
 	private String adserver_uid;
 	
 	@JsonField(name = "last_uid")
@@ -200,6 +200,9 @@ OK•	Device
 	@Load 
 	Ref<Demography> demography;
 	
+	@Ignore
+	Geography geo;
+	
 	private String engagementType;
 	
 	@Index
@@ -304,23 +307,7 @@ OK•	Device
 		AudienceProcessing.setFieldsWithAnnotation(this, reqJson);
 		latestHitTime = AudienceProcessing.getHitTime(reqJson);
 		increaseFrequency();
-		
-		try {
-			AudienceService.createScope(this, reqJson);
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-//		geography = new Geography(reqJson);
-//		demography = new Demography(reqJson);
-//		behavior = new Behavior(reqJson);
-//		category = new Category(reqJson);
-//		device = new Device(reqJson);
-//		setEngagementType(reqJson);
-//		crm = new CRM(reqJson);
-//		latestHitTime = getHitTime(reqJson);
+		geo = new Geography(reqJson); //for test, will be delete after
 	}
 	
 	//Creating additional entity for this class
@@ -328,8 +315,6 @@ OK•	Device
 		Geography geo = new Geography(reqJson);
 		this.geography = Ref.create(null);
 	}
-
-	
 
 	public Long increaseFrequency() {
 		frequency = (frequency == null) ? 1 : frequency + 1;
@@ -342,6 +327,11 @@ OK•	Device
 	
 	public void createUid(JSONObject reqJson) {
 		String uid = AudienceProcessing.getJsonValue(new String[] { "uid" }, reqJson);
+		
+		adserver_uid = AudienceProcessing.getJsonValue(new String[] { "adserver_uid" }, reqJson);
+		if (adserver_uid == null) {
+			adserver_uid = uid;
+		}
 
 		if (uid == null || uid.isEmpty()) {
 			uid = UUID.randomUUID().toString();

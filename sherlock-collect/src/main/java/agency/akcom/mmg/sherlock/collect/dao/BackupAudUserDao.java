@@ -9,8 +9,8 @@ public class BackupAudUserDao extends BaseDao<BackupAudUser> {
 		super(BackupAudUser.class);
 	}
 
-	public void saveBackup(AudUser backupAudUser, AudUser replacedAudUser) {
-		this.save(new BackupAudUser(backupAudUser, replacedAudUser));
+	public void saveBackup(AudUser backupAudUser) {
+		this.save(new BackupAudUser(backupAudUser));
 	}
 
 }

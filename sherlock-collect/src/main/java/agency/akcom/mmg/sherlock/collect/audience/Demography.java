@@ -1,5 +1,6 @@
 package agency.akcom.mmg.sherlock.collect.audience;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -19,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Subclass(index = true)
 @Data
 @Slf4j
-public class Demography extends AudUserChild {
+public class Demography extends AudUserAttribute{
 	
 	@Index
 	Date date;

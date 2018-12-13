@@ -9,8 +9,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Ref;
 
-import agency.akcom.mmg.sherlock.collect.audience.AudUserChild;
-import agency.akcom.mmg.sherlock.collect.dao.AudUserChildDao;
+import agency.akcom.mmg.sherlock.collect.audience.AudUserAttribute;
+import agency.akcom.mmg.sherlock.collect.dao.AudUserAttributeDao;
 import agency.akcom.mmg.sherlock.collect.dao.AudUserDao;
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
 import agency.akcom.mmg.sherlock.collect.domain.IDField;
@@ -32,10 +32,10 @@ public class CompareFieldAudUsers {
 		List<String> scopeNames = AudUserDao.getFieldNamesSpace(AudUser.class, Scope.class);
 		for(String name : scopeNames) {
 			Ref refUser1 = AudUserDao.getRef(user1, name);
-			AudUserChild childUser1 = (AudUserChild) refUser1.get();
+			AudUserAttribute childUser1 = (AudUserAttribute) refUser1.get();
 			
 			Ref refUser2 = AudUserDao.getRef(user2, name);
-			AudUserChild childUser2 = (AudUserChild) refUser2.get();
+			AudUserAttribute childUser2 = (AudUserAttribute) refUser2.get();
 			
 			List<String> fieldNamesList = AudienceService.getFieldNames(childUser1.getClass());
 			fieldNamesList.removeAll(ignoreList);

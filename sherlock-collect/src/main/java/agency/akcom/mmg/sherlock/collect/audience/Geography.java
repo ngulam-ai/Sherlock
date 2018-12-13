@@ -14,12 +14,14 @@ import agency.akcom.mmg.sherlock.collect.domain.AudUser;
 import agency.akcom.mmg.sherlock.collect.domain.JsonField;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.Serializable;
 import java.util.Date;
 
 @Subclass(index = true)
 @Data
 @Slf4j
-public class Geography extends AudUserChild {
+public class Geography extends AudUserAttribute {
 	
 	@Index
 	Date date;

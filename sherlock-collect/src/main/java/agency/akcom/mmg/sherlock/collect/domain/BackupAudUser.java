@@ -16,12 +16,9 @@ public class BackupAudUser extends DatastoreObject {
 	
 	private AudUser backupAudUser;
 	
-	private AudUser replacedAudUser;
-	
-	public BackupAudUser(AudUser backupAudUser, AudUser replacedAudUser) {
+	public BackupAudUser(AudUser backupAudUser) {
 		uid = backupAudUser.getUid();
 		this.backupAudUser = backupAudUser;
-		this.replacedAudUser = replacedAudUser;
 	}
 
 }

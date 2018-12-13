@@ -22,12 +22,13 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.googlecode.objectify.ObjectifyService;
 
-import agency.akcom.mmg.sherlock.collect.audience.AudUserChild;
+import agency.akcom.mmg.sherlock.collect.audience.AudUserAttribute;
 import agency.akcom.mmg.sherlock.collect.audience.Demography;
 import agency.akcom.mmg.sherlock.collect.audience.Geography;
 import agency.akcom.mmg.sherlock.collect.dao.AudUserDao;
 import agency.akcom.mmg.sherlock.collect.domain.AudUser;
-//@Ignore
+import agency.akcom.mmg.sherlock.collect.domain.BackupAudUser;
+@Ignore
 public class MergeAudUsersByIDsFieldsTest {
 	
 	private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -47,9 +48,10 @@ public class MergeAudUsersByIDsFieldsTest {
 		COLLECT_SERVLET.init();
 		closeable = ObjectifyService.begin();
 		ObjectifyService.register(AudUser.class);
-		ObjectifyService.register(AudUserChild.class);
+		ObjectifyService.register(AudUserAttribute.class);
 		ObjectifyService.register(Geography.class);
 		ObjectifyService.register(Demography.class);
+		ObjectifyService.register(BackupAudUser.class);
 
 	}
 
