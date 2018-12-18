@@ -3,6 +3,7 @@ package agency.akcom.mmg.sherlock.ui.server.dispatch.common;
 import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
 import agency.akcom.mmg.sherlock.ui.server.dispatch.MyAbstractActionHandler;
+import agency.akcom.mmg.sherlock.ui.server.pocket.PocketUtils;
 import agency.akcom.mmg.sherlock.ui.shared.action.CheckConfigConnectionsAction;
 import agency.akcom.mmg.sherlock.ui.shared.action.CheckConfigConnectionsResult;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
@@ -33,13 +34,7 @@ public class CheckConfigConnectionsHandler extends MyAbstractActionHandler<Check
                 }
                 case POCKETMATH: {
                     TokenConnectionDto tokenConnectionDto = (TokenConnectionDto) curentConfigConnectionDto;
-//                    result = PocketUtils.checkingValidCredentials(tokenConnectionDto.getToken());
-                    try {
-                        Thread.sleep(6000);
-                        result=true;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    result = PocketUtils.checkingValidCredentials(tokenConnectionDto.getToken());
                     break;
                 }
             }
