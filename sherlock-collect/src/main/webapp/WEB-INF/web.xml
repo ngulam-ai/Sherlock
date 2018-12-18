@@ -14,6 +14,20 @@
 		<servlet-name>CollectServlet</servlet-name>
 		<url-pattern>/collect</url-pattern>
 	</servlet-mapping>
+	
+	<listener>
+		<listener-class>agency.akcom.mmg.sherlock.collect.guice.GuiceServletConfig</listener-class>
+	</listener>
+
+	<filter>
+		<filter-name>guiceFilter</filter-name>
+		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>guiceFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>

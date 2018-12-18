@@ -9,6 +9,7 @@ import com.google.cloud.bigquery.JobId;
 import com.google.cloud.bigquery.JobInfo;
 import com.google.cloud.bigquery.QueryJobConfiguration;
 
+import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions.Settings;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,7 +28,7 @@ public class SessionCostsOneDayUpdateTask extends AbstractTask {
 			return;
 		}
 
-		BigQuery bigquery = BigQueryOptions.newBuilder().setProjectId("sherlock-184721").build().getService();
+		BigQuery bigquery = BigQueryOptions.newBuilder().setProjectId(Settings.getProjectId()).build().getService();
 
 		String query = String.format(SessionCostsUpdateTask.QUERY_TEMPLATE, dateString);
 
@@ -39,7 +40,7 @@ public class SessionCostsOneDayUpdateTask extends AbstractTask {
 
 		try {
 			// Wait for the query to complete.
-			queryJob = queryJob.waitFor();
+			queryJob = queryJob.waitFor(); //TODO set more time for job. com.google.apphosting.runtime.HardDeadlineExceededError: This request (00000166a026fc2a) started at 2018/10/23 09:00:01.450 UTC and was still executing at 2018/10/23 09:10:01.859 UTC.
 
 			// Check for errors
 			if (queryJob == null) {

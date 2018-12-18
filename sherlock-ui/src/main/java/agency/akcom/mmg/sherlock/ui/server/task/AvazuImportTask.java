@@ -28,16 +28,14 @@ import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
 import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
 import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
+import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
 import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AvazuImportTask extends AbstractTask {
-
-	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
-	private static final String PROJECT_ID = "sherlock-184721";
+public class AvazuImportTask extends AbstractTask implements TaskOptions {
 
 	private static final TimeZone TZ = TimeZone.getTimeZone("Europe/Madrid");
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -45,53 +43,32 @@ public class AvazuImportTask extends AbstractTask {
 		DATE_FORMAT.setTimeZone(TZ);
 	}
 
-	private static final String DATE_KEY = "date";
-	// based on
-	// https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters?hl=en#trafficsources
-	private static final String DSP_KEY = "cd12";
-	private static final String MODEL_KEY = "cd98";
-	private static final String SOURCE_KEY = "cs";
-	private static final String MEDIUM_KEY = "cm";
-	private static final String CONTENT_KEY = "cc";
-	private static final String TERM_KEY = "ck";
-	private static final String CAMPAIGN_NAME_KEY = "cn";
-	private static final String CAMPAIGN_ID_KEY = "ci";
-
-	private static final String TIME_KEY = "time";
-
-	private static final String IMPRESSIONS_KEY = "_imp";
-	private static final String CLICKS_KEY = "_clk";
-	private static final String CONVERSION_KEY = "_cnv";
-	private static final String SPEND_KEY = "cp.ap";
-
-	private static final String SITE_NAME_KEY = "_sn";
-
 	@Override
 	public void run() {
 		log.info("AvazuImportTask runing");
 		ImportLog importLog = new ImportLog(Partner.AVAZU);
-		ImportLogDao importLogDao = new ImportLogDao();
-		importLogDao.save(importLog);
 		
 		//Getting credentials for Avazu
 		DspDao dspdao = new DspDao();
 		ArrayList<ConfigConnection> credentialsList;
 		try {
 			credentialsList = dspdao.getCredentials(Partner.AVAZU);
+			// If got empty list
+			if (credentialsList == null) {
+				log.warn("Not credentials for Avazu");
+				saveImportLog(importLog, true);
+				return;
+			}
 		} catch (NoSuchFieldException ex) {
 			log.warn("Not found credentials for Avazu");
-			importLog.setEnd(new Date());
-			importLog.setStatus(ImportStatus.SUCCESS);
-			importLogDao.save(importLog);
+			saveImportLog(importLog, true);
 			return;
 		}
 
 		Publisher publisher = preparePublisher();
 		if (publisher == null) {
 			log.error("Avazu Publisher was not prepared");
-			importLog.setEnd(new Date());
-			importLog.setStatus(ImportStatus.FAILURE);
-			importLogDao.save(importLog);
+			saveImportLog(importLog, false);
 			return;
 		}
 
@@ -102,7 +79,7 @@ public class AvazuImportTask extends AbstractTask {
 			SecretIdConnection credentials = (SecretIdConnection) config;
 			AvazuUtils avazuUtils = new AvazuUtils(credentials);
 			if(avazuUtils.checkingValidCredentials() == false) {
-				log.warn("Invalid credentials: ClientSecret{" + credentials.getClientSecret() + "}, ClientId{" + credentials.getClientId());
+				log.warn("AVAZU. Invalid credentials: ClientSecret{" + credentials.getClientSecret() + "}, ClientId{" + credentials.getClientId());
 				continue;
 			}
 			
@@ -122,14 +99,11 @@ public class AvazuImportTask extends AbstractTask {
 				log.error(e.toString());
 			}
 		}
-
-		importLog.setEnd(new Date());
-		importLog.setStatus(ImportStatus.SUCCESS);
-		importLogDao.save(importLog);
+		saveImportLog(importLog, true);
 	}
-
+	
 	private static Publisher preparePublisher() {
-		TopicName topicName = TopicName.of(PROJECT_ID, TOPIC_ID);
+		TopicName topicName = TopicName.of(Settings.getProjectId(), Settings.getTopicId());
 		Publisher publisher = null;
 		try {
 			publisher = Publisher.newBuilder(topicName).build();
@@ -178,28 +152,28 @@ public class AvazuImportTask extends AbstractTask {
 		// cid ?
 		
 		// in order to put it in proper day of the costdata_* tables
-		jsonObject.put(TIME_KEY,
+		jsonObject.put(Keys.getTIME_KEY(),
 				LocalDate.parse(datum.getDay()).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli());
 		// new GregorianCalendar(TZ).getTime().getTime());
 
-		jsonObject.put(DSP_KEY, "Avazu MDSP");
-		jsonObject.put(MODEL_KEY, campaignsBidTypes.get(datum.getCampaign_id()));
-		jsonObject.put(SOURCE_KEY, datum.getSite_id());
-		jsonObject.put(MEDIUM_KEY, "Display"); // TODO other possible options?
-		jsonObject.put(CONTENT_KEY, datum.getCreative_id());
+		jsonObject.put(Keys.getDSP_KEY(), "Avazu MDSP");
+		jsonObject.put(Keys.getMODEL_KEY(), campaignsBidTypes.get(datum.getCampaign_id()));
+		jsonObject.put(Keys.getSOURCE_KEY(), datum.getSite_id());
+		jsonObject.put(Keys.getMEDIUM_KEY(), "Display"); // TODO other possible options?
+		jsonObject.put(Keys.getCONTENT_KEY(), datum.getCreative_id());
 		/// jsonObject.put(TERM_KEY, null); // not used in these campaigns
-		jsonObject.put(CAMPAIGN_NAME_KEY, datum.getCampaign_name());
-		jsonObject.put(CAMPAIGN_ID_KEY, datum.getCampaign_id());
+		jsonObject.put(Keys.getCAMPAIGN_NAME_KEY(), datum.getCampaign_name());
+		jsonObject.put(Keys.getCAMPAIGN_ID_KEY(), datum.getCampaign_id());
 
-		jsonObject.put(DATE_KEY, datum.getDay().replaceAll("-", ""));
+		jsonObject.put(Keys.getDATE_KEY(), datum.getDay().replaceAll("-", ""));
 
-		jsonObject.put(IMPRESSIONS_KEY, "" + datum.getImpressions());
-		jsonObject.put(CLICKS_KEY, "" + datum.getClicks());
-		jsonObject.put(CONVERSION_KEY, "" + datum.getConversions());
-		jsonObject.put(SPEND_KEY, "" + datum.getSpend());
+		jsonObject.put(Keys.getIMPRESSIONS_KEY(), "" + datum.getImpressions());
+		jsonObject.put(Keys.getCLICKS_KEY(), "" + datum.getClicks());
+		jsonObject.put(Keys.getCONVERSION_KEY(), "" + datum.getConversions());
+		jsonObject.put(Keys.getSPEND_KEY(), "" + datum.getSpend());
 
 		// not for Cost table insertion, just for debug
-		jsonObject.put(SITE_NAME_KEY, datum.getSite_name());
+		jsonObject.put(Keys.getSITE_NAME_KEY(), datum.getSite_name());
 
 		return jsonObject.toString();
 	}
