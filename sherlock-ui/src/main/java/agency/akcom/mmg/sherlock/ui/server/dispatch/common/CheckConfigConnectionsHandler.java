@@ -27,15 +27,19 @@ public class CheckConfigConnectionsHandler extends MyAbstractActionHandler<Check
                 case AVAZU: {
                     SecretIdConnectionDto secretIdConnectionDto = (SecretIdConnectionDto) curentConfigConnectionDto;
                     SecretIdConnection secretIdConnection = new SecretIdConnection(secretIdConnectionDto.getName(), secretIdConnectionDto.getClientId(), secretIdConnectionDto.getClientSecret(), secretIdConnectionDto.getGrantType());
-//                    AvazuUtils avazuUtils = new AvazuUtils(secretIdConnection);
-//                    result = avazuUtils.checkingValidCredentials();
-                    result=true;
+                    AvazuUtils avazuUtils = new AvazuUtils(secretIdConnection);
+                    result = avazuUtils.checkingValidCredentials();
                     break;
                 }
                 case POCKETMATH: {
                     TokenConnectionDto tokenConnectionDto = (TokenConnectionDto) curentConfigConnectionDto;
 //                    result = PocketUtils.checkingValidCredentials(tokenConnectionDto.getToken());
-                    result=false;
+                    try {
+                        Thread.sleep(6000);
+                        result=true;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 }
             }

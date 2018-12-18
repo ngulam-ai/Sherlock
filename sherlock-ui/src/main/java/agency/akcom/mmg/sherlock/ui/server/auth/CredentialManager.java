@@ -29,7 +29,7 @@ import agency.akcom.mmg.sherlock.ui.server.ServerUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Credential manager to get, save, delete user credentials.
+ * Credential manager to get, saveStorage, deleteStorage user credentials.
  * 
  */
 @Slf4j
@@ -64,7 +64,7 @@ public class CredentialManager {
 	private static GoogleClientSecrets clientSecrets;
 
 	/**
-	 * Credential store to get, save, delete user credentials.
+	 * Credential store to get, saveStorage, deleteStorage user credentials.
 	 */
 	private static AppEngineDataStoreFactory appEngineDataStoreFactory = new AppEngineDataStoreFactory();
 	private static DataStore<StoredCredential> credentialStore;
@@ -135,7 +135,7 @@ public class CredentialManager {
 	 * @param userId
 	 *            The id of the user.
 	 * @param credential
-	 *            A credential object to save.
+	 *            A credential object to saveStorage.
 	 * @throws IOException
 	 */
 	public static void saveCredential(String userId, Credential credential) throws IOException {
