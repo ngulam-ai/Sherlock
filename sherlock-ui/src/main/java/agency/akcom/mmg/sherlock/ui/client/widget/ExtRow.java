@@ -57,10 +57,10 @@ public class ExtRow extends Row {
     protected void checkAlert() {
         if (resultCheckConncetion) {
             alert.setType(AlertType.SUCCESS);
-            textCheckCoonection.setText("OnLine");
+            textCheckCoonection.setText("Valid");
         } else {
             alert.setType(AlertType.DANGER);
-            textCheckCoonection.setText("OffLine");
+            textCheckCoonection.setText("Invalid");
         }
     }
 

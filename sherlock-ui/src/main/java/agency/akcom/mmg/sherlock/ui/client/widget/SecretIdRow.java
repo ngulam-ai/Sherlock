@@ -58,8 +58,8 @@ public class SecretIdRow extends ExtRow {
 
         alert.add(colum("XS_2", textName));
         alert.add(colum("XS_3", textId));
-        alert.add(colum("XS_5", textSecret));
-        alert.add(colum("XS_2",textCheckCoonection));
+        alert.add(colum("XS_6", textSecret));
+        alert.add(colum("XS_1",textCheckCoonection));
         alert.setHeight("50px");
         focusPanel.add(alert);
         rowAlert.add(focusPanel);

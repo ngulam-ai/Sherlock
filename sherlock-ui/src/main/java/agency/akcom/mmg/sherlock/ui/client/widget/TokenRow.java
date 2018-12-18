@@ -56,8 +56,8 @@ public class TokenRow extends ExtRow {
         setTexts();
 
         alert.add(colum("XS_2", textName));
-        alert.add(colum("XS_8", textToken));
-        alert.add(colum("XS_2", textCheckCoonection));
+        alert.add(colum("XS_9", textToken));
+        alert.add(colum("XS_1", textCheckCoonection));
         alert.setHeight("50px");
         focusPanel.add(alert);
         rowAlert.add(focusPanel);
