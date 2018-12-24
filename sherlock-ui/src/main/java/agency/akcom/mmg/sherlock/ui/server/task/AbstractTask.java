@@ -1,6 +1,7 @@
 package agency.akcom.mmg.sherlock.ui.server.task;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.google.appengine.api.modules.ModulesServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
@@ -8,6 +9,9 @@ import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
+import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
+import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
+import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
 import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("serial")
@@ -60,5 +64,21 @@ public abstract class AbstractTask implements DeferredTask, Serializable {
 
 	protected Queue getQueue() {
 		return QueueFactory.getDefaultQueue();
+	}
+	
+	/**
+	 * Save status to log
+	 * @param importLog link to importlog
+	 * @param status "true" saves with status SUCCESS, "false" saves status like FAILURE
+	 */
+	public static void saveImportLog(ImportLog importLog, boolean status) {
+		ImportLogDao importLogDao = new ImportLogDao();
+		importLog.setEnd(new Date());
+		if(status) {
+			importLog.setStatus(ImportStatus.SUCCESS);
+		} else {
+			importLog.setStatus(ImportStatus.FAILURE);
+		}
+		importLogDao.save(importLog);
 	}
 }
