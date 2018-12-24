@@ -125,22 +125,22 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 	private static void postToPubSub(Publisher publisher, ReportDatum datum, Map<String, String> campaignsBidTypes) {
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-		ByteString data = ByteString.copyFromUtf8(prepareMessage(datum, campaignsBidTypes));
-
-		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
-
-		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
-			@Override
-			public void onSuccess(String messageId) {
-				log.info("published with message id: " + messageId);
-			}
-
-			@Override
-			public void onFailure(Throwable throwable) {
-				log.error("failed to publish: " + throwable);
-			}
-		});
+//		ByteString data = ByteString.copyFromUtf8(prepareMessage(datum, campaignsBidTypes));
+//
+//		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+//		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
+//
+//		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
+//			@Override
+//			public void onSuccess(String messageId) {
+//				log.info("published with message id: " + messageId);
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable throwable) {
+//				log.error("failed to publish: " + throwable);
+//			}
+//		});
 	}
 
 	private static String prepareMessage(ReportDatum datum, Map<String, String> campaignsBidTypes) {

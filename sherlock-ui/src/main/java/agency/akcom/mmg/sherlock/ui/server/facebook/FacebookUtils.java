@@ -31,19 +31,33 @@ public class FacebookUtils {
 	
 	static FacebookClientBuilder POCKET_CLIENT_BUILDER = new FacebookClientBuilder();
 	static FacebookClient pocketClient = POCKET_CLIENT_BUILDER.getFacebookClient();
-	private static String token= "EAANmRf7YVrgBAC8gAhgU3H1xKLONwt1tlrjpEwyaJm1btgqJI8mDTi5c290CoEqxB3nTmDTSVE15hMde3C4Ns1lyGZB1rZCkA3HtUiLJbXyuvtCuI4Yakyg4S3P9sguaJDvk9RfdsvGekVKmNuQW3Bz8zuQXsB7SjXHAPiRVldeR3bTxMHZC0eZAtXKNAlkIhcxMVK4PTc5ZCtLvXfmJcw6MJjjEY9e8SybWhkubwF1EmthBb5OtL";
+	private static String token= "EAANmRf7YVrgBAGWIwrOCIS0dkZA4ocf55OyTnPtZBV0ZA0lHBaSbPSBBgXKrLVQNy5Jr8mwBEQ6pftVuR7W7XarS2W5NrYa9qDQLXZAFkWqHxWJEXY924HJ0OtodlnnVXZCaEMxhcHScfVF2Ec2ZBfpVX0ZCZB0yRsZBaLF9Tzdt48db6Jena8EKP";
 	private static String startDate;
 	private static String endDate;
 
-	public static void getReport(){
-		String accountId = getAccountId().getId(); //TODO to make for array;
-		ReportStat reportStat = pocketClient.getReportStat(accountId, token);
+	public static void getReport() {
+		List<Data> list = getAccountId(); //TODO to make for array;
+		for (Data data : list) {
+			String accountId = data.getId();
+			ReportStat reportStat = pocketClient.getReportStat(accountId, token);
+			ReportStat adSet = pocketClient.getAdSet(accountId, token);
+			ReportStat ads = pocketClient.getAds(token, accountId);
+		}
 	}
 
-	public static Data getAccountId(){
-		AccountId accountId = pocketClient.getAccountId(token);
-		Data data = accountId.getData().get(0);
-		return data;
+	public static List getAccountId(){
+		AccountId accountId = null;
+		try {
+			accountId = pocketClient.getAccountId(token);
+			if(accountId == null){
+				return null;
+			}
+		} catch(FeignException ex){
+//			boolean expired = ex.getMessage().contains("Session has expired");
+			log.error(ex.getMessage());
+		}
+		List listData = accountId.getData();
+		return listData;
 	}
 	
 //	public static boolean checkingValidCredentials(String token) {
