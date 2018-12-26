@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.cloud.bigquery.*;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,28 +44,72 @@ public class CostsDataflowTemplateRunTask extends AbstractTask {
 
 	@Override
 	public void run() {
+
 		Map<String, String> parameters = new HashMap();
-		
+
 		// set "dateString" parameter by yesterday date
 		String dateString = LocalDate.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		parameters.put("dateString", dateString);
 
+		if (checkExistTable(dateString)) {
+			runDataflow(parameters);
+		} else {
+			log.info("Not found cost table for " + dateString + " date. Dataflow was not running.");
+		}
+	}
+
+	public void runDataflow(Map<String, String> parameters) {
 		Dataflow dataflow = new Dataflow(new UrlFetchTransport(), GsonFactory.getDefaultInstance(), null);
 
 		CreateJobFromTemplateRequest content = new CreateJobFromTemplateRequest();
-		content.setJobName(JOB_NAME_PREFIX + dateString + "-" + UUID.randomUUID().toString());
+		content.setJobName(JOB_NAME_PREFIX + parameters.get("dateString") + "-" + UUID.randomUUID().toString());
 		content.setGcsPath(MY_TEMPLATE_FULL_PATH);
 		content.setParameters(parameters);
 
 		try {
-			// TODO determine actual project automatically 
+			// TODO determine actual project automatically
 			Job job = dataflow.projects().templates().create(PROJECT, content).setAccessToken(getAccessToken())
 					.execute();
 			log.info(job.toPrettyString());
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}
+	}
 
+	private boolean checkExistTable (String dateString) {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT COUNT(*)");
+		sb.append("FROM `" + PROJECT + ".MMG_Streaming.costdata_" + dateString + "` ");
+		sb.append("LIMIT 1");
+
+		BigQuery bigquery = BigQueryOptions.newBuilder().setProjectId(PROJECT).build().getService();
+		QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(sb.toString()).setUseLegacySql(false).build();
+
+		// Create a job ID so that we can safely retry.
+		JobId jobId = JobId.of(UUID.randomUUID().toString());
+		com.google.cloud.bigquery.Job queryJob = bigquery.create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
+
+		try {
+			// Wait for the query to complete.
+			queryJob = queryJob.waitFor();
+			// Check for errors
+			if (queryJob == null) {
+				throw new RuntimeException("Job no longer exists");
+			} else if (queryJob.getStatus().getError() != null) {
+				// You can also look at queryJob.getStatus().getExecutionErrors() for all
+				// errors, not just the latest one.
+				throw new RuntimeException(queryJob.getStatus().getError().toString());
+			}
+		} catch (Exception e) {
+			if (e.getMessage().contains("Not found: Table")) {
+				return false;
+			} else {
+				log.error(e.getMessage());
+				throw new RuntimeException(e);
+			}
+		}
+		return true;
 	}
 
 	private String getAccessToken() {

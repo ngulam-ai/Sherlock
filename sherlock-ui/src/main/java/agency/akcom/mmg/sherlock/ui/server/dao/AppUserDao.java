@@ -15,7 +15,7 @@ public class AppUserDao extends BaseDao<AppUser> {
 		// user will be deleted along with the Customer
 		new CustomerDao().delete(get(id).getCustomer());
 
-		// TODO am I also have to delete User StoredCredential?
+		// TODO am I also have to deleteStorage User StoredCredential?
 	};
 
 	public AppUser findByGoogleId(String googleId) throws TooManyResultsException {
