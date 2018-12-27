@@ -10,12 +10,14 @@ import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 @Entity
 public class ImportLog extends DatastoreObject {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
+	//version 2 : add String description;
 	
 	private Partner partner;
 	private Date start = new Date();
 	private Date end;
 	private ImportStatus status = ImportStatus.FAILURE; // if not set as success later
+	private String description;
 
 	public ImportLog() {
 
@@ -57,5 +59,11 @@ public class ImportLog extends DatastoreObject {
 		this.partner = partner;
 	}
 
+	public String getDescription() {
+		return description;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

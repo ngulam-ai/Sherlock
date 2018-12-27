@@ -1,38 +1,26 @@
 package agency.akcom.mmg.sherlock.ui.server.task;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import org.json.JSONObject;
-
+import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
+import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
+import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
+import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions;
+import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
+import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.TopicName;
-
-import agency.akcom.mmg.sherlock.ui.server.avazu.AvazuUtils;
-import agency.akcom.mmg.sherlock.ui.server.avazu.model.Report.ReportDatum;
-import agency.akcom.mmg.sherlock.ui.server.configConnection.SecretIdConnection;
-import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
-import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
-import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
-import agency.akcom.mmg.sherlock.ui.server.options.TaskOptions;
-import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
-import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
-import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.*;
 
 @Slf4j
 public class AvazuImportTask extends AbstractTask implements TaskOptions {
@@ -56,11 +44,13 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 			// If got empty list
 			if (credentialsList == null) {
 				log.warn("Not credentials for Avazu");
+				importLog.setDescription("Not credentials");
 				saveImportLog(importLog, true);
 				return;
 			}
 		} catch (NoSuchFieldException ex) {
 			log.warn("Not found credentials for Avazu");
+			importLog.setDescription("Not found credentials");
 			saveImportLog(importLog, true);
 			return;
 		}
@@ -68,11 +58,14 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 		Publisher publisher = preparePublisher();
 		if (publisher == null) {
 			log.error("Avazu Publisher was not prepared");
+			importLog.setDescription("Publisher was not prepared");
 			saveImportLog(importLog, false);
 			return;
 		}
 
 		String yesterday = getYesterdayFormated();
+//		String yesterday = "2018-11-08";
+		setPartner(Partner.AVAZU);
 
 		//Report data from API for each credential
 		for (ConfigConnection config : credentialsList) {
@@ -90,7 +83,18 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 			for (ReportDatum datum : reportDatums) {
 				log.info(datum.toString());
 				postToPubSub(publisher, datum, campaignsBidTypes);
+				sumImpression(datum.getImpressions());
+				sumClick(datum.getClicks());
+				sumConversions(datum.getConversions());
+				sumSpendDouble(datum.getSpend());
 			}
+			String description =
+					"impression: " + impression
+							+ "; click: " + click
+							+ "; spend: " + spendDouble
+							+ "; conversions: " + conversions
+							+ "; from: " + yesterday;
+			saveLogDescription(description);
 
 			// When finished with the publisher, shutdown to free up resources.
 			try {
@@ -99,18 +103,8 @@ public class AvazuImportTask extends AbstractTask implements TaskOptions {
 				log.error(e.toString());
 			}
 		}
+		importLog.setDescription("Download data");
 		saveImportLog(importLog, true);
-	}
-	
-	private static Publisher preparePublisher() {
-		TopicName topicName = TopicName.of(Settings.getProjectId(), Settings.getTopicId());
-		Publisher publisher = null;
-		try {
-			publisher = Publisher.newBuilder(topicName).build();
-		} catch (IOException e) {
-			log.error(e.toString());
-		}
-		return publisher;
 	}
 
 	private static String getYesterdayFormated() {
