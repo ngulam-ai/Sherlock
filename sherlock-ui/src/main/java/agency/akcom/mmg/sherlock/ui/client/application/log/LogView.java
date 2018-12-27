@@ -48,6 +48,14 @@ class LogView extends ViewWithUiHandlers<LogUiHandlers> implements LogPresenter.
 		};
 		logTable.addColumn(partnerTextColumn);
 
+		final TextColumn<ImportLog> descriptionTextColumn = new TextColumn<ImportLog>() {
+			@Override
+			public String getValue(ImportLog importLog) {
+				return importLog.getDescription();
+			}
+		};
+		logTable.addColumn(descriptionTextColumn);
+
 		// Start
 		final TextColumn<ImportLog> startTextColumn = new TextColumn<ImportLog>() {
 			@Override
