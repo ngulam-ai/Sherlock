@@ -26,5 +26,6 @@ public class MyHandlerModule extends HandlerModule {
 		bindHandler(DeleteDspAction.class,DeleteDspHandler.class);
 		bindHandler(ChangeDspAction.class,ChangeDspHandler.class);
 		bindHandler(GetAllDspAction.class,GetAllDspHandler.class);
+		bindHandler(CheckConfigConnectionsAction.class,CheckConfigConnectionsHandler.class);
 	}
 }

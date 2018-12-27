@@ -1,5 +1,6 @@
 package agency.akcom.mmg.sherlock.ui.server.dao;
 
+import agency.akcom.mmg.sherlock.ui.server.ServerUtils;
 import com.googlecode.objectify.Ref;
 
 import agency.akcom.mmg.sherlock.ui.domain.AppUser;
@@ -33,11 +34,18 @@ public class CustomerDao extends BaseDao<Customer> {
         appUser.setCustomer(customer);
         // TODO all new USERS will be admins - remove after testing
         // appUser.setAdmin(true);
-        if (customer.getEmail().contains("@ngulam.com"))
-            appUser.setAdmin(true);
-        else
-            appUser.setAdmin(false);
-        // ---
+		if (ServerUtils.isProduction()) {
+			if (customer.getEmail().contains("@ngulam.com"))
+				appUser.setAdmin(true);
+			else
+				appUser.setAdmin(false);
+			// ---
+		} else {
+			if (customer.getEmail().contains("@akolchin.com"))
+				appUser.setAdmin(true);
+			else
+				appUser.setAdmin(false);
+		}
         appUserDao.save(appUser);
 
 		return customer;

@@ -3,10 +3,8 @@ package agency.akcom.mmg.sherlock.ui.client.application.settings;
 import agency.akcom.mmg.sherlock.ui.client.application.ApplicationPresenter;
 import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
-import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspAction;
-import agency.akcom.mmg.sherlock.ui.shared.action.ChangeDspResult;
-import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspAction;
-import agency.akcom.mmg.sherlock.ui.shared.action.GetAllDspResult;
+import agency.akcom.mmg.sherlock.ui.client.widget.ExtRow;
+import agency.akcom.mmg.sherlock.ui.shared.action.*;
 import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
 import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
@@ -52,7 +50,6 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
     @Override
     protected void onReset() {
         super.onReset();
-        GWT.log("onReset");
     }
 
     @Override
@@ -63,7 +60,6 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
         dispatcher.execute(new GetAllDspAction(), new AsyncCallbackImpl<GetAllDspResult>() {
             @Override
             public void onSuccess(GetAllDspResult result) {
-                GWT.log("onSuccess onBind");
                 if (result.getDspDtos() != null && result.getDspDtos().size() > 0) {
                     dspDtos = result.getDspDtos();
                     getView().displayConfig(dspDtos);
@@ -72,12 +68,9 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
             @Override
             public void onFailure(Throwable caught) {
                 super.onFailure(caught);
-                GWT.log("onFailure onBind");
             }
         });
-
         checkAndAddDefaultDsp();
-        GWT.log("OnBind Exit");
         getView().displayConfig(dspDtos);
     }
 
@@ -99,6 +92,16 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                 dspDtos.add(indexDsp, result.getOutDspDto());
             }
         });
+    }
+
+    @Override
+    public void CheckConfigConnections(ExtRow curentRow) {
+        dispatcher.execute(new CheckConfigConnectionsAction(curentRow.getPartner(), curentRow.getCurentConnection()), new AsyncCallbackImpl<CheckConfigConnectionsResult>() {
+            @Override
+            public void onSuccess(CheckConfigConnectionsResult result) {
+                curentRow.setResultCheckConncetion(result.getResult());
+            }
+             });
     }
 
     private void checkAndAddDefaultDsp() {
