@@ -103,7 +103,7 @@ public class CostsDataflowTemplateRunTask extends AbstractTask {
 				throw new RuntimeException(queryJob.getStatus().getError().toString());
 			}
 		} catch (Exception e) {
-			if (e.getMessage().contains("Not found: Table")) {
+			if (e.getMessage().contains("Not found:")) {
 				return false;
 			} else {
 				log.error(e.getMessage());
