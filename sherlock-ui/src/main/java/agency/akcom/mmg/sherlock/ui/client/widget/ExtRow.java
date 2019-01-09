@@ -110,4 +110,22 @@ public class ExtRow extends Row {
     public ConfigConnectionDto getCurentConnection() {
         return curentConnection;
     }
+
+    protected String getSecurityStr(String input) {
+        String result = "";
+        int length = input.length();
+        if (length > 4) {
+            for (int i = 0; i < length - 4; i++) {
+                result = result + "*";
+            }
+            result = result + input.substring(length-4);
+        } else {
+            result = input;
+        }
+        return result;
+    }
+
+    protected boolean checkSecurityStr(String input1, String input2){
+        return input1.equals(input2);
+    }
 }
