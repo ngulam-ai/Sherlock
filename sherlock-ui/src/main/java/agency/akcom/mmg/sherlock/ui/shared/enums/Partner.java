@@ -5,7 +5,8 @@ import java.io.Serializable;
 
 public enum Partner implements Serializable, IsSerializable  {
 	POCKETMATH,
-	AVAZU;
+	AVAZU,
+	AD_WORDS;
 
 	Partner() {}
 }
