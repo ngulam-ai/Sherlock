@@ -6,11 +6,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import agency.akcom.mmg.sherlock.ui.server.task.AbstractTask;
-import agency.akcom.mmg.sherlock.ui.server.task.AvazuImportTask;
-import agency.akcom.mmg.sherlock.ui.server.task.CostsDataflowTemplateRunTask;
-import agency.akcom.mmg.sherlock.ui.server.task.PocketMathImportTask;
-import agency.akcom.mmg.sherlock.ui.server.task.SessionCostsUpdateTask;
+import agency.akcom.mmg.sherlock.ui.server.task.*;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,6 +17,7 @@ public class CronServlet extends HttpServlet {
 
 	private static final String AVAZU_DAILY_IMPORT = "avazu_daily_import";
 	private static final String POCKETMATH_DAILY_IMPORT = "pocketmath_daily_import";
+	private static final String PERFECTAUDIENCE_DAILY_IMPORT = "perfectaudience_daily_import";
 	private static final String COSTS_DAILY_DF_PIPELINE = "costs_daily_df_pipeline";
 	private static final Object SESSION_COSTS_UPDATE = "session_costs_update"; 
 
@@ -42,6 +39,11 @@ public class CronServlet extends HttpServlet {
 			AbstractTask task = new PocketMathImportTask();
 			task.enqueue();
 			
+		} else if (PERFECTAUDIENCE_DAILY_IMPORT.equals(taskType)) {
+			log.info("Running cron job: " + taskType);
+			AbstractTask task = new PerfectAudienceTask();
+			task.enqueue();
+
 		} else if (COSTS_DAILY_DF_PIPELINE.equals(taskType)) {
 			log.info("Running cron job: " + taskType);
 			AbstractTask task = new CostsDataflowTemplateRunTask();

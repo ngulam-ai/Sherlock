@@ -5,7 +5,8 @@ import java.io.Serializable;
 
 public enum TypeConnection implements Serializable, IsSerializable {
     TOKEN,
-    SECRET_ID;
+    SECRET_ID,
+    EMAIL_PASSWORD;
 
     TypeConnection() {}
 }

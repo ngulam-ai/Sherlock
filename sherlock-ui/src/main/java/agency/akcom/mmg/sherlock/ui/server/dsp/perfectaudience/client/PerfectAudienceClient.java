@@ -1,8 +1,9 @@
 package agency.akcom.mmg.sherlock.ui.server.dsp.perfectaudience.client;
 
-import agency.akcom.mmg.sherlock.ui.server.dsp.perfectaudience.model.Auth;
+import agency.akcom.mmg.sherlock.ui.server.dsp.perfectaudience.model.PerfectReport.*;
 import agency.akcom.mmg.sherlock.ui.server.dsp.perfectaudience.model.AuthRequest;
 import feign.Headers;
+import feign.Param;
 import feign.RequestLine;
 
 public interface PerfectAudienceClient {
@@ -10,13 +11,15 @@ public interface PerfectAudienceClient {
 	@RequestLine("POST /auth")
 	@Headers("Content-Type: application/json")
 	Auth getAuth(AuthRequest authRequest);
-	
-//	@RequestLine("GET /v3/orders/{id}")
-//	@Headers("Authorization: Token token={token}")
-//	ReportOrderInfo orderDetails(@Param("token") String token, @Param("id") String order_id);
-//	
-//	@RequestLine("GET /v3/orders/{id}/stats/publishers.json")
-//	@Headers("Authorization: Token token={token}")
-//	ReportPublisher reportPublisher(@Param("token") String token, @Param("id") String order_id);
+
+	//TODO to check yesterday? Does it return realy yesterday interval?
+
+	@RequestLine("GET /reports/campaign_report?interval=yesterday")
+	@Headers("Authorization: {token}")
+	CampaignReport campaignReport (@Param("token") String token);
+
+	@RequestLine("GET /reports/ad_report?interval=yesterday&campaign_id={camp_id}")
+	@Headers("Authorization: {token}")
+	AdReport adReport (@Param("token") String token, @Param("camp_id") String camp_id);
 
 }

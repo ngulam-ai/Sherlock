@@ -5,10 +5,7 @@ import agency.akcom.mmg.sherlock.ui.client.dispatch.AsyncCallbackImpl;
 import agency.akcom.mmg.sherlock.ui.client.place.NameTokens;
 import agency.akcom.mmg.sherlock.ui.client.widget.ExtRow;
 import agency.akcom.mmg.sherlock.ui.shared.action.*;
-import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
-import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
-import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
-import agency.akcom.mmg.sherlock.ui.shared.dto.TokenConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.*;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.gwt.core.client.GWT;
@@ -136,6 +133,12 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
                     }
                     break;
                 }
+                case EMAIL_PASSWORD: {
+                    if (curent.getConfigConnectionDtos().size()==0){
+                        curent.setConfigConnectionDtos(getDefaultEmailPasswordConfigConnections());
+                    }
+                    break;
+                }
             }
         }
     }
@@ -175,6 +178,24 @@ public class SettingsPresenter extends Presenter<SettingsPresenter.MyView, Setti
         tokenConnectionDto.setName("Name");
         tokenConnectionDto.setToken("Token");
         result.add(tokenConnectionDto);
+        return result;
+    }
+
+    private DspDto getDefaultPerfectAudience() {
+        GWT.log("create PERFECT_AUDIENCE");
+        DspDto result = new DspDto();
+        result.setTypeConnection(TypeConnection.EMAIL_PASSWORD);
+        result.setPartner(Partner.PERFECTAUDIENCE);
+        result.setName("PERFECTAUDIENCE");
+        result.setConfigConnectionDtos(getDefaultEmailPasswordConfigConnections());
+        return result;
+    }
+
+    private ArrayList<ConfigConnectionDto> getDefaultEmailPasswordConfigConnections(){
+        ArrayList<ConfigConnectionDto> result = new ArrayList<ConfigConnectionDto>();
+        EmailPasswordConnectionDto emailPasswordConnectionDto = new EmailPasswordConnectionDto("Email", "Password");
+        emailPasswordConnectionDto.setName("Name");
+        result.add(emailPasswordConnectionDto);
         return result;
     }
 

@@ -3,9 +3,14 @@ cron:
   url: /cron?task=avazu_daily_import
   schedule: every day 03:00
   target: ui
-  
+
 - description: "daily import PocketMath data"
   url: /cron?task=pocketmath_daily_import
+  schedule: every day 03:00
+  target: ui
+
+- description: "daily import PerfectAudience data"
+  url: /cron?task=perfectaudience_daily_import
   schedule: every day 03:00
   target: ui
 

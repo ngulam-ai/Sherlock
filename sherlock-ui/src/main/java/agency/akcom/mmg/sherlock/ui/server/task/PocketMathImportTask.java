@@ -104,18 +104,6 @@ public class PocketMathImportTask extends AbstractTask implements TaskOptions {
 	}
 
 	// TODO same the logic with Avazu
-	private static Publisher preparePublisher() {
-		TopicName topicName = TopicName.of(Settings.getProjectId(), Settings.getTopicId());
-		Publisher publisher = null;
-		try {
-			publisher = Publisher.newBuilder(topicName).build();
-		} catch (IOException e) {
-			log.error(e.toString());
-		}
-		return publisher;
-	}
-
-	// TODO same the logic with Avazu
 	private static void postToPubSub(Publisher publisher, ReportPublisher report, String date) {
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes

@@ -1,8 +1,13 @@
 package agency.akcom.mmg.sherlock.ui.server.task;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
+import agency.akcom.mmg.sherlock.ui.server.configConnection.ConfigConnection;
+import agency.akcom.mmg.sherlock.ui.server.dao.DspDao;
+import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import com.google.appengine.api.modules.ModulesServiceFactory;
 import com.google.appengine.api.taskqueue.DeferredTask;
 import com.google.appengine.api.taskqueue.Queue;
@@ -12,6 +17,8 @@ import com.google.appengine.api.taskqueue.TaskOptions;
 import agency.akcom.mmg.sherlock.ui.server.dao.ImportLogDao;
 import agency.akcom.mmg.sherlock.ui.shared.domain.ImportLog;
 import agency.akcom.mmg.sherlock.ui.shared.enums.ImportStatus;
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.pubsub.v1.TopicName;
 import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings("serial")
@@ -81,4 +88,34 @@ public abstract class AbstractTask implements DeferredTask, Serializable {
 		}
 		importLogDao.save(importLog);
 	}
+
+	public static ArrayList<ConfigConnection> getCredentials(Partner partner, ImportLog importLog) {
+		DspDao dspdao = new DspDao();
+		ArrayList<ConfigConnection> credentialsList;
+		try {
+			credentialsList = dspdao.getCredentials(Partner.PERFECTAUDIENCE);
+			// If got empty list
+			if (credentialsList == null) {
+				log.warn("Not credentials for " + partner.toString());
+				saveImportLog(importLog, true);
+				return null;
+			}
+		} catch (NoSuchFieldException ex) {
+			log.warn("Not found credentials for " + partner.toString());
+			saveImportLog(importLog, true);
+			return null;
+		}
+		return credentialsList;
+	}
+
+    protected static Publisher preparePublisher() {
+        TopicName topicName = TopicName.of(agency.akcom.mmg.sherlock.ui.server.options.TaskOptions.Settings.getProjectId(), agency.akcom.mmg.sherlock.ui.server.options.TaskOptions.Settings.getTopicId());
+        Publisher publisher = null;
+        try {
+            publisher = Publisher.newBuilder(topicName).build();
+        } catch (IOException e) {
+            log.error(e.toString());
+        }
+        return publisher;
+    }
 }

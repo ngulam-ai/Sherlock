@@ -1,12 +1,10 @@
 package agency.akcom.mmg.sherlock.ui.client.application.settings;
 
+import agency.akcom.mmg.sherlock.ui.client.widget.EmailPasswordRow;
 import agency.akcom.mmg.sherlock.ui.client.widget.ExtRow;
 import agency.akcom.mmg.sherlock.ui.client.widget.SecretIdRow;
 import agency.akcom.mmg.sherlock.ui.client.widget.TokenRow;
-import agency.akcom.mmg.sherlock.ui.shared.dto.ConfigConnectionDto;
-import agency.akcom.mmg.sherlock.ui.shared.dto.DspDto;
-import agency.akcom.mmg.sherlock.ui.shared.dto.SecretIdConnectionDto;
-import agency.akcom.mmg.sherlock.ui.shared.dto.TokenConnectionDto;
+import agency.akcom.mmg.sherlock.ui.shared.dto.*;
 import agency.akcom.mmg.sherlock.ui.shared.enums.Partner;
 import agency.akcom.mmg.sherlock.ui.shared.enums.TypeConnection;
 import com.google.gwt.core.client.GWT;
@@ -81,6 +79,14 @@ public class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> impleme
                 }
                 break;
             }
+            case EMAIL_PASSWORD: {
+                tabPane.add(getRowConfigEmailPasswordHeader());
+                for (int i = 0; i < curentDspDto.getConfigConnectionDtos().size(); i++) {
+                    EmailPasswordRow emailPasswordRow = (EmailPasswordRow) getRow(curentDspDto.getConfigConnectionDtos().get(i), curentDspDto.getPartner());
+                    tabPane.add(emailPasswordRow);
+                }
+                break;
+            }
         }
         tabPane.add(getAddButton(indexDsp));
         if (indexDsp == activeDsp) {
@@ -103,6 +109,14 @@ public class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> impleme
         Row row = new Row();
         row.add(colum("XS_2", "Name"));
         row.add(colum("XS_8", "Token"));
+        return row;
+    }
+
+    public Row getRowConfigEmailPasswordHeader() {
+        Row row = new Row();
+        row.add(colum("XS_2", "Name"));
+        row.add(colum("XS_3", "Email"));
+        row.add(colum("XS_5", "Password"));
         return row;
     }
 
@@ -137,6 +151,11 @@ public class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> impleme
                         dspDtos.get(indexDsp).getConfigConnectionDtos().add(newTokenConnectionDto);
                         activeDsp = indexDsp;
                         break;
+                    }
+                    case EMAIL_PASSWORD: {
+                        EmailPasswordConnectionDto emailPasswordConnectionDto = new EmailPasswordConnectionDto("Email", "Password");
+                        dspDtos.get(indexDsp).getConfigConnectionDtos().add(emailPasswordConnectionDto);
+                        activeDsp = indexDsp;
                     }
                 }
                 refresh();
@@ -201,6 +220,12 @@ public class SettingsView extends ViewWithUiHandlers<SettingsUiHandlers> impleme
                     tokenRow.configuration((TokenConnectionDto) curentConfigConnectionDto, partner, this);
                     storage.put(curentConfigConnectionDto, tokenRow);
                     return tokenRow;
+                }
+                case PERFECTAUDIENCE: {
+                    EmailPasswordRow emailPasswordRow = new EmailPasswordRow();
+                    emailPasswordRow.configuration((EmailPasswordConnectionDto) curentConfigConnectionDto, partner, this);
+                    storage.put(curentConfigConnectionDto, emailPasswordRow);
+                    return emailPasswordRow;
                 }
             }
         }
