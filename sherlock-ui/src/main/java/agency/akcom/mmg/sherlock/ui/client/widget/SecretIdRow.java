@@ -39,8 +39,13 @@ public class SecretIdRow extends ExtRow {
         deleteClickHandler();
 
         textBoxName.setText(curentConnection.getName());
-        textBoxSecretId.setText(getSecurityStr(curentConnection.getClientId()));
-        textBoxSecret.setText(getSecurityStr(curentConnection.getClientSecret()));
+        if (curentConnection.getClientId().equals("Client_id")) {
+            textBoxSecretId.setText(curentConnection.getClientId());
+            textBoxSecret.setText(curentConnection.getClientSecret());
+        } else {
+            textBoxSecretId.setText(getSecurityStr(curentConnection.getClientId()));
+            textBoxSecret.setText(getSecurityStr(curentConnection.getClientSecret()));
+        }
         rowEdit.add(colum("XS_2", textBoxName));
         rowEdit.add(colum("XS_3", textBoxSecretId));
         rowEdit.add(colum("XS_5", textBoxSecret));
@@ -113,8 +118,13 @@ public class SecretIdRow extends ExtRow {
 
     private void setTexts() {
         textName.setText(curentConnection.getName());
-        textId.setText(getSecurityStr(curentConnection.getClientId()));
-        textSecret.setText(getSecurityStr(curentConnection.getClientSecret()));
+        if (curentConnection.getClientId().equals("Client_id")) {
+            textId.setText(curentConnection.getClientId());
+            textSecret.setText(curentConnection.getClientSecret());
+        } else {
+            textId.setText(getSecurityStr(curentConnection.getClientId()));
+            textSecret.setText(getSecurityStr(curentConnection.getClientSecret()));
+        }
     }
 
     @Override

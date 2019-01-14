@@ -40,8 +40,11 @@ public class TokenRow extends ExtRow {
         deleteClickHandler();
 
         textBoxName.setText(curentConnection.getName());
-        textBoxToken.setText(getSecurityStr(curentConnection.getToken()));
-
+        if (curentConnection.getToken().equals("Token")) {
+            textBoxToken.setText(curentConnection.getToken());
+        } else {
+            textBoxToken.setText(getSecurityStr(curentConnection.getToken()));
+        }
         rowEdit.add(colum("XS_2", textBoxName));
         rowEdit.add(colum("XS_8", textBoxToken));
         rowEdit.add(colum("XS_1", save));
@@ -109,7 +112,11 @@ public class TokenRow extends ExtRow {
 
     private void setTexts() {
         textName.setText(curentConnection.getName());
-        textToken.setText(getSecurityStr(curentConnection.getToken()));
+        if (curentConnection.getToken().equals("Token")) {
+            textToken.setText(curentConnection.getToken());
+        } else {
+            textToken.setText(getSecurityStr(curentConnection.getToken()));
+        }
     }
 
     @Override
