@@ -5,12 +5,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +36,8 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
@@ -45,6 +49,8 @@ import com.google.pubsub.v1.TopicName;
 
 //@WebServlet(name = "CollectServlet", urlPatterns = { "/collect" })
 public class CollectServlet extends HttpServlet {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CollectServlet.class);
 
 	private static final String TOPIC_ID = "sherlock-real-time-ga-hit-data";
 
@@ -89,7 +95,9 @@ public class CollectServlet extends HttpServlet {
 		// printRequest(req, "GET");
 
 		try {
-			postToPubSub(putParamToJSON(req));
+			JSONObject hit = putParamToJSON(req);
+//			postToPubSub(hit);
+			AudienceService.processUIds(hit);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -102,7 +110,9 @@ public class CollectServlet extends HttpServlet {
 		// printRequest(req, "POST");
 
 		try {
-			postToPubSub(putParamToJSON(req));
+			JSONObject hit = putParamToJSON(req);
+//			postToPubSub(hit);
+			AudienceService.processUIds(hit);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -127,6 +137,7 @@ public class CollectServlet extends HttpServlet {
 		String idTimeZone = "Europe/Madrid"; // TODO Determine and use Analytics account time zone;
 		Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(idTimeZone));
 		SimpleDateFormat format = new SimpleDateFormat();
+		//TODO consider to implement with several static formats with different patterns - should speed up
 		format.setTimeZone(TimeZone.getTimeZone(idTimeZone));
 		int offsetTimeZone = TimeZone.getTimeZone(idTimeZone).getOffset(calendar.getTime().getTime());
 		tryToPutOnce(reqJson, "time", "" + (calendar.getTime().getTime()+offsetTimeZone));
@@ -164,6 +175,21 @@ public class CollectServlet extends HttpServlet {
 		// Year
 		format.applyPattern("yyyy");
 		tryToPutOnce(reqJson, "cd96", "" + format.format(calendar.getTime()));
+		
+		jsonValuesReplaceToNull(reqJson);
+		
+		try {
+			AudienceService.setAudUserUid(reqJson);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			LOG.warn("AudienceService error");
+			LOG.warn(e.getMessage());
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			String sStackTrace = sw.toString(); // stack trace as a string
+			LOG.warn(sStackTrace);
+		}
 
 		System.out.println("---request JSON---");
 		System.out.println(reqJson.toString(4));
@@ -173,26 +199,66 @@ public class CollectServlet extends HttpServlet {
 
 	}
 
+	private void jsonValuesReplaceToNull(JSONObject elementJSON) {
+		List<String> keysToDelete = new ArrayList<>();
+
+		for (String key : elementJSON.keySet()) {
+
+			String value = "";
+
+			try {
+				value = elementJSON.getString(key);
+			} catch (JSONException e) {
+				LOG.warn(e.getMessage());
+				continue;
+			}
+            if ((value.equalsIgnoreCase("n/a")) 
+            		|| (value.equalsIgnoreCase("unknown"))
+            		|| (value.equalsIgnoreCase("null"))
+                    || ((value.startsWith("${") || value.startsWith("{")) && value.endsWith("}"))
+                    || (value.startsWith("$$") && value.endsWith("$$"))
+                    || (value.startsWith("@") && value.endsWith("@")) 
+                    || (value.startsWith("$$CUSTOM_PARAM("))
+                    || (value.isEmpty())) {
+                LOG.debug(String.format("Remove key='%s' value='%s'", key, value));
+                keysToDelete.add(key);
+                continue;
+            }
+            //we have row like "Spain;Galicia;Cee;unknown;unknown;Androi..." just do not delete all row
+            elementJSON.put(key, value.replaceAll("(?i)n/a", "null")  
+            		.replaceAll("(?i)unknown", "null")
+                    .replaceAll("\\$\\$.+?\\$\\$", "null") // $$xxx$$
+                    .replaceAll("\\$\\{.+?\\}", "null") // ${xxx}
+                    .replaceAll("\\{.+?\\}", "null") // {xxx}
+                    .replaceAll("@.+?@", "null") // @xxx@
+            );
+		}
+
+		for (String key : keysToDelete) {
+			elementJSON.remove(key);
+		}
+	}
+
 	private void postToPubSub(JSONObject jsonObj) throws Exception {
 
 		// schedule a message to be published, messages are automatically batched
 		// convert message to bytes
-		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
-
-		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
-
-		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
-			@Override
-			public void onSuccess(String messageId) {
-				System.out.println("published with message id: " + messageId);
-			}
-
-			@Override
-			public void onFailure(Throwable t) {
-				System.out.println("failed to publish: " + t);
-			}
-		});
+//		ByteString data = ByteString.copyFromUtf8(jsonObj.toString());
+//
+//		PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+//		ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);
+//
+//		ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {
+//			@Override
+//			public void onSuccess(String messageId) {
+//				System.out.println("published with message id: " + messageId);
+//			}
+//
+//			@Override
+//			public void onFailure(Throwable t) {
+//				System.out.println("failed to publish: " + t);
+//			}
+//		});
 
 	}
 

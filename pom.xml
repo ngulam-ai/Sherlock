@@ -30,7 +30,6 @@
 		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
-
 	<dependencyManagement>
 		<dependencies>
 			<!-- ensure all GWT deps use the same version (unless overridden) -->
@@ -123,7 +122,45 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.google.appengine/appengine-api-labs -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-labs</artifactId>
+			<version>1.9.64</version>
+		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.google.appengine/appengine-api-stubs -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-stubs</artifactId>
+			<version>1.9.64</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.appengine/appengine-tools-api -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-tools-api</artifactId>
+			<version>1.7.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.appengine/appengine-testing -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-testing</artifactId>
+			<version>1.9.64</version>
+			<scope>test</scope>
+		</dependency>
+	
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-test -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>5.0.8.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+	
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-mock -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -333,5 +370,12 @@
 				<enabled>false</enabled>
 			</releases>
 		</repository>
+		
+		<repository>
+			<id>appToolsRepo</id>
+			<name>appengineToolsApiRepo</name>
+			<url>http://clojars.org/repo/</url>
+		</repository>
+		
 	</repositories>
 </project>

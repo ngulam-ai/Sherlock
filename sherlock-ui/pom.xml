@@ -67,6 +67,7 @@
 				<configuration>
 					<deploy.project>${appengineProjectName}</deploy.project>
 					<stage.enableJarClasses>false</stage.enableJarClasses>
+					<deploy.promote>false</deploy.promote>
 					<deploy.version>${appengine.app.version}</deploy.version>
 				</configuration>
 			</plugin>
