@@ -16,9 +16,9 @@ public class SecretIdRow extends ExtRow {
     TextBox textBoxName = new TextBox();
     TextBox textBoxSecretId = new TextBox();
     TextBox textBoxSecret = new TextBox();
-    Text textName =new Text();
-    Text textId =new Text();
-    Text textSecret =new Text();
+    Text textName = new Text();
+    Text textId = new Text();
+    Text textSecret = new Text();
 
     public SecretIdRow() {
     }
@@ -39,9 +39,13 @@ public class SecretIdRow extends ExtRow {
         deleteClickHandler();
 
         textBoxName.setText(curentConnection.getName());
-        textBoxSecretId.setText(curentConnection.getClientId());
-        textBoxSecret.setText(curentConnection.getClientSecret());
-
+        if (curentConnection.getClientId().equals("Client_id")) {
+            textBoxSecretId.setText(curentConnection.getClientId());
+            textBoxSecret.setText(curentConnection.getClientSecret());
+        } else {
+            textBoxSecretId.setText(getSecurityStr(curentConnection.getClientId()));
+            textBoxSecret.setText(getSecurityStr(curentConnection.getClientSecret()));
+        }
         rowEdit.add(colum("XS_2", textBoxName));
         rowEdit.add(colum("XS_3", textBoxSecretId));
         rowEdit.add(colum("XS_5", textBoxSecret));
@@ -59,7 +63,7 @@ public class SecretIdRow extends ExtRow {
         alert.add(colum("XS_2", textName));
         alert.add(colum("XS_3", textId));
         alert.add(colum("XS_6", textSecret));
-        alert.add(colum("XS_1",textCheckCoonection));
+        alert.add(colum("XS_1", textCheckCoonection));
         alert.setHeight("50px");
         focusPanel.add(alert);
         rowAlert.add(focusPanel);
@@ -86,13 +90,19 @@ public class SecretIdRow extends ExtRow {
         });
     }
 
-    private void save(){
-        resultCheckConncetion=false;
+    private void save() {
+        resultCheckConncetion = false;
         checkAlert();
         parent.deleteStorage(this);
         curentConnection.setName(textBoxName.getText());
-        curentConnection.setClientId(textBoxSecretId.getText());
-        curentConnection.setClientSecret(textBoxSecret.getText());
+        if (!checkSecurityStr(textBoxSecretId.getText(), textId.getText())) {
+            curentConnection.setClientId(textBoxSecretId.getText());
+        }
+        if (!checkSecurityStr(textBoxSecret.getText(), textSecret.getText())) {
+            curentConnection.setClientSecret(textBoxSecret.getText());
+        }
+        textBoxSecretId.setText(getSecurityStr(curentConnection.getClientId()));
+        textBoxSecret.setText(getSecurityStr(curentConnection.getClientSecret()));
         parent.saveStorage(this);
         parent.saveChangesInDao();
         setTexts();
@@ -100,16 +110,21 @@ public class SecretIdRow extends ExtRow {
         parent.refresh();
     }
 
-    private void delete(){
+    private void delete() {
         parent.deleteStorage(this);
         parent.saveChangesInDao();
         parent.refresh();
     }
 
-    private void setTexts(){
+    private void setTexts() {
         textName.setText(curentConnection.getName());
-        textId.setText(curentConnection.getClientId());
-        textSecret.setText(curentConnection.getClientSecret());
+        if (curentConnection.getClientId().equals("Client_id")) {
+            textId.setText(curentConnection.getClientId());
+            textSecret.setText(curentConnection.getClientSecret());
+        } else {
+            textId.setText(getSecurityStr(curentConnection.getClientId()));
+            textSecret.setText(getSecurityStr(curentConnection.getClientSecret()));
+        }
     }
 
     @Override
